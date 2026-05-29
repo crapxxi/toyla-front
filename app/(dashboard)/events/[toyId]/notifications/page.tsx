@@ -42,8 +42,7 @@ function LogItem({ log }: { log: NotificationLog }) {
             {deliveryStatusLabel(log.deliveryStatus)}
           </Badge>
         </div>
-        <p className="text-xs text-gray-400 mt-0.5">Гость #{log.guestId}</p>
-        <p className="text-xs text-gray-400">{formatDateShort(log.sentAt)}</p>
+        <p className="text-xs text-gray-400 mt-0.5">{formatDateShort(log.sentAt)}</p>
       </div>
     </div>
   )
