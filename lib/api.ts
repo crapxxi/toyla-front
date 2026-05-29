@@ -25,9 +25,10 @@ async function logout401() {
 
 api.interceptors.response.use(
   (res) => res,
-  async (err) => {
+  (err) => {
     if (err.response?.status === 401 && typeof window !== 'undefined') {
-      await logout401()
+      logout401()
+      return new Promise(() => {})
     }
     return Promise.reject(err)
   }

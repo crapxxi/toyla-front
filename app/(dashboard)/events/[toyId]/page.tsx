@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
 import {
   Users, MapPin, Calendar, ChevronRight, Trash2,
-  Copy, ExternalLink, Settings, LayoutGrid,
+  Copy, ExternalLink, Settings, LayoutGrid, User,
 } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Badge } from '@/components/ui/badge'
@@ -125,6 +125,15 @@ export default function EventPage() {
             <div>
               <p className="text-xs text-gray-400">Дата</p>
               <p className="text-sm font-medium text-gray-900">{formatEventDate(toy.eventDate)}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center">
+              <User size={16} className="text-emerald-600" />
+            </div>
+            <div>
+              <p className="text-xs text-gray-400">Организатор</p>
+              <p className="text-sm font-medium text-gray-900">{toy.organizerName}</p>
             </div>
           </div>
           {toy.locationName && (

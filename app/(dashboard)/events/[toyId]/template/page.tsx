@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import { ChevronLeft, Save, Monitor, Palette, Music2, Timer, Eye } from 'lucide-react'
@@ -85,9 +85,10 @@ export default function TemplatePage() {
   const { data: toy, isLoading } = useGetToy(toyId)
   const [showPreview, setShowPreview] = useState(false)
 
+  const initialSettings = useMemo(() => toy?.templateSettings ?? {}, [toy])
   const { settings, updateSettings, saveSettings, isSaving } = useTemplateSettings(
     toyId,
-    toy?.templateSettings ?? {}
+    initialSettings
   )
 
   if (isLoading) {
