@@ -39,6 +39,7 @@ export interface ToyResponse {
   templateId: EventTemplate
   language: MessageLanguage
   templateSettings: TemplateSettings | null
+  organizerName: string
 }
 
 export interface GuestResponse {
