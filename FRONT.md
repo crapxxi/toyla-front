@@ -97,7 +97,11 @@ export interface Toy {
   gisLink: string | null
   templateId: EventTemplate
   language: MessageLanguage
-  templateSettings: TemplateSettings
+  templateSettings: TemplateSettings | null
+  // ⚠️ backend returns the full entity — these fields ARE present in responses:
+  user: User                           // organizer; pick user.id for organizerId
+  tables: SeatingTable[]               // may be empty array
+  guests: Guest[]                      // may be empty array
 }
 
 export interface Guest {
@@ -108,14 +112,18 @@ export interface Guest {
   status: RsvpStatus
   partySize: number
   rsvpToken: string                    // UUID — never expose in UI, only in WhatsApp links
+  // ⚠️ backend returns full entity — these fields ARE present in responses:
+  toy: { id: string }                  // back-reference, ignore in UI
   seatingTable: SeatingTable | null
+  notificationLogs: NotificationLog[]  // may be empty array
 }
 
 export interface SeatingTable {
   id: number
   name: string
   capacity: number
-  toyId: string
+  // ⚠️ backend returns full entity — toy field IS present (use toy.id, not toyId):
+  toy: { id: string }                  // back-reference; extract toyId as toy.id
   guests: Guest[]
 }
 
@@ -142,7 +150,7 @@ export interface PublicToyResponse {
 }
 
 export interface AuthResponse {
-  username: string
+  phoneNumber: string   // ← backend returns phoneNumber, NOT username
   token: string
 }
 ```
@@ -162,7 +170,7 @@ export interface AuthResponse {
 
 3. User enters the 6-digit code they received
 4. POST /api/v1/auth/verify-otp → { phoneNumber, code }
-   → Returns 200 { username, token }
+   → Returns 200 { phoneNumber, token }   // ← phoneNumber, NOT username
    → If first time: backend auto-creates the user account
    → On failure: 400 { "error": "..." }
 
@@ -295,58 +303,128 @@ api.interceptors.response.use(
 
 ### Complete API Reference
 
-| Method | URL | Auth | Body / Params | Response |
-|--------|-----|------|---------------|----------|
-| `POST` | `/api/v1/auth/request-otp` | ❌ | `{ phoneNumber }` | `{ message }` |
-| `POST` | `/api/v1/auth/verify-otp` | ❌ | `{ phoneNumber, code }` | `AuthResponse` |
-| `GET` | `/api/v1/toys?organizerId={id}` | ✅ | — | `Toy[]` |
-| `POST` | `/api/v1/toys?organizerId={id}` | ✅ | `ToyRequest` | `Toy` |
-| `GET` | `/api/v1/toys/{toyId}` | ✅ | — | `Toy` |
-| `PUT` | `/api/v1/toys/{toyId}` | ✅ | `ToyRequest` | `Toy` |
-| `DELETE` | `/api/v1/toys/{toyId}` | ✅ | — | `204` |
-| `PATCH` | `/api/v1/toys/{toyId}/template` | ✅ | `Record<string,unknown>` | `Toy` |
-| `POST` | `/api/v1/toys/{toyId}/guests` | ✅ | `GuestRequest` | `Guest` |
-| `GET` | `/api/v1/toys/{toyId}/guests` | ✅ | `?status=` optional | `Guest[]` |
-| `PUT` | `/api/v1/guests/{id}` | ✅ | `GuestRequest` | `Guest` |
-| `DELETE` | `/api/v1/guests/{id}` | ✅ | — | `204` |
-| `POST` | `/api/v1/toys/{toyId}/tables` | ✅ | `{ name, capacity }` | `SeatingTable` |
-| `GET` | `/api/v1/toys/{toyId}/tables` | ✅ | — | `SeatingTable[]` |
-| `GET` | `/api/v1/tables/{id}` | ✅ | — | `SeatingTable` |
-| `PATCH` | `/api/v1/tables/{id}/capacity` | ✅ | `?capacity=` | `SeatingTable` |
-| `POST` | `/api/v1/tables/{tableId}/guests/{guestId}` | ✅ | — | `SeatingTable` |
-| `DELETE` | `/api/v1/tables/{tableId}/guests/{guestId}` | ✅ | — | `204` |
-| `DELETE` | `/api/v1/tables/{id}` | ✅ | — | `204` |
-| `POST` | `/api/v1/rsvp/{rsvpToken}?status=ACCEPTED` | ❌ | — | `Guest` |
-| `GET` | `/api/v1/public/events/{username}/{toyId}` | ❌ | — | `PublicToyResponse` |
+> **Note:** All authenticated endpoints require `Authorization: Bearer <token>` header.
+> `organizerId` и `guestId` — это `Long` (число), `toyId` и `rsvpToken` — UUID-строки.
+
+#### Auth (no JWT required)
+
+| Method | URL | Body | Response |
+|--------|-----|------|----------|
+| `POST` | `/api/v1/auth/request-otp` | `{ phoneNumber: string }` | `{ message: "OTP sent to your WhatsApp" }` |
+| `POST` | `/api/v1/auth/verify-otp` | `{ phoneNumber: string, code: string }` | `{ phoneNumber: string, token: string }` |
+
+> ⚠️ `verify-otp` возвращает **`phoneNumber`**, не `username`. После логина нужно отдельно получить профиль пользователя через `GET /api/v1/toys?organizerId=...` (id юзера приходит из JWT, декодируй его на клиенте).
+
+> ❌ Эндпоинтов `/auth/register` и `/auth/login` (с паролем) **не существует** — есть DTO-заготовки в коде, но контроллеров нет.
+
+---
+
+#### Events (Toys) — требует JWT
+
+| Method | URL | Params / Body | Response |
+|--------|-----|---------------|----------|
+| `GET` | `/api/v1/toys` | `?organizerId={Long}` | `Toy[]` |
+| `POST` | `/api/v1/toys` | `?organizerId={Long}` + `ToyRequest` body | `Toy` (201) |
+| `GET` | `/api/v1/toys/{toyId}` | — | `Toy` |
+| `PUT` | `/api/v1/toys/{toyId}` | `ToyRequest` body | `Toy` |
+| `DELETE` | `/api/v1/toys/{toyId}` | — | `204` |
+| `PATCH` | `/api/v1/toys/{toyId}/template` | `Record<string, unknown>` body | `Toy` |
+
+---
+
+#### Guests — требует JWT
+
+| Method | URL | Params / Body | Response |
+|--------|-----|---------------|----------|
+| `POST` | `/api/v1/toys/{toyId}/guests` | `GuestRequest` body | `Guest` (201) |
+| `GET` | `/api/v1/toys/{toyId}/guests` | `?status=PENDING\|ACCEPTED\|DECLINED` (опц.) | `Guest[]` |
+| `GET` | `/api/v1/guests/{id}` | — | `Guest` |
+| `PUT` | `/api/v1/guests/{id}` | `GuestRequest` body | `Guest` |
+| `DELETE` | `/api/v1/guests/{id}` | — | `204` |
+
+> ⚠️ Лимит 500 гостей на event → 409 `{ error: "Event has reached the maximum guest capacity of 500" }`
+
+---
+
+#### Seating Tables — требует JWT
+
+| Method | URL | Params / Body | Response |
+|--------|-----|---------------|----------|
+| `POST` | `/api/v1/toys/{toyId}/tables` | `{ name: string, capacity: number }` body | `SeatingTable` (201) |
+| `GET` | `/api/v1/toys/{toyId}/tables` | — | `SeatingTable[]` |
+| `GET` | `/api/v1/tables/{id}` | — | `SeatingTable` |
+| `PATCH` | `/api/v1/tables/{id}/capacity` | `?capacity={int}` | `SeatingTable` |
+| `POST` | `/api/v1/tables/{tableId}/guests/{guestId}` | — | `SeatingTable` |
+| `DELETE` | `/api/v1/tables/{tableId}/guests/{guestId}` | — | `204` |
+| `DELETE` | `/api/v1/tables/{id}` | — | `204` |
+
+---
+
+#### RSVP — без JWT
+
+| Method | URL | Params | Response |
+|--------|-----|--------|----------|
+| `POST` | `/api/v1/rsvp/{rsvpToken}` | `?status=ACCEPTED\|DECLINED\|PENDING` | `Guest` |
+
+> `rsvpToken` — UUID гостя, приходит в WhatsApp-ссылке. Никогда не логировать.
+
+---
+
+#### Public — без JWT
+
+| Method | URL | Response |
+|--------|-----|----------|
+| `GET` | `/api/v1/public/events/{username}/{toyId}` | `PublicToyResponse` |
+
+---
+
+#### ❌ НЕ РЕАЛИЗОВАНО (нет контроллеров)
+
+| Что | Статус |
+|-----|--------|
+| `POST /api/v1/toys/{toyId}/notifications/send-invites` | Нет контроллера. Уведомления отправляются автоматически по расписанию. |
+| `GET /api/v1/toys/{toyId}/notifications` | Нет контроллера. `NotificationLog` в БД есть, эндпоинта нет. |
+| `PUT /api/v1/users/{userId}` | Нет UserController. Настройки профиля пока недоступны через API. |
 
 **Request bodies:**
 ```typescript
 interface ToyRequest {
-  title: string
-  description: string
-  eventDate: string           // "2025-06-14T18:00:00"
+  title: string               // @NotBlank
+  description: string         // @NotBlank
+  eventDate: string           // "2025-06-14T18:00:00" — LocalDateTime, без timezone
   locationName?: string
   gisLink?: string
-  templateId?: EventTemplate
-  language?: MessageLanguage
+  templateId?: EventTemplate  // default: ELEGANT
+  language?: MessageLanguage  // default: RUSSIAN
   templateSettings?: Record<string, unknown>
 }
 
 interface GuestRequest {
-  firstName: string
-  lastName: string
-  phoneNumber: string         // digits only, 10-13 chars
-  partySize?: number
+  firstName: string           // @NotBlank
+  lastName: string            // @NotBlank
+  phoneNumber: string         // @NotBlank — digits only, validation на клиенте
+  partySize?: number          // default: 1
+}
+
+interface SeatingTableRequest {
+  name: string                // @NotBlank
+  capacity: number            // @Min(1)
 }
 ```
 
 **Error response shape:**
 ```typescript
-// Validation errors (400)
+// Validation errors (400) — @Valid провалился
 { errors: { fieldName: "message" } }
 
-// All other errors
+// Все остальные ошибки (404, 409, 429, 403, 500)
 { error: "Human-readable message" }
+
+// 401 — нет/невалидный токен
+{ error: "Authentication required" }
+
+// 403 — нет прав
+{ error: "Access denied" }
 ```
 
 ---

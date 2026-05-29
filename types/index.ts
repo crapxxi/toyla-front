@@ -42,7 +42,10 @@ export interface Toy {
   gisLink: string | null
   templateId: EventTemplate
   language: MessageLanguage
-  templateSettings: TemplateSettings
+  templateSettings: TemplateSettings | null
+  user: User
+  tables: SeatingTable[]
+  guests: Guest[]
 }
 
 export interface Guest {
@@ -53,14 +56,16 @@ export interface Guest {
   status: RsvpStatus
   partySize: number
   rsvpToken: string
+  toy: { id: string }
   seatingTable: SeatingTable | null
+  notificationLogs: NotificationLog[]
 }
 
 export interface SeatingTable {
   id: number
   name: string
   capacity: number
-  toyId: string
+  toy: { id: string }
   guests: Guest[]
 }
 
@@ -85,7 +90,7 @@ export interface PublicToyResponse {
 }
 
 export interface AuthResponse {
-  username: string
+  phoneNumber: string
   token: string
 }
 

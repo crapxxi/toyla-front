@@ -13,6 +13,14 @@ import { api } from '@/lib/api'
 type Step = 'phone' | 'otp'
 type Lang = 'ru' | 'kk'
 
+function parseJwtPayload(token: string): Record<string, unknown> {
+  try {
+    return JSON.parse(atob(token.split('.')[1]))
+  } catch {
+    return {}
+  }
+}
+
 const t = {
   ru: {
     title: 'Toyla.app',
@@ -124,8 +132,10 @@ export default function LoginPage() {
         toast.error('Ошибка сохранения сессии. Попробуйте ещё раз.')
         return
       }
+      const payload = parseJwtPayload(data.token)
+      const userId = Number(payload.id ?? payload.userId ?? payload.sub ?? 0) || 0
       // Store in Zustand for client use
-      setAuth(data.token, data.username, 'ORGANIZER')
+      setAuth(data.token, data.phoneNumber, 'ORGANIZER', userId)
       toast.success(tr.loginSuccess)
       window.location.href = '/dashboard'
     } catch (err) {
