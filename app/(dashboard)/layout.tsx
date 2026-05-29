@@ -1,5 +1,5 @@
 'use client'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Sidebar } from '@/components/dashboard/Sidebar'
 import { useAuthStore } from '@/store/auth.store'
@@ -7,14 +7,19 @@ import { useAuthStore } from '@/store/auth.store'
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const { token } = useAuthStore()
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    if (!token) {
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (mounted && !token) {
       router.replace('/login')
     }
-  }, [token, router])
+  }, [mounted, token, router])
 
-  if (!token) return null
+  if (!mounted || !token) return null
 
   return (
     <div className="flex min-h-screen bg-[#FAFAFA]">

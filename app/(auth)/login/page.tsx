@@ -123,7 +123,7 @@ export default function LoginPage() {
       // Store in Zustand for client use (token will be re-read from cookie for SSR)
       setAuth(data.token, data.username, 'ORGANIZER')
       toast.success(tr.loginSuccess)
-      router.push('/dashboard')
+      window.location.href = '/dashboard'
     } catch (err) {
       if (axios.isAxiosError(err)) {
         if (err.response?.status === 400 || err.response?.status === 401) {
