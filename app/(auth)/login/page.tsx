@@ -19,6 +19,11 @@ const t = {
     phoneLabel: 'Номер телефона',
     sendCode: 'Получить код',
     otpLabel: 'Введите код из WhatsApp',
+    nameLabel: 'Имя',
+    lastNameLabel: 'Фамилия',
+    namePlaceholder: 'Айгерим',
+    lastNamePlaceholder: 'Алибекова',
+    nameHint: 'Будет отображаться в приглашениях',
     verify: 'Войти',
     resendIn: (s: number) => `Повторно через ${s}с`,
     resendCode: 'Отправить повторно',
@@ -33,6 +38,11 @@ const t = {
     phoneLabel: 'Телефон нөмірі',
     sendCode: 'Кодты алу',
     otpLabel: 'WhatsApp кодын енгізіңіз',
+    nameLabel: 'Аты',
+    lastNameLabel: 'Тегі',
+    namePlaceholder: 'Айгерім',
+    lastNamePlaceholder: 'Әлібекова',
+    nameHint: 'Шақырулармен көрсетіледі',
     verify: 'Кіру',
     resendIn: (s: number) => `${s}с кейін қайталаңыз`,
     resendCode: 'Қайта жіберу',
@@ -60,6 +70,8 @@ export default function LoginPage() {
   const [phone, setPhone] = useState('')
   const [phoneRaw, setPhoneRaw] = useState('')
   const [otp, setOtp] = useState('')
+  const [name, setName] = useState('')
+  const [lastName, setLastName] = useState('')
   const [loading, setLoading] = useState(false)
   const [countdown, setCountdown] = useState(0)
   const tr = t[lang]
@@ -105,10 +117,10 @@ export default function LoginPage() {
     setLoading(true)
     try {
       const digits = phoneRaw.replace(/\D/g, '')
-      const { data } = await api.post<AuthResponse>('/api/v1/auth/verify-otp', {
-        phoneNumber: digits,
-        code: otp,
-      })
+      const body: Record<string, string> = { phoneNumber: digits, code: otp }
+      if (name.trim()) body.name = name.trim()
+      if (lastName.trim()) body.lastName = lastName.trim()
+      const { data } = await api.post<AuthResponse>('/api/v1/auth/verify-otp', body)
       const res = await fetch('/internal/set-token', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -230,6 +242,33 @@ export default function LoginPage() {
                 <h2 className="text-lg font-semibold text-gray-900 mb-1">{tr.otpLabel}</h2>
                 <p className="text-xs text-gray-500 mb-6">{tr.sentTo(phoneRaw)}</p>
                 <OtpInput value={otp} onChange={setOtp} disabled={loading} />
+                <div className="mt-5 grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1.5">{tr.nameLabel}</label>
+                    <input
+                      type="text"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder={tr.namePlaceholder}
+                      maxLength={64}
+                      disabled={loading}
+                      className="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:border-[#8B5CF6] focus:ring-2 focus:ring-[#8B5CF6]/20 outline-none text-sm transition-all"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1.5">{tr.lastNameLabel}</label>
+                    <input
+                      type="text"
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      placeholder={tr.lastNamePlaceholder}
+                      maxLength={64}
+                      disabled={loading}
+                      className="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:border-[#8B5CF6] focus:ring-2 focus:ring-[#8B5CF6]/20 outline-none text-sm transition-all"
+                    />
+                  </div>
+                </div>
+                <p className="text-xs text-gray-400 mt-1.5">{tr.nameHint}</p>
                 <button
                   onClick={handleVerify}
                   disabled={loading || otp.length < 6}

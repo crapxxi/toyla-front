@@ -14,13 +14,14 @@ let isLoggingOut = false
 async function logout401() {
   if (isLoggingOut) return
   isLoggingOut = true
-  useAuthStore.getState().clearAuth()
   try {
+    useAuthStore.getState().clearAuth()
     await fetch('/internal/logout', { method: 'POST' })
   } catch {
-    // ignore — cookie deletion is best-effort
+    // ignore
+  } finally {
+    window.location.href = '/login'
   }
-  window.location.href = '/login'
 }
 
 api.interceptors.response.use(
