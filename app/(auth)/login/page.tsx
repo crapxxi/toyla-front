@@ -115,12 +115,16 @@ export default function LoginPage() {
         code: otp,
       })
       // Set httpOnly cookie via Next.js API route
-      await fetch('/api/auth/set-token', {
+      const cookieRes = await fetch('/api/auth/set-token', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token: data.token }),
       })
-      // Store in Zustand for client use (token will be re-read from cookie for SSR)
+      if (!cookieRes.ok) {
+        toast.error('Ошибка сохранения сессии. Попробуйте ещё раз.')
+        return
+      }
+      // Store in Zustand for client use
       setAuth(data.token, data.username, 'ORGANIZER')
       toast.success(tr.loginSuccess)
       window.location.href = '/dashboard'
@@ -134,6 +138,8 @@ export default function LoginPage() {
         } else {
           toast.error(err.response?.data?.error ?? 'Ошибка верификации')
         }
+      } else {
+        toast.error('Ошибка соединения. Попробуйте ещё раз.')
       }
     } finally {
       setLoading(false)

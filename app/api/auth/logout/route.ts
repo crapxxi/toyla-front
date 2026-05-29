@@ -1,7 +1,8 @@
+import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 
 export async function POST() {
-  const res = NextResponse.json({ ok: true })
-  res.cookies.delete('toyla_token')
-  return res
+  const cookieStore = await cookies()
+  cookieStore.delete('toyla_token')
+  return NextResponse.json({ ok: true })
 }
