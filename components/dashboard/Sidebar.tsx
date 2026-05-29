@@ -24,7 +24,7 @@ const navItems = [
 export function Sidebar() {
   const pathname = usePathname()
   const router = useRouter()
-  const { user, clearAuth } = useAuthStore()
+  const { username, clearAuth } = useAuthStore()
   const { sidebarOpen, setSidebarOpen } = useUIStore()
 
   const handleLogout = async () => {
@@ -80,13 +80,11 @@ export function Sidebar() {
       <div className="px-3 py-4 border-t border-gray-100">
         <div className="flex items-center gap-3 px-3 py-2 mb-2">
           <div className="w-8 h-8 rounded-full bg-[#EDE9FE] flex items-center justify-center text-[#8B5CF6] font-semibold text-sm">
-            {user?.username?.[0]?.toUpperCase() ?? 'U'}
+            {username?.[0]?.toUpperCase() ?? 'U'}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-gray-900 truncate">@{user?.username}</p>
-            <p className="text-xs text-gray-500 truncate">
-              {user?.role === 'ADMIN' ? 'Администратор' : 'Организатор'}
-            </p>
+            <p className="text-sm font-medium text-gray-900 truncate">@{username}</p>
+            <p className="text-xs text-gray-500 truncate">Организатор</p>
           </div>
         </div>
         <button

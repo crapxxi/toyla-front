@@ -40,8 +40,8 @@ const steps = ['Детали', 'Шаблон', 'Язык', 'Готово']
 
 export default function NewEventPage() {
   const router = useRouter()
-  const { user } = useAuthStore()
-  const createToy = useCreateToy(user?.id ?? 0)
+  const { userId } = useAuthStore()
+  const createToy = useCreateToy(userId ?? 0)
   const [step, setStep] = useState(0)
   const [selectedTemplate, setSelectedTemplate] = useState<EventTemplate>('ELEGANT')
   const [selectedLang, setSelectedLang] = useState<MessageLanguage>('RUSSIAN')

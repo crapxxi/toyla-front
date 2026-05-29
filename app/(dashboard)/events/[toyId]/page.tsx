@@ -23,10 +23,10 @@ const TEMPLATE_LABELS: Record<string, string> = {
 export default function EventPage() {
   const { toyId } = useParams<{ toyId: string }>()
   const router = useRouter()
-  const { user } = useAuthStore()
+  const { userId } = useAuthStore()
   const { data: toy, isLoading } = useGetToy(toyId)
   const { data: guests } = useGetGuests(toyId)
-  const deleteToy = useDeleteToy(user?.id ?? 0)
+  const deleteToy = useDeleteToy(userId ?? 0)
   const [showDelete, setShowDelete] = useState(false)
 
   if (isLoading) {

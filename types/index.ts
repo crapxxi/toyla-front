@@ -90,7 +90,8 @@ export interface PublicToyResponse {
 }
 
 export interface AuthResponse {
-  phoneNumber: string
+  id: number
+  username: string
   token: string
 }
 

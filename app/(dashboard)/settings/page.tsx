@@ -23,15 +23,15 @@ const profileSchema = z.object({
 type ProfileForm = z.infer<typeof profileSchema>
 
 export default function SettingsPage() {
-  const { user, setAuth, token } = useAuthStore()
+  const { userId, username, setAuth, token } = useAuthStore()
 
   const { data: profile, isLoading } = useQuery({
-    queryKey: ['profile', user?.username],
+    queryKey: ['profile', username],
     queryFn: async () => {
       const { data } = await api.get<UserType>('/api/auth/me')
       return data
     },
-    enabled: !!token,
+    enabled: !!token && !!userId,
   })
 
   const form = useForm<ProfileForm>({
@@ -39,7 +39,7 @@ export default function SettingsPage() {
     defaultValues: {
       name: '',
       lastName: '',
-      username: user?.username ?? '',
+      username: username ?? '',
     },
   })
 
@@ -59,8 +59,8 @@ export default function SettingsPage() {
       return updated
     },
     onSuccess: (updated) => {
-      if (token && user) {
-        setAuth(token, updated.username, updated.role, updated.id)
+      if (token) {
+        setAuth({ id: updated.id, username: updated.username, token })
       }
       toast.success('Настройки сохранены')
     },
@@ -82,17 +82,15 @@ export default function SettingsPage() {
           <div className="flex items-center gap-4 mb-6">
             <div className="w-16 h-16 rounded-2xl bg-[#EDE9FE] flex items-center justify-center">
               <span className="text-2xl font-bold text-[#8B5CF6]">
-                {(profile?.name?.[0] ?? user?.username?.[0] ?? 'U').toUpperCase()}
+                {(profile?.name?.[0] ?? username?.[0] ?? 'U').toUpperCase()}
               </span>
             </div>
             <div>
               <p className="font-semibold text-gray-900">
-                {profile?.name ? `${profile.name} ${profile.lastName ?? ''}` : `@${user?.username}`}
+                {profile?.name ? `${profile.name} ${profile.lastName ?? ''}` : `@${username}`}
               </p>
-              <p className="text-sm text-gray-400">@{user?.username}</p>
-              <p className="text-xs text-gray-400 mt-0.5">
-                {user?.role === 'ADMIN' ? 'Администратор' : 'Организатор'}
-              </p>
+              <p className="text-sm text-gray-400">@{username}</p>
+              <p className="text-xs text-gray-400 mt-0.5">Организатор</p>
             </div>
           </div>
 

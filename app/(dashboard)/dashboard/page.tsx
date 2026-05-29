@@ -25,8 +25,8 @@ function EventCardWithStats({ toy }: { toy: Toy }) {
 }
 
 export default function DashboardPage() {
-  const { user } = useAuthStore()
-  const organizerId = user?.id ?? 0
+  const { userId } = useAuthStore()
+  const organizerId = userId ?? 0
   const { data: toys, isLoading } = useGetToys(organizerId)
   const [search, setSearch] = useState('')
 

@@ -1,11 +1,12 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { UserRole } from '@/types'
+import { AuthResponse } from '@/types'
 
 interface AuthStore {
   token: string | null
-  user: { username: string; role: UserRole; id: number } | null
-  setAuth: (token: string, username: string, role: UserRole, id?: number) => void
+  userId: number | null
+  username: string | null
+  setAuth: (res: AuthResponse) => void
   clearAuth: () => void
 }
 
@@ -13,14 +14,15 @@ export const useAuthStore = create<AuthStore>()(
   persist(
     (set) => ({
       token: null,
-      user: null,
-      setAuth: (token, username, role, id = 0) =>
-        set({ token, user: { username, role, id } }),
-      clearAuth: () => set({ token: null, user: null }),
+      userId: null,
+      username: null,
+      setAuth: (res) =>
+        set({ token: res.token, userId: res.id, username: res.username }),
+      clearAuth: () => set({ token: null, userId: null, username: null }),
     }),
     {
       name: 'toyla-auth',
-      partialize: (state) => ({ token: state.token, user: state.user }),
+      partialize: (state) => ({ token: state.token, userId: state.userId, username: state.username }),
     }
   )
 )
