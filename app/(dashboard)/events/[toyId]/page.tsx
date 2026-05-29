@@ -64,7 +64,7 @@ export default function EventPage() {
 
   const navCards = [
     { href: `/events/${toyId}/guests`, icon: Users, label: 'Гости', value: `${total}`, color: 'text-violet-600 bg-violet-50' },
-    { href: `/events/${toyId}/seating`, icon: LayoutGrid, label: 'Рассадка', value: `${accepted} мест`, color: 'text-blue-600 bg-blue-50' },
+    { href: `/events/${toyId}/seating`, icon: LayoutGrid, label: 'Рассадка', value: '', color: 'text-blue-600 bg-blue-50' },
     { href: `/events/${toyId}/template`, icon: Settings, label: 'Шаблон', value: TEMPLATE_LABELS[toy.templateId], color: 'text-amber-600 bg-amber-50' },
   ]
 
