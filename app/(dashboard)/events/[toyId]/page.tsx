@@ -23,7 +23,7 @@ const TEMPLATE_LABELS: Record<string, string> = {
 export default function EventPage() {
   const { toyId } = useParams<{ toyId: string }>()
   const router = useRouter()
-  const { userId } = useAuthStore()
+  const { userId, username } = useAuthStore()
   const { data: toy, isLoading } = useGetToy(toyId)
   const { data: guests } = useGetGuests(toyId)
   const deleteToy = useDeleteToy(userId ?? 0)
@@ -49,7 +49,7 @@ export default function EventPage() {
   const declined = guests?.filter((g) => g.status === 'DECLINED').length ?? 0
   const pending = guests?.filter((g) => g.status === 'PENDING').length ?? 0
   const total = guests?.length ?? 0
-  const eventUrl = `${process.env.NEXT_PUBLIC_APP_URL}/${user?.username}/${toy.id}`
+  const eventUrl = `${process.env.NEXT_PUBLIC_APP_URL}/${username}/${toy.id}`
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(eventUrl)
