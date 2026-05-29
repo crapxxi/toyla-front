@@ -2,13 +2,13 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 import { api } from '@/lib/api'
 import { handleApiError } from '@/lib/handleApiError'
-import { Toy, ToyRequest, TemplateSettings, queryKeys } from '@/types'
+import { ToyResponse, ToyRequest, TemplateSettings, queryKeys } from '@/types'
 
 export function useGetToys(organizerId: number) {
   return useQuery({
     queryKey: queryKeys.toys(organizerId),
     queryFn: async () => {
-      const { data } = await api.get<Toy[]>('/api/v1/toys', { params: { organizerId } })
+      const { data } = await api.get<ToyResponse[]>('/api/v1/toys', { params: { organizerId } })
       return data
     },
     enabled: organizerId > 0,
@@ -19,7 +19,7 @@ export function useGetToy(toyId: string) {
   return useQuery({
     queryKey: queryKeys.toy(toyId),
     queryFn: async () => {
-      const { data } = await api.get<Toy>(`/api/v1/toys/${toyId}`)
+      const { data } = await api.get<ToyResponse>(`/api/v1/toys/${toyId}`)
       return data
     },
     enabled: !!toyId,
@@ -30,7 +30,7 @@ export function useCreateToy(organizerId: number) {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (payload: ToyRequest) => {
-      const { data } = await api.post<Toy>('/api/v1/toys', payload, { params: { organizerId } })
+      const { data } = await api.post<ToyResponse>('/api/v1/toys', payload, { params: { organizerId } })
       return data
     },
     onSuccess: () => {
@@ -45,7 +45,7 @@ export function useUpdateToy(toyId: string, organizerId: number) {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (payload: Partial<ToyRequest>) => {
-      const { data } = await api.put<Toy>(`/api/v1/toys/${toyId}`, payload)
+      const { data } = await api.put<ToyResponse>(`/api/v1/toys/${toyId}`, payload)
       return data
     },
     onSuccess: () => {
@@ -76,7 +76,7 @@ export function usePatchTemplate(toyId: string) {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (settings: Partial<TemplateSettings>) => {
-      const { data } = await api.patch<Toy>(`/api/v1/toys/${toyId}/template`, settings)
+      const { data } = await api.patch<ToyResponse>(`/api/v1/toys/${toyId}/template`, settings)
       return data
     },
     onSuccess: () => {

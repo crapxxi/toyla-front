@@ -2,13 +2,13 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 import { api } from '@/lib/api'
 import { handleApiError } from '@/lib/handleApiError'
-import { SeatingTable, queryKeys } from '@/types'
+import { SeatingTableResponse, queryKeys } from '@/types'
 
 export function useGetTables(toyId: string) {
   return useQuery({
     queryKey: queryKeys.tables(toyId),
     queryFn: async () => {
-      const { data } = await api.get<SeatingTable[]>(`/api/v1/toys/${toyId}/tables`)
+      const { data } = await api.get<SeatingTableResponse[]>(`/api/v1/toys/${toyId}/tables`)
       return data
     },
     enabled: !!toyId,
@@ -19,7 +19,7 @@ export function useCreateTable(toyId: string) {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (payload: { name: string; capacity: number }) => {
-      const { data } = await api.post<SeatingTable>(`/api/v1/toys/${toyId}/tables`, payload)
+      const { data } = await api.post<SeatingTableResponse>(`/api/v1/toys/${toyId}/tables`, payload)
       return data
     },
     onSuccess: () => {
@@ -38,13 +38,13 @@ export function useAssignGuest(toyId: string) {
     },
     onMutate: async ({ tableId, guestId }) => {
       await queryClient.cancelQueries({ queryKey: queryKeys.tables(toyId) })
-      const previous = queryClient.getQueryData<SeatingTable[]>(queryKeys.tables(toyId))
+      const previous = queryClient.getQueryData<SeatingTableResponse[]>(queryKeys.tables(toyId))
       if (previous) {
         const guest = previous.flatMap((t) => t.guests).find((g) => g.id === guestId)
         const updated = previous.map((table) => {
           const withoutGuest = table.guests.filter((g) => g.id !== guestId)
           if (table.id === tableId && guest) {
-            return { ...table, guests: [...withoutGuest, { ...guest, seatingTable: table }] }
+            return { ...table, guests: [...withoutGuest, { ...guest, seatingTableId: table.id }] }
           }
           return { ...table, guests: withoutGuest }
         })

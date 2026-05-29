@@ -22,7 +22,7 @@ import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { EmptyState } from '@/components/shared/EmptyState'
 import { useGetTables, useCreateTable, useAssignGuest, useRemoveGuest, useDeleteTable } from '@/hooks/useSeating'
 import { useGetGuests } from '@/hooks/useGuests'
-import { Guest, SeatingTable } from '@/types'
+import { GuestResponse, SeatingTableResponse } from '@/types'
 
 const tableSchema = z.object({
   name: z.string().min(1, 'Введите название'),
@@ -35,7 +35,7 @@ function GuestChip({
   tableId,
   onRemove,
 }: {
-  guest: Guest
+  guest: GuestResponse
   tableId: number
   onRemove: (guestId: number) => void
 }) {
@@ -70,7 +70,7 @@ function TableCard({
   onDelete,
   onRemoveGuest,
 }: {
-  table: SeatingTable
+  table: SeatingTableResponse
   onDelete: () => void
   onRemoveGuest: (guestId: number) => void
 }) {
@@ -147,7 +147,7 @@ export default function SeatingPage() {
   const deleteTable = useDeleteTable(toyId)
   const [showForm, setShowForm] = useState(false)
   const [deleteTableId, setDeleteTableId] = useState<number | null>(null)
-  const [activeGuest, setActiveGuest] = useState<Guest | null>(null)
+  const [activeGuest, setActiveGuest] = useState<GuestResponse | null>(null)
 
   const form = useForm<TableForm>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -160,7 +160,7 @@ export default function SeatingPage() {
     useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 8 } })
   )
 
-  const unassignedGuests = (guests ?? []).filter((g) => !g.seatingTable)
+  const unassignedGuests = (guests ?? []).filter((g) => g.seatingTableId === null)
 
   const handleDragStart = (event: DragStartEvent) => {
     const data = event.active.data.current

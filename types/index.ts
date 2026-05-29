@@ -1,17 +1,13 @@
-export type RsvpStatus = 'PENDING' | 'ACCEPTED' | 'DECLINED'
+export type RsvpStatus       = 'PENDING' | 'ACCEPTED' | 'DECLINED'
 export type NotificationType = 'INITIAL_INVITE' | 'REMINDER_24H' | 'MORNING_SEATING'
-export type DeliveryStatus = 'PENDING' | 'DELIVERED' | 'FAILED' | 'ERROR'
-export type EventTemplate = 'ELEGANT' | 'FESTIVE' | 'MINIMALIST' | 'ROMANTIC' | 'MODERN'
-export type MessageLanguage = 'RUSSIAN' | 'KAZAKH'
-export type UserRole = 'ORGANIZER' | 'ADMIN'
+export type DeliveryStatus   = 'PENDING' | 'DELIVERED' | 'FAILED' | 'ERROR'
+export type EventTemplate    = 'ELEGANT' | 'FESTIVE' | 'MINIMALIST' | 'ROMANTIC' | 'MODERN'
+export type MessageLanguage  = 'RUSSIAN' | 'KAZAKH'
 
-export interface User {
+export interface AuthResponse {
   id: number
   username: string
-  phoneNumber: string
-  name: string | null
-  lastName: string | null
-  role: UserRole
+  token: string
 }
 
 export interface TemplateSettings {
@@ -33,7 +29,7 @@ export interface TemplateSettings {
   countdownPosition?: 'top' | 'bottom' | 'floating'
 }
 
-export interface Toy {
+export interface ToyResponse {
   id: string
   title: string
   description: string
@@ -43,12 +39,9 @@ export interface Toy {
   templateId: EventTemplate
   language: MessageLanguage
   templateSettings: TemplateSettings | null
-  user: User
-  tables: SeatingTable[]
-  guests: Guest[]
 }
 
-export interface Guest {
+export interface GuestResponse {
   id: number
   firstName: string
   lastName: string
@@ -56,22 +49,19 @@ export interface Guest {
   status: RsvpStatus
   partySize: number
   rsvpToken: string
-  toy: { id: string }
-  seatingTable: SeatingTable | null
-  notificationLogs: NotificationLog[]
+  seatingTableId: number | null
 }
 
-export interface SeatingTable {
+export interface SeatingTableResponse {
   id: number
   name: string
   capacity: number
-  toy: { id: string }
-  guests: Guest[]
+  toyId: string
+  guests: GuestResponse[]
 }
 
 export interface NotificationLog {
   id: number
-  guestId: number
   type: NotificationType
   sentAt: string
   deliveryStatus: DeliveryStatus
@@ -85,14 +75,8 @@ export interface PublicToyResponse {
   locationName: string | null
   gisLink: string | null
   templateId: EventTemplate
-  templateSettings: TemplateSettings
+  templateSettings: TemplateSettings | null
   organizerDisplayName: string
-}
-
-export interface AuthResponse {
-  id: number
-  username: string
-  token: string
 }
 
 export interface ToyRequest {
@@ -101,7 +85,7 @@ export interface ToyRequest {
   eventDate: string
   locationName?: string
   gisLink?: string
-  templateId?: EventTemplate
+  templateId: EventTemplate
   language?: MessageLanguage
   templateSettings?: Record<string, unknown>
 }
@@ -114,24 +98,24 @@ export interface GuestRequest {
 }
 
 export const queryKeys = {
-  toys: (organizerId: number) => ['toys', organizerId],
-  toy: (id: string) => ['toy', id],
-  guests: (toyId: string) => ['guests', toyId],
-  guestsByStatus: (toyId: string, status: RsvpStatus) => ['guests', toyId, status],
-  tables: (toyId: string) => ['tables', toyId],
-  logs: (toyId: string) => ['logs', toyId],
-  publicEvent: (username: string, toyId: string) => ['public', username, toyId],
+  toys:           (userId: number)                       => ['toys', userId],
+  toy:            (id: string)                           => ['toy', id],
+  guests:         (toyId: string)                        => ['guests', toyId],
+  guestsByStatus: (toyId: string, s: RsvpStatus)         => ['guests', toyId, s],
+  tables:         (toyId: string)                        => ['tables', toyId],
+  logs:           (toyId: string)                        => ['logs', toyId],
+  publicEvent:    (username: string, toyId: string)      => ['public', username, toyId],
 }
 
 export const statusColors: Record<DeliveryStatus, string> = {
   DELIVERED: 'bg-green-100 text-green-700',
-  FAILED: 'bg-red-100 text-red-700',
-  PENDING: 'bg-amber-100 text-amber-700',
-  ERROR: 'bg-orange-100 text-orange-700',
+  FAILED:    'bg-red-100 text-red-700',
+  PENDING:   'bg-amber-100 text-amber-700',
+  ERROR:     'bg-orange-100 text-orange-700',
 }
 
 export const rsvpColors: Record<RsvpStatus, string> = {
   ACCEPTED: 'bg-green-100 text-green-700',
   DECLINED: 'bg-red-100 text-red-700',
-  PENDING: 'bg-amber-100 text-amber-700',
+  PENDING:  'bg-amber-100 text-amber-700',
 }

@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 import { MapPin, Calendar, Users, Clock, AlertTriangle } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
-import { Toy } from '@/types'
+import { ToyResponse } from '@/types'
 import { formatEventDate, daysUntilDelete, isPastEvent } from '@/lib/formatters'
 
 const TEMPLATE_LABELS: Record<string, string> = {
@@ -24,7 +24,7 @@ const TEMPLATE_COLORS: Record<string, string> = {
 }
 
 interface EventCardProps {
-  toy: Toy
+  toy: ToyResponse
   guestStats?: {
     total: number
     accepted: number

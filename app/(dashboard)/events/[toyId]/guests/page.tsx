@@ -188,7 +188,7 @@ export default function GuestsPage() {
                     {guest.partySize}
                   </TableCell>
                   <TableCell className="text-sm text-gray-500 hidden md:table-cell">
-                    {guest.seatingTable?.name ?? '—'}
+                    {guest.seatingTableId !== null ? 'Назначен' : '—'}
                   </TableCell>
                   <TableCell>
                     <button

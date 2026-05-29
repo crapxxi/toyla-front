@@ -9,9 +9,9 @@ import { EmptyState } from '@/components/shared/EmptyState'
 import { useGetToys } from '@/hooks/useToys'
 import { useGetGuests } from '@/hooks/useGuests'
 import { useAuthStore } from '@/store/auth.store'
-import { Toy } from '@/types'
+import { ToyResponse } from '@/types'
 
-function EventCardWithStats({ toy }: { toy: Toy }) {
+function EventCardWithStats({ toy }: { toy: ToyResponse }) {
   const { data: guests } = useGetGuests(toy.id)
   const stats = guests
     ? {
