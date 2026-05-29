@@ -9,12 +9,25 @@ api.interceptors.request.use((config) => {
   return config
 })
 
+let isLoggingOut = false
+
+async function logout401() {
+  if (isLoggingOut) return
+  isLoggingOut = true
+  useAuthStore.getState().clearAuth()
+  try {
+    await fetch('/internal/logout', { method: 'POST' })
+  } catch {
+    // ignore — cookie deletion is best-effort
+  }
+  window.location.href = '/login'
+}
+
 api.interceptors.response.use(
   (res) => res,
-  (err) => {
-    if (err.response?.status === 401) {
-      useAuthStore.getState().clearAuth()
-      if (typeof window !== 'undefined') window.location.href = '/login'
+  async (err) => {
+    if (err.response?.status === 401 && typeof window !== 'undefined') {
+      await logout401()
     }
     return Promise.reject(err)
   }

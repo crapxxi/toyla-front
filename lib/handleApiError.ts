@@ -2,13 +2,22 @@ import axios from 'axios'
 import toast from 'react-hot-toast'
 import { useAuthStore } from '@/store/auth.store'
 
+async function logout401() {
+  useAuthStore.getState().clearAuth()
+  try {
+    await fetch('/internal/logout', { method: 'POST' })
+  } catch {
+    // ignore
+  }
+  window.location.href = '/login'
+}
+
 export function handleApiError(err: unknown) {
   if (!axios.isAxiosError(err)) return
   const { status, data, headers } = err.response ?? {}
 
   if (status === 401) {
-    useAuthStore.getState().clearAuth()
-    window.location.href = '/login'
+    logout401()
     return
   }
   if (status === 403) { toast.error('Доступ запрещён'); return }

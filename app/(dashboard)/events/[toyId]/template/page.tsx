@@ -2,8 +2,7 @@
 import { useState } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
-import { ChevronLeft, Eye, Save } from 'lucide-react'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { ChevronLeft, Save, Monitor, Palette, Music2, Timer, Eye } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
@@ -20,37 +19,65 @@ import { PublicToyResponse } from '@/types'
 
 function ColorPicker({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
   return (
-    <div className="flex items-center justify-between">
-      <label className="text-sm text-gray-700">{label}</label>
-      <div className="flex items-center gap-2">
-        <input
-          type="color"
-          value={value || '#000000'}
-          onChange={(e) => onChange(e.target.value)}
-          className="w-8 h-8 rounded-lg cursor-pointer border border-gray-200 p-0.5"
-        />
+    <div className="flex items-center justify-between gap-4">
+      <label className="text-sm text-gray-700 flex-1">{label}</label>
+      <div className="flex items-center gap-2.5">
+        <div className="relative">
+          <input
+            type="color"
+            value={value || '#8B5CF6'}
+            onChange={(e) => onChange(e.target.value)}
+            className="w-9 h-9 rounded-xl cursor-pointer border-2 border-gray-100 p-0.5 bg-transparent"
+          />
+        </div>
         <Input
           value={value || ''}
           onChange={(e) => onChange(e.target.value)}
-          placeholder="#000000"
-          className="w-28 h-8 text-xs rounded-lg"
+          placeholder="#8B5CF6"
+          className="w-28 h-9 text-xs rounded-xl font-mono"
         />
       </div>
     </div>
   )
 }
 
-function ToggleSwitch({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
+function Toggle({ label, sublabel, checked, onChange }: { label: string; sublabel?: string; checked: boolean; onChange: (v: boolean) => void }) {
   return (
-    <button
-      onClick={() => onChange(!checked)}
-      className={`relative w-10 h-5 rounded-full transition-colors ${checked ? 'bg-[#8B5CF6]' : 'bg-gray-200'}`}
-    >
-      <div
-        className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${checked ? 'translate-x-5' : 'translate-x-0.5'}`}
-      />
-    </button>
+    <div className="flex items-center justify-between gap-3">
+      <div>
+        <p className="text-sm text-gray-900">{label}</p>
+        {sublabel && <p className="text-xs text-gray-400 mt-0.5">{sublabel}</p>}
+      </div>
+      <button
+        onClick={() => onChange(!checked)}
+        className={`relative w-11 h-6 rounded-full transition-colors flex-shrink-0 ${checked ? 'bg-[#8B5CF6]' : 'bg-gray-200'}`}
+      >
+        <div className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow-sm transition-transform ${checked ? 'translate-x-5' : 'translate-x-0.5'}`} />
+      </button>
+    </div>
   )
+}
+
+function SectionCard({ icon: Icon, title, children }: { icon: React.ElementType; title: string; children: React.ReactNode }) {
+  return (
+    <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+      <div className="flex items-center gap-2.5 px-5 py-3.5 border-b border-gray-50">
+        <div className="w-7 h-7 rounded-lg bg-[#EDE9FE] flex items-center justify-center">
+          <Icon size={14} className="text-[#8B5CF6]" />
+        </div>
+        <p className="text-sm font-semibold text-gray-900">{title}</p>
+      </div>
+      <div className="p-5 space-y-5">{children}</div>
+    </div>
+  )
+}
+
+const TEMPLATE_MAP = {
+  ELEGANT: ElegantTemplate,
+  FESTIVE: FestiveTemplate,
+  MINIMALIST: MinimalistTemplate,
+  ROMANTIC: RomanticTemplate,
+  MODERN: ModernTemplate,
 }
 
 export default function TemplatePage() {
@@ -66,7 +93,7 @@ export default function TemplatePage() {
   if (isLoading) {
     return (
       <div className="space-y-4">
-        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-10 w-48" />
         <Skeleton className="h-64 rounded-2xl" />
       </div>
     )
@@ -86,16 +113,16 @@ export default function TemplatePage() {
     organizerDisplayName: 'Организатор',
   }
 
-  const TemplateComponent = {
-    ELEGANT: ElegantTemplate,
-    FESTIVE: FestiveTemplate,
-    MINIMALIST: MinimalistTemplate,
-    ROMANTIC: RomanticTemplate,
-    MODERN: ModernTemplate,
-  }[toy.templateId] ?? ElegantTemplate
+  const TemplateComponent = TEMPLATE_MAP[toy.templateId] ?? ElegantTemplate
+
+  const TEMPLATE_LABELS: Record<string, string> = {
+    ELEGANT: 'Элегантный', FESTIVE: 'Праздничный', MINIMALIST: 'Минималистичный',
+    ROMANTIC: 'Романтичный', MODERN: 'Современный',
+  }
 
   return (
     <div>
+      {/* Header */}
       <div className="flex items-center gap-3 mb-6">
         <Link
           href={`/events/${toyId}`}
@@ -103,18 +130,18 @@ export default function TemplatePage() {
         >
           <ChevronLeft size={18} />
         </Link>
-        <div className="flex-1">
-          <h1 className="text-xl font-semibold text-gray-900">Шаблон</h1>
-          <p className="text-xs text-gray-500">{toy.title}</p>
+        <div className="flex-1 min-w-0">
+          <h1 className="text-xl font-semibold text-gray-900">Дизайн шаблона</h1>
+          <p className="text-xs text-gray-400 mt-0.5 truncate">{toy.title} · {TEMPLATE_LABELS[toy.templateId]}</p>
         </div>
         <div className="flex gap-2">
           <Button
             variant="outline"
             onClick={() => setShowPreview(!showPreview)}
-            className="rounded-xl gap-2 text-sm"
+            className={`rounded-xl gap-2 text-sm transition-colors ${showPreview ? 'bg-[#EDE9FE] border-[#8B5CF6] text-[#8B5CF6]' : ''}`}
           >
             <Eye size={15} />
-            <span className="hidden sm:block">Предпросмотр</span>
+            <span className="hidden sm:block">Превью</span>
           </Button>
           <Button
             onClick={saveSettings}
@@ -127,219 +154,207 @@ export default function TemplatePage() {
         </div>
       </div>
 
-      <div className={`grid gap-6 ${showPreview ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1'}`}>
-        {/* Settings panel */}
-        <div>
-          <Tabs defaultValue="design">
-            <TabsList className="w-full rounded-xl mb-4">
-              <TabsTrigger value="design" className="flex-1 rounded-lg text-xs">Дизайн</TabsTrigger>
-              <TabsTrigger value="music" className="flex-1 rounded-lg text-xs">Музыка</TabsTrigger>
-              <TabsTrigger value="timer" className="flex-1 rounded-lg text-xs">Таймер</TabsTrigger>
-            </TabsList>
-
-            {/* Design tab */}
-            <TabsContent value="design" className="bg-white rounded-2xl border border-gray-100 p-5 space-y-5">
-              <ColorPicker
-                label="Основной цвет"
-                value={settings.primaryColor ?? ''}
-                onChange={(v) => updateSettings({ primaryColor: v })}
+      <div className={`grid gap-5 ${showPreview ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1 max-w-xl'}`}>
+        {/* Settings */}
+        <div className="space-y-4">
+          {/* Design */}
+          <SectionCard icon={Palette} title="Цвета и шрифт">
+            <ColorPicker
+              label="Основной цвет"
+              value={settings.primaryColor ?? ''}
+              onChange={(v) => updateSettings({ primaryColor: v })}
+            />
+            <Separator />
+            <ColorPicker
+              label="Цвет фона"
+              value={settings.backgroundColor ?? ''}
+              onChange={(v) => updateSettings({ backgroundColor: v })}
+            />
+            <Separator />
+            <ColorPicker
+              label="Акцентный цвет"
+              value={settings.accentColor ?? ''}
+              onChange={(v) => updateSettings({ accentColor: v })}
+            />
+            <Separator />
+            <div>
+              <label className="block text-sm text-gray-700 mb-2">Приветственный текст</label>
+              <Textarea
+                value={settings.greetingText ?? ''}
+                onChange={(e) => updateSettings({ greetingText: e.target.value })}
+                placeholder="С радостью приглашаем вас..."
+                rows={2}
+                className="rounded-xl resize-none text-sm"
               />
-              <Separator />
-              <ColorPicker
-                label="Цвет фона"
-                value={settings.backgroundColor ?? ''}
-                onChange={(v) => updateSettings({ backgroundColor: v })}
-              />
-              <Separator />
-              <ColorPicker
-                label="Акцентный цвет"
-                value={settings.accentColor ?? ''}
-                onChange={(v) => updateSettings({ accentColor: v })}
-              />
-              <Separator />
-              <div>
-                <label className="block text-sm text-gray-700 mb-1.5">Текст приветствия</label>
-                <Textarea
-                  value={settings.greetingText ?? ''}
-                  onChange={(e) => updateSettings({ greetingText: e.target.value })}
-                  placeholder="С радостью приглашаем вас..."
-                  rows={2}
-                  className="rounded-xl resize-none text-sm"
-                />
-              </div>
-              <Separator />
-              <div>
-                <label className="block text-sm text-gray-700 mb-1.5">URL обложки</label>
-                <Input
-                  value={settings.coverImageUrl ?? ''}
-                  onChange={(e) => updateSettings({ coverImageUrl: e.target.value })}
-                  placeholder="https://..."
-                  className="rounded-xl text-sm"
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-700 mb-1.5">URL фонового изображения</label>
-                <Input
-                  value={settings.backgroundImageUrl ?? ''}
-                  onChange={(e) => updateSettings({ backgroundImageUrl: e.target.value })}
-                  placeholder="https://..."
-                  className="rounded-xl text-sm"
-                />
-              </div>
-              <Separator />
-              <div>
-                <label className="block text-sm text-gray-700 mb-2">Шрифт</label>
-                <div className="flex gap-2">
-                  {(['serif', 'sans-serif', 'cursive'] as const).map((f) => (
-                    <button
-                      key={f}
-                      onClick={() => updateSettings({ fontFamily: f })}
-                      className={`flex-1 py-2 text-xs rounded-lg border transition-all ${
-                        settings.fontFamily === f
-                          ? 'border-[#8B5CF6] bg-[#EDE9FE] text-[#8B5CF6]'
-                          : 'border-gray-200 text-gray-600 hover:border-gray-300'
-                      }`}
+            </div>
+            <Separator />
+            <div>
+              <label className="block text-sm text-gray-700 mb-2">Шрифт</label>
+              <div className="grid grid-cols-3 gap-2">
+                {([
+                  { key: 'serif', label: 'Serif', preview: 'Аа' },
+                  { key: 'sans-serif', label: 'Sans', preview: 'Аа' },
+                  { key: 'cursive', label: 'Cursive', preview: 'Аа' },
+                ] as { key: 'serif' | 'sans-serif' | 'cursive'; label: string; preview: string }[]).map((f) => (
+                  <button
+                    key={f.key}
+                    onClick={() => updateSettings({ fontFamily: f.key })}
+                    className={`py-2.5 px-3 rounded-xl border text-center transition-all ${
+                      settings.fontFamily === f.key
+                        ? 'border-[#8B5CF6] bg-[#EDE9FE] text-[#8B5CF6]'
+                        : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                    }`}
+                  >
+                    <div
+                      className="text-lg leading-none mb-0.5"
+                      style={{ fontFamily: f.key === 'sans-serif' ? 'Inter' : f.key === 'cursive' ? 'cursive' : 'Georgia, serif' }}
                     >
-                      {f === 'serif' ? 'Serif' : f === 'sans-serif' ? 'Sans' : 'Cursive'}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </TabsContent>
-
-            {/* Music tab */}
-            <TabsContent value="music" className="bg-white rounded-2xl border border-gray-100 p-5 space-y-5">
-              <div>
-                <label className="block text-sm text-gray-700 mb-1.5">Ссылка на музыку</label>
-                <Input
-                  value={settings.musicUrl ?? ''}
-                  onChange={(e) => updateSettings({ musicUrl: e.target.value })}
-                  placeholder="https://..."
-                  className="rounded-xl text-sm"
-                />
-                <p className="text-xs text-gray-400 mt-1">Прямая ссылка на MP3 файл</p>
-              </div>
-              <Separator />
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-700">Автовоспроизведение</p>
-                  <p className="text-xs text-gray-400">Музыка запустится при открытии</p>
-                </div>
-                <ToggleSwitch
-                  checked={settings.musicAutoplay ?? false}
-                  onChange={(v) => updateSettings({ musicAutoplay: v })}
-                />
-              </div>
-              <Separator />
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-700">Повтор</p>
-                  <p className="text-xs text-gray-400">Воспроизводить по кругу</p>
-                </div>
-                <ToggleSwitch
-                  checked={settings.musicLoop ?? true}
-                  onChange={(v) => updateSettings({ musicLoop: v })}
-                />
-              </div>
-              <Separator />
-              <div>
-                <label className="block text-sm text-gray-700 mb-2">
-                  Громкость: {Math.round((settings.musicVolume ?? 0.5) * 100)}%
-                </label>
-                <input
-                  type="range"
-                  min={0}
-                  max={1}
-                  step={0.1}
-                  value={settings.musicVolume ?? 0.5}
-                  onChange={(e) => updateSettings({ musicVolume: Number(e.target.value) })}
-                  className="w-full accent-[#8B5CF6]"
-                />
-              </div>
-            </TabsContent>
-
-            {/* Timer tab */}
-            <TabsContent value="timer" className="bg-white rounded-2xl border border-gray-100 p-5 space-y-5">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-700">Обратный отсчёт</p>
-                  <p className="text-xs text-gray-400">Показывать таймер на странице</p>
-                </div>
-                <ToggleSwitch
-                  checked={settings.countdownEnabled ?? false}
-                  onChange={(v) => updateSettings({ countdownEnabled: v })}
-                />
-              </div>
-
-              {settings.countdownEnabled && (
-                <>
-                  <Separator />
-                  <div>
-                    <label className="block text-sm text-gray-700 mb-1.5">Дата события</label>
-                    <Input
-                      type="datetime-local"
-                      value={settings.countdownTargetDate?.slice(0, 16) ?? toy.eventDate.slice(0, 16)}
-                      onChange={(e) => updateSettings({ countdownTargetDate: new Date(e.target.value).toISOString() })}
-                      className="rounded-xl text-sm"
-                    />
-                  </div>
-                  <Separator />
-                  <div>
-                    <label className="block text-sm text-gray-700 mb-2">Стиль таймера</label>
-                    <div className="flex gap-2">
-                      {(['minimal', 'elegant', 'festive'] as const).map((s) => (
-                        <button
-                          key={s}
-                          onClick={() => updateSettings({ countdownStyle: s })}
-                          className={`flex-1 py-2 text-xs rounded-lg border transition-all ${
-                            settings.countdownStyle === s
-                              ? 'border-[#8B5CF6] bg-[#EDE9FE] text-[#8B5CF6]'
-                              : 'border-gray-200 text-gray-600 hover:border-gray-300'
-                          }`}
-                        >
-                          {s === 'minimal' ? 'Минимал.' : s === 'elegant' ? 'Элегант.' : 'Праздн.'}
-                        </button>
-                      ))}
+                      {f.preview}
                     </div>
+                    <div className="text-[10px] font-medium">{f.label}</div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </SectionCard>
+
+          {/* Music */}
+          <SectionCard icon={Music2} title="Музыка">
+            <div>
+              <label className="block text-sm text-gray-700 mb-1.5">Ссылка на MP3</label>
+              <Input
+                value={settings.musicUrl ?? ''}
+                onChange={(e) => updateSettings({ musicUrl: e.target.value })}
+                placeholder="https://example.com/music.mp3"
+                className="rounded-xl text-sm"
+              />
+              <p className="text-xs text-gray-400 mt-1.5">Прямая ссылка на аудиофайл</p>
+            </div>
+            <Separator />
+            <Toggle
+              label="Автовоспроизведение"
+              sublabel="Музыка запустится при открытии"
+              checked={settings.musicAutoplay ?? false}
+              onChange={(v) => updateSettings({ musicAutoplay: v })}
+            />
+            <Separator />
+            <Toggle
+              label="Повтор"
+              sublabel="Воспроизводить по кругу"
+              checked={settings.musicLoop ?? true}
+              onChange={(v) => updateSettings({ musicLoop: v })}
+            />
+            <Separator />
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-sm text-gray-700">Громкость</label>
+                <span className="text-sm font-medium text-[#8B5CF6]">{Math.round((settings.musicVolume ?? 0.5) * 100)}%</span>
+              </div>
+              <input
+                type="range"
+                min={0}
+                max={1}
+                step={0.05}
+                value={settings.musicVolume ?? 0.5}
+                onChange={(e) => updateSettings({ musicVolume: Number(e.target.value) })}
+                className="w-full accent-[#8B5CF6]"
+              />
+            </div>
+          </SectionCard>
+
+          {/* Timer */}
+          <SectionCard icon={Timer} title="Обратный отсчёт">
+            <Toggle
+              label="Показывать таймер"
+              sublabel="Обратный отсчёт до события"
+              checked={settings.countdownEnabled ?? false}
+              onChange={(v) => updateSettings({ countdownEnabled: v })}
+            />
+
+            {settings.countdownEnabled && (
+              <>
+                <Separator />
+                <div>
+                  <label className="block text-sm text-gray-700 mb-1.5">Дата и время события</label>
+                  <Input
+                    type="datetime-local"
+                    value={settings.countdownTargetDate?.slice(0, 16) ?? toy.eventDate.slice(0, 16)}
+                    onChange={(e) => updateSettings({ countdownTargetDate: new Date(e.target.value).toISOString() })}
+                    className="rounded-xl text-sm"
+                  />
+                </div>
+                <Separator />
+                <div>
+                  <label className="block text-sm text-gray-700 mb-2">Стиль таймера</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {(['minimal', 'elegant', 'festive'] as const).map((s) => (
+                      <button
+                        key={s}
+                        onClick={() => updateSettings({ countdownStyle: s })}
+                        className={`py-2 px-3 text-xs rounded-xl border transition-all ${
+                          settings.countdownStyle === s
+                            ? 'border-[#8B5CF6] bg-[#EDE9FE] text-[#8B5CF6] font-medium'
+                            : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                        }`}
+                      >
+                        {s === 'minimal' ? 'Простой' : s === 'elegant' ? 'Элегант.' : 'Праздн.'}
+                      </button>
+                    ))}
                   </div>
-                  <Separator />
-                  <div>
-                    <label className="block text-sm text-gray-700 mb-2">Позиция</label>
-                    <div className="flex gap-2">
-                      {(['top', 'bottom', 'floating'] as const).map((p) => (
-                        <button
-                          key={p}
-                          onClick={() => updateSettings({ countdownPosition: p })}
-                          className={`flex-1 py-2 text-xs rounded-lg border transition-all ${
-                            settings.countdownPosition === p
-                              ? 'border-[#8B5CF6] bg-[#EDE9FE] text-[#8B5CF6]'
-                              : 'border-gray-200 text-gray-600 hover:border-gray-300'
-                          }`}
-                        >
-                          {p === 'top' ? 'Сверху' : p === 'bottom' ? 'Снизу' : 'Плав.'}
-                        </button>
-                      ))}
-                    </div>
+                </div>
+                <Separator />
+                <div>
+                  <label className="block text-sm text-gray-700 mb-2">Позиция</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {(['top', 'bottom', 'floating'] as const).map((p) => (
+                      <button
+                        key={p}
+                        onClick={() => updateSettings({ countdownPosition: p })}
+                        className={`py-2 px-3 text-xs rounded-xl border transition-all ${
+                          settings.countdownPosition === p
+                            ? 'border-[#8B5CF6] bg-[#EDE9FE] text-[#8B5CF6] font-medium'
+                            : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                        }`}
+                      >
+                        {p === 'top' ? '↑ Сверху' : p === 'bottom' ? '↓ Снизу' : '⊙ Плав.'}
+                      </button>
+                    ))}
                   </div>
-                </>
-              )}
-            </TabsContent>
-          </Tabs>
+                </div>
+              </>
+            )}
+          </SectionCard>
         </div>
 
-        {/* Preview panel */}
+        {/* Preview */}
         {showPreview && (
-          <div className="rounded-2xl overflow-hidden border border-gray-200 bg-gray-50 min-h-[600px]">
-            <div className="bg-gray-100 px-4 py-2 flex items-center gap-2 border-b border-gray-200">
-              <div className="flex gap-1.5">
-                <div className="w-3 h-3 rounded-full bg-red-300" />
-                <div className="w-3 h-3 rounded-full bg-amber-300" />
-                <div className="w-3 h-3 rounded-full bg-green-300" />
+          <div className="lg:sticky lg:top-6 lg:self-start">
+            <div className="rounded-2xl border border-gray-200 overflow-hidden bg-gray-100">
+              <div className="flex items-center gap-2 px-4 py-2.5 border-b border-gray-200 bg-white">
+                <div className="flex gap-1.5">
+                  <div className="w-3 h-3 rounded-full bg-red-300" />
+                  <div className="w-3 h-3 rounded-full bg-amber-300" />
+                  <div className="w-3 h-3 rounded-full bg-green-300" />
+                </div>
+                <div className="flex-1 flex items-center justify-center">
+                  <div className="flex items-center gap-1.5 bg-gray-100 rounded-lg px-3 py-1">
+                    <Monitor size={11} className="text-gray-400" />
+                    <span className="text-xs text-gray-400">toyla.app / предпросмотр</span>
+                  </div>
+                </div>
               </div>
-              <span className="text-xs text-gray-400 mx-auto">Предпросмотр</span>
-            </div>
-            <div className="overflow-auto max-h-[700px]">
-              <TemplateComponent event={mockEvent} />
+              {/*
+                transform: translateZ(0) here is critical:
+                it creates a new containing block for position:fixed children,
+                preventing the music player and other fixed elements from
+                escaping the preview box and overlapping settings controls.
+              */}
+              <div
+                className="overflow-auto"
+                style={{ maxHeight: '70vh', transform: 'translateZ(0)', position: 'relative' }}
+              >
+                <TemplateComponent event={mockEvent} />
+              </div>
             </div>
           </div>
         )}
