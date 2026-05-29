@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
 import {
   Users, MapPin, Calendar, ChevronRight, Trash2,
-  Copy, ExternalLink, Settings, LayoutGrid, Bell,
+  Copy, ExternalLink, Settings, LayoutGrid,
 } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Badge } from '@/components/ui/badge'
@@ -23,7 +23,7 @@ const TEMPLATE_LABELS: Record<string, string> = {
 export default function EventPage() {
   const { toyId } = useParams<{ toyId: string }>()
   const router = useRouter()
-  const { userId, username } = useAuthStore()
+  const { userId } = useAuthStore()
   const { data: toy, isLoading } = useGetToy(toyId)
   const { data: guests } = useGetGuests(toyId)
   const deleteToy = useDeleteToy(userId ?? 0)
@@ -49,7 +49,7 @@ export default function EventPage() {
   const declined = guests?.filter((g) => g.status === 'DECLINED').length ?? 0
   const pending = guests?.filter((g) => g.status === 'PENDING').length ?? 0
   const total = guests?.length ?? 0
-  const eventUrl = `${process.env.NEXT_PUBLIC_APP_URL}/${username}/${toy.id}`
+  const eventUrl = `https://toyla.app/${userId}/${toy.id}`
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(eventUrl)
@@ -66,7 +66,6 @@ export default function EventPage() {
     { href: `/events/${toyId}/guests`, icon: Users, label: 'Гости', value: `${total}`, color: 'text-violet-600 bg-violet-50' },
     { href: `/events/${toyId}/seating`, icon: LayoutGrid, label: 'Рассадка', value: `${accepted} мест`, color: 'text-blue-600 bg-blue-50' },
     { href: `/events/${toyId}/template`, icon: Settings, label: 'Шаблон', value: TEMPLATE_LABELS[toy.templateId], color: 'text-amber-600 bg-amber-50' },
-    { href: `/events/${toyId}/notifications`, icon: Bell, label: 'Уведомления', value: 'Журнал', color: 'text-green-600 bg-green-50' },
   ]
 
   return (
@@ -169,7 +168,7 @@ export default function EventPage() {
       </div>
 
       {/* Navigation cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         {navCards.map((card) => {
           const Icon = card.icon
           return (

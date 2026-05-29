@@ -4,7 +4,6 @@ import { usePathname, useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   LayoutDashboard,
-  CalendarDays,
   Settings,
   LogOut,
   Menu,
@@ -17,14 +16,22 @@ import { cn } from '@/lib/utils'
 
 const navItems = [
   { href: '/dashboard', label: 'Главная', icon: LayoutDashboard },
-  { href: '/events', label: 'Мероприятия', icon: CalendarDays },
   { href: '/settings', label: 'Настройки', icon: Settings },
 ]
+
+function formatPhoneDisplay(phone: string | null): string {
+  if (!phone) return 'Профиль'
+  const digits = phone.replace(/\D/g, '')
+  if (digits.length >= 11) {
+    return `+${digits[0]} (${digits.slice(1, 4)}) ${digits.slice(4, 7)}-${digits.slice(7, 9)}-${digits.slice(9, 11)}`
+  }
+  return `+${digits}`
+}
 
 export function Sidebar() {
   const pathname = usePathname()
   const router = useRouter()
-  const { username, clearAuth } = useAuthStore()
+  const { phoneNumber, clearAuth } = useAuthStore()
   const { sidebarOpen, setSidebarOpen } = useUIStore()
 
   const handleLogout = async () => {
@@ -80,10 +87,10 @@ export function Sidebar() {
       <div className="px-3 py-4 border-t border-gray-100">
         <div className="flex items-center gap-3 px-3 py-2 mb-2">
           <div className="w-8 h-8 rounded-full bg-[#EDE9FE] flex items-center justify-center text-[#8B5CF6] font-semibold text-sm">
-            {username?.[0]?.toUpperCase() ?? 'U'}
+            {phoneNumber?.[0]?.toUpperCase() ?? 'U'}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-gray-900 truncate">@{username}</p>
+            <p className="text-sm font-medium text-gray-900 truncate">{formatPhoneDisplay(phoneNumber)}</p>
             <p className="text-xs text-gray-500 truncate">Организатор</p>
           </div>
         </div>

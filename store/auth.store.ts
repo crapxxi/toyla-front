@@ -5,7 +5,7 @@ import { AuthResponse } from '@/types'
 interface AuthStore {
   token: string | null
   userId: number | null
-  username: string | null
+  phoneNumber: string | null
   setAuth: (res: AuthResponse) => void
   clearAuth: () => void
 }
@@ -15,14 +15,14 @@ export const useAuthStore = create<AuthStore>()(
     (set) => ({
       token: null,
       userId: null,
-      username: null,
+      phoneNumber: null,
       setAuth: (res) =>
-        set({ token: res.token, userId: res.id, username: res.username }),
-      clearAuth: () => set({ token: null, userId: null, username: null }),
+        set({ token: res.token, userId: res.id, phoneNumber: res.phoneNumber }),
+      clearAuth: () => set({ token: null, userId: null, phoneNumber: null }),
     }),
     {
       name: 'toyla-auth',
-      partialize: (state) => ({ token: state.token, userId: state.userId, username: state.username }),
+      partialize: (state) => ({ token: state.token, userId: state.userId, phoneNumber: state.phoneNumber }),
     }
   )
 )

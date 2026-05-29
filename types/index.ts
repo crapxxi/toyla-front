@@ -6,7 +6,7 @@ export type MessageLanguage  = 'RUSSIAN' | 'KAZAKH'
 
 export interface AuthResponse {
   id: number
-  username: string
+  phoneNumber: string
   token: string
 }
 
@@ -104,7 +104,7 @@ export const queryKeys = {
   guestsByStatus: (toyId: string, s: RsvpStatus)         => ['guests', toyId, s],
   tables:         (toyId: string)                        => ['tables', toyId],
   logs:           (toyId: string)                        => ['logs', toyId],
-  publicEvent:    (username: string, toyId: string)      => ['public', username, toyId],
+  publicEvent:    (userId: number, toyId: string)         => ['public', userId, toyId],
 }
 
 export const statusColors: Record<DeliveryStatus, string> = {

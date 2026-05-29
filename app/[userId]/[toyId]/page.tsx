@@ -3,14 +3,14 @@ import { PublicToyResponse } from '@/types'
 import { PublicEventClient } from './PublicEventClient'
 
 interface Props {
-  params: Promise<{ username: string; toyId: string }>
+  params: Promise<{ userId: string; toyId: string }>
   searchParams: Promise<{ token?: string }>
 }
 
-async function fetchPublicEvent(username: string, toyId: string): Promise<PublicToyResponse | null> {
+async function fetchPublicEvent(userId: string, toyId: string): Promise<PublicToyResponse | null> {
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/v1/public/events/${username}/${toyId}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/api/v1/public/events/${userId}/${toyId}`,
       { next: { revalidate: 60 } }
     )
     if (!res.ok) return null
@@ -21,8 +21,8 @@ async function fetchPublicEvent(username: string, toyId: string): Promise<Public
 }
 
 export async function generateMetadata({ params }: Props) {
-  const { username, toyId } = await params
-  const event = await fetchPublicEvent(username, toyId)
+  const { userId, toyId } = await params
+  const event = await fetchPublicEvent(userId, toyId)
   return {
     title: event ? `${event.title} | Toyla.app` : 'Приглашение | Toyla.app',
     description: event?.description ?? 'Вас приглашают на мероприятие',
@@ -34,10 +34,10 @@ export async function generateMetadata({ params }: Props) {
 }
 
 export default async function PublicEventPage({ params, searchParams }: Props) {
-  const { username, toyId } = await params
+  const { userId, toyId } = await params
   const { token } = await searchParams
 
-  const event = await fetchPublicEvent(username, toyId)
+  const event = await fetchPublicEvent(userId, toyId)
   if (!event) notFound()
 
   return <PublicEventClient event={event} rsvpToken={token} />
