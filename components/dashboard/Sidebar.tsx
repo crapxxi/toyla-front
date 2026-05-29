@@ -28,7 +28,7 @@ export function Sidebar() {
   const { sidebarOpen, setSidebarOpen } = useUIStore()
 
   const handleLogout = async () => {
-    await fetch('/api/auth/logout', { method: 'POST' })
+    await fetch('/internal/logout', { method: 'POST' })
     clearAuth()
     router.push('/login')
   }

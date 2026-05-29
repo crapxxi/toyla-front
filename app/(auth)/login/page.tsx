@@ -77,7 +77,7 @@ function formatPhoneDisplay(raw: string): string {
 }
 
 async function saveSession(authRes: AuthResponse, setAuth: (r: AuthResponse) => void) {
-  const res = await fetch('/api/auth/set-token', {
+  const res = await fetch('/internal/set-token', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ token: authRes.token }),
