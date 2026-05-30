@@ -31,16 +31,30 @@ export function BackgroundMusicPlayer({
     audio.addEventListener('canplaythrough', () => setCanPlay(true))
     audio.addEventListener('ended', () => setIsPlaying(false))
 
-    if (autoplay) {
-      const playPromise = audio.play()
-      if (playPromise !== undefined) {
-        playPromise
-          .then(() => setIsPlaying(true))
-          .catch(() => {
-            // Autoplay blocked — user gesture needed
-          })
+    if (!autoplay) {
+      return () => {
+        audio.pause()
+        audio.src = ''
       }
     }
+
+    // Try immediate autoplay first (works on some browsers / if already unlocked)
+    audio.play()
+      .then(() => setIsPlaying(true))
+      .catch(() => {
+        // Blocked — wait for first user gesture then play
+        const unlock = () => {
+          audio.play()
+            .then(() => setIsPlaying(true))
+            .catch(() => {})
+          document.removeEventListener('click', unlock)
+          document.removeEventListener('touchstart', unlock)
+          document.removeEventListener('keydown', unlock)
+        }
+        document.addEventListener('click', unlock, { once: true })
+        document.addEventListener('touchstart', unlock, { once: true })
+        document.addEventListener('keydown', unlock, { once: true })
+      })
 
     return () => {
       audio.pause()
