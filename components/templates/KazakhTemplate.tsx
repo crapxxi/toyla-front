@@ -18,15 +18,13 @@ export interface TemplateProps {
 }
 
 const KK_MONTHS = [
-  'Қаңтар','Ақпан','Наурыз','Сәуір','Мамыр','Маусым',
-  'Шілде','Тамыз','Қыркүйек','Қазан','Қараша','Желтоқсан',
+  'ҚАҢТАР','АҚПАН','НАУРЫЗ','СӘУІР','МАМЫР','МАУСЫМ',
+  'ШІЛДЕ','ТАМЫЗ','ҚЫРКҮЙЕК','ҚАЗАН','ҚАРАША','ЖЕЛТОҚСАН',
 ]
-const KK_DAYS = ['Жексенбі','Дүйсенбі','Сейсенбі','Сәрсенбі','Бейсенбі','Жұма','Сенбі']
 
 function formatDateKk(dateStr: string) {
   const d = new Date(dateStr)
   return {
-    day: KK_DAYS[d.getDay()],
     date: d.getDate(),
     month: KK_MONTHS[d.getMonth()],
     year: d.getFullYear(),
@@ -64,12 +62,12 @@ function Countdown({ targetDate, primary, accent }: { targetDate: string; primar
   ]
 
   return (
-    <div className="flex gap-1.5 justify-center flex-wrap">
+    <div className="flex gap-1.5 justify-center flex-wrap mb-4">
       {units.map(({ v, label }, i) => (
         <div key={label} className="flex items-center gap-1.5">
           <div className="flex flex-col items-center">
             <div
-              className="w-[58px] h-[58px] flex items-center justify-center rounded-xl text-[22px]"
+              className="w-[54px] h-[54px] flex items-center justify-center rounded-xl text-[20px]"
               style={{
                 border: `1px solid ${accent}45`,
                 background: `linear-gradient(145deg, ${accent}14, ${accent}05)`,
@@ -81,22 +79,18 @@ function Countdown({ targetDate, primary, accent }: { targetDate: string; primar
             >
               {pad(v)}
             </div>
-            <span
-              className="text-[9px] uppercase tracking-[0.18em] mt-1.5"
-              style={{ color: accent, fontFamily: 'Inter, sans-serif' }}
-            >
+            <span className="text-[9px] uppercase tracking-[0.18em] mt-1.5" style={{ color: accent, fontFamily: 'Inter, sans-serif' }}>
               {label}
             </span>
           </div>
-          {i < 3 && (
-            <span className="text-xl -mt-5 select-none" style={{ color: `${accent}55` }}>·</span>
-          )}
+          {i < 3 && <span className="text-xl -mt-5 select-none" style={{ color: `${accent}55` }}>·</span>}
         </div>
       ))}
     </div>
   )
 }
 
+// ── Botanical floral banner ────────────────────────────────────────────────────
 function FloralBanner({ flip }: { flip?: boolean }) {
   return (
     <svg
@@ -104,13 +98,13 @@ function FloralBanner({ flip }: { flip?: boolean }) {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className="w-full"
-      style={{ maxHeight: 96, display: 'block', transform: flip ? 'scaleY(-1)' : undefined }}
+      style={{ maxHeight: 100, display: 'block', transform: flip ? 'scaleY(-1)' : undefined }}
     >
-      {/* Left main branches */}
+      {/* Left branches */}
       <path d="M240 108 Q178 84 118 44" stroke="#7A8F55" strokeWidth="1.2" fill="none" strokeLinecap="round"/>
       <path d="M240 108 Q194 79 152 53" stroke="#7A8F55" strokeWidth="0.75" fill="none" strokeLinecap="round"/>
       <path d="M240 108 Q162 70 88 20" stroke="#7A8F55" strokeWidth="1" fill="none" strokeLinecap="round"/>
-      {/* Right main branches */}
+      {/* Right branches */}
       <path d="M240 108 Q302 84 362 44" stroke="#7A8F55" strokeWidth="1.2" fill="none" strokeLinecap="round"/>
       <path d="M240 108 Q286 79 328 53" stroke="#7A8F55" strokeWidth="0.75" fill="none" strokeLinecap="round"/>
       <path d="M240 108 Q318 70 392 20" stroke="#7A8F55" strokeWidth="1" fill="none" strokeLinecap="round"/>
@@ -130,7 +124,41 @@ function FloralBanner({ flip }: { flip?: boolean }) {
       <ellipse cx="280" cy="75" rx="14" ry="5" transform="rotate(22  280 75)" fill="#9AAF6A" opacity="0.58"/>
       <ellipse cx="260" cy="88" rx="11" ry="4" transform="rotate(12  260 88)" fill="#8A9E5A" opacity="0.48"/>
 
-      {/* Gold accent buds */}
+      {/* Flowers — left cluster */}
+      {/* Big flower left */}
+      {[0,45,90,135,180,225,270,315].map((angle, i) => {
+        const r = angle * Math.PI / 180
+        return <ellipse key={`fl-${i}`} cx={88 + Math.cos(r)*13} cy={16 + Math.sin(r)*13} rx="9" ry="14"
+          fill="#F4EFE3" opacity="0.82" transform={`rotate(${angle} ${88 + Math.cos(r)*13} ${16 + Math.sin(r)*13})`} />
+      })}
+      <circle cx="88" cy="16" r="8" fill="#F0E8CF" opacity="0.92"/>
+      <circle cx="88" cy="16" r="4" fill="#DBC98A" opacity="0.85"/>
+      {/* Small flower left */}
+      {[0,60,120,180,240,300].map((angle, i) => {
+        const r = angle * Math.PI / 180
+        return <ellipse key={`fls-${i}`} cx={114 + Math.cos(r)*9} cy={28 + Math.sin(r)*9} rx="6" ry="9"
+          fill="#F4EFE3" opacity="0.75" transform={`rotate(${angle} ${114 + Math.cos(r)*9} ${28 + Math.sin(r)*9})`} />
+      })}
+      <circle cx="114" cy="28" r="5.5" fill="#F0E8CF" opacity="0.88"/>
+      <circle cx="114" cy="28" r="2.5" fill="#DBC98A" opacity="0.8"/>
+
+      {/* Flowers — right cluster */}
+      {[0,45,90,135,180,225,270,315].map((angle, i) => {
+        const r = angle * Math.PI / 180
+        return <ellipse key={`fr-${i}`} cx={391 + Math.cos(r)*13} cy={16 + Math.sin(r)*13} rx="9" ry="14"
+          fill="#F4EFE3" opacity="0.82" transform={`rotate(${angle} ${391 + Math.cos(r)*13} ${16 + Math.sin(r)*13})`} />
+      })}
+      <circle cx="391" cy="16" r="8" fill="#F0E8CF" opacity="0.92"/>
+      <circle cx="391" cy="16" r="4" fill="#DBC98A" opacity="0.85"/>
+      {[0,60,120,180,240,300].map((angle, i) => {
+        const r = angle * Math.PI / 180
+        return <ellipse key={`frs-${i}`} cx={366 + Math.cos(r)*9} cy={28 + Math.sin(r)*9} rx="6" ry="9"
+          fill="#F4EFE3" opacity="0.75" transform={`rotate(${angle} ${366 + Math.cos(r)*9} ${28 + Math.sin(r)*9})`} />
+      })}
+      <circle cx="366" cy="28" r="5.5" fill="#F0E8CF" opacity="0.88"/>
+      <circle cx="366" cy="28" r="2.5" fill="#DBC98A" opacity="0.8"/>
+
+      {/* Gold buds */}
       <circle cx="147" cy="41" r="3.5" fill="#C4943A" opacity="0.68"/>
       <circle cx="113" cy="26" r="3"   fill="#C4943A" opacity="0.58"/>
       <circle cx="333" cy="41" r="3.5" fill="#C4943A" opacity="0.68"/>
@@ -193,25 +221,25 @@ export function KazakhTemplate({ event, rsvpToken, onAccept, onDecline, rsvpLoad
 
       <div className="relative z-10 max-w-md mx-auto">
 
-        {/* ── Top botanical ── */}
+        {/* ── Top botanical banner ── */}
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1.1 }}>
           <FloralBanner />
         </motion.div>
 
-        <div className="px-6 pb-10 space-y-8">
+        <div className="px-6 pb-10 space-y-7">
 
-          {/* ── Greeting + organizer ── */}
+          {/* ── Greeting ── */}
           <motion.div
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.35, duration: 0.7 }}
+            transition={{ delay: 0.3, duration: 0.7 }}
             className="text-center space-y-2.5"
           >
             <p className="text-[11px] uppercase tracking-[0.5em]" style={{ color: accent, fontFamily: 'Inter, sans-serif' }}>
               Құрметті қонақтар!
             </p>
             <GoldDividerSmall accent={accent} />
-            <p className="text-xl leading-snug" style={{ color: primary }}>
+            <p className="text-base leading-snug" style={{ color: primary }}>
               {event.organizerDisplayName}
             </p>
             <p className="text-[10px] italic tracking-[0.3em]" style={{ color: green, fontFamily: 'Inter, sans-serif' }}>
@@ -219,16 +247,27 @@ export function KazakhTemplate({ event, rsvpToken, onAccept, onDecline, rsvpLoad
             </p>
           </motion.div>
 
-          {/* ── Event title ── */}
-          <motion.h1
-            initial={{ opacity: 0, y: 18 }}
+          {/* ── Event title — large gold ── */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.7 }}
-            className="text-center text-4xl sm:text-5xl leading-snug font-normal"
-            style={{ color: primary }}
+            transition={{ delay: 0.46, duration: 0.8 }}
+            className="text-center"
           >
-            {event.title}
-          </motion.h1>
+            <h1
+              className="leading-[1.05] mb-1 whitespace-pre-line"
+              style={{
+                fontSize: 'clamp(3.2rem, 14vw, 5.5rem)',
+                background: `linear-gradient(160deg, #B8960A 0%, #E8C840 35%, #C4943A 65%, #8B6010 100%)`,
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+                fontWeight: 700,
+              }}
+            >
+              {event.title}
+            </h1>
+          </motion.div>
 
           <GoldDividerFull accent={accent} />
 
@@ -237,7 +276,7 @@ export function KazakhTemplate({ event, rsvpToken, onAccept, onDecline, rsvpLoad
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.68 }}
+              transition={{ delay: 0.65 }}
               className="text-center text-sm leading-[2] italic whitespace-pre-line"
               style={{ color: '#6A4E38' }}
             >
@@ -245,39 +284,75 @@ export function KazakhTemplate({ event, rsvpToken, onAccept, onDecline, rsvpLoad
             </motion.p>
           )}
 
-          {/* ── Countdown + date ── */}
+          {/* ── Date info — three boxes ── */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.82 }}
-            className="rounded-2xl py-6 px-4 space-y-5"
-            style={{
-              background: `linear-gradient(150deg, ${accent}08, ${accent}03)`,
-              border: `1px solid ${accent}22`,
-            }}
+            transition={{ delay: 0.8 }}
           >
-            <Countdown targetDate={event.eventDate} primary={primary} accent={accent} />
-
-            {/* Date row */}
-            <div className="flex items-center justify-center gap-4">
-              <div className="h-px w-10" style={{ background: `${accent}40` }}/>
-              <div className="text-center">
-                <p className="text-[10px] uppercase tracking-[0.28em] mb-1" style={{ color: accent, fontFamily: 'Inter, sans-serif' }}>
-                  {dateInfo.day}
-                </p>
-                <div className="flex items-baseline gap-2.5 justify-center">
-                  <span className="text-[42px] leading-none font-light" style={{ color: primary }}>
-                    {dateInfo.date}
-                  </span>
-                  <div className="text-left">
-                    <p className="text-sm leading-tight" style={{ color: primary }}>{dateInfo.month}</p>
-                    <p className="text-xs leading-tight opacity-55" style={{ color: primary }}>
-                      {dateInfo.year} · {dateInfo.time}
-                    </p>
-                  </div>
-                </div>
+            {s.countdownEnabled && s.countdownTargetDate && (
+              <div className="mb-5">
+                <Countdown targetDate={s.countdownTargetDate} primary={primary} accent={accent} />
               </div>
-              <div className="h-px w-10" style={{ background: `${accent}40` }}/>
+            )}
+
+            <div className="flex items-stretch justify-center">
+              {/* Time */}
+              <div
+                className="flex-1 flex flex-col items-center justify-center py-5 px-3"
+                style={{ border: `1px solid ${accent}50`, borderRight: 'none', borderRadius: '14px 0 0 14px', backgroundColor: `${accent}05` }}
+              >
+                <span
+                  className="text-3xl font-semibold leading-none"
+                  style={{ color: primary }}
+                >
+                  {dateInfo.time}
+                </span>
+                <span
+                  className="text-[9px] uppercase tracking-[0.3em] mt-2"
+                  style={{ color: accent, fontFamily: 'Inter, sans-serif' }}
+                >
+                  уақыт
+                </span>
+              </div>
+
+              {/* Day — highlighted center */}
+              <div
+                className="flex flex-col items-center justify-center py-5 px-6"
+                style={{ backgroundColor: `${accent}18`, border: `1px solid ${accent}55` }}
+              >
+                <span
+                  className="leading-none"
+                  style={{ fontSize: '3.2rem', fontWeight: 300, color: primary, letterSpacing: '-0.02em' }}
+                >
+                  {dateInfo.date}
+                </span>
+                <span
+                  className="text-[9px] uppercase tracking-[0.3em] mt-2"
+                  style={{ color: accent, fontFamily: 'Inter, sans-serif' }}
+                >
+                  күні
+                </span>
+              </div>
+
+              {/* Month + Year */}
+              <div
+                className="flex-1 flex flex-col items-center justify-center py-5 px-3"
+                style={{ border: `1px solid ${accent}50`, borderLeft: 'none', borderRadius: '0 14px 14px 0', backgroundColor: `${accent}05` }}
+              >
+                <span
+                  className="text-sm font-semibold leading-tight text-center"
+                  style={{ color: primary }}
+                >
+                  {dateInfo.year}
+                </span>
+                <span
+                  className="text-sm font-semibold leading-tight text-center mt-0.5"
+                  style={{ color: primary }}
+                >
+                  {dateInfo.month}
+                </span>
+              </div>
             </div>
           </motion.div>
 
@@ -286,18 +361,16 @@ export function KazakhTemplate({ event, rsvpToken, onAccept, onDecline, rsvpLoad
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.98 }}
+              transition={{ delay: 0.95 }}
               className="rounded-2xl overflow-hidden"
               style={{ border: `1px solid ${accent}28` }}
             >
-              {/* Header bar */}
               <div className="flex items-center gap-2 px-5 py-2.5" style={{ backgroundColor: `${accent}14` }}>
                 <MapPin size={12} style={{ color: accent }} />
                 <span className="text-[9px] uppercase tracking-[0.42em]" style={{ color: accent, fontFamily: 'Inter, sans-serif' }}>
                   Мекенжай
                 </span>
               </div>
-              {/* Body */}
               <div className="px-5 py-4 text-center space-y-3" style={{ backgroundColor: `${accent}05` }}>
                 <p className="text-base leading-snug" style={{ color: primary }}>{event.locationName}</p>
                 {event.gisLink && (
@@ -306,12 +379,7 @@ export function KazakhTemplate({ event, rsvpToken, onAccept, onDecline, rsvpLoad
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 text-xs px-5 py-2 rounded-full transition-all hover:opacity-80 active:scale-95"
-                    style={{
-                      backgroundColor: accent,
-                      color: '#FFF7E8',
-                      fontFamily: 'Inter, sans-serif',
-                      letterSpacing: '0.04em',
-                    }}
+                    style={{ backgroundColor: accent, color: '#FFF7E8', fontFamily: 'Inter, sans-serif', letterSpacing: '0.04em' }}
                   >
                     <MapPin size={11} />
                     Картада ашу
@@ -325,7 +393,7 @@ export function KazakhTemplate({ event, rsvpToken, onAccept, onDecline, rsvpLoad
           <motion.div
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.08 }}
+            transition={{ delay: 1.05 }}
             className="space-y-4"
           >
             <GoldDividerFull accent={accent} />
