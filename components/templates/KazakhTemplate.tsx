@@ -53,8 +53,8 @@ function Countdown({ targetDate, primary, accent }: { targetDate: string; primar
   }, [targetDate])
   if (!t) return null
   const units = [
-    { v: t.days, label: 'Күн' },
-    { v: t.hours, label: 'Сағат' },
+    { v: t.days,    label: 'Күн' },
+    { v: t.hours,   label: 'Сағат' },
     { v: t.minutes, label: 'Минут' },
     { v: t.seconds, label: 'Секунд' },
   ]
@@ -63,8 +63,10 @@ function Countdown({ targetDate, primary, accent }: { targetDate: string; primar
       {units.map(({ v, label }, i) => (
         <div key={label} className="flex items-center gap-2">
           <div className="flex flex-col items-center">
-            <div className="w-[56px] h-[56px] flex items-center justify-center rounded-2xl text-[20px]"
-              style={{ border: `1px solid ${accent}45`, background: `linear-gradient(145deg, ${accent}18, ${accent}06)`, color: primary, fontFamily: '"Georgia", serif', fontWeight: 300 }}>
+            <div
+              className="w-[56px] h-[56px] flex items-center justify-center rounded-2xl text-[20px]"
+              style={{ border: `1px solid ${accent}55`, background: `linear-gradient(145deg, ${accent}18, ${accent}06)`, color: primary, fontFamily: '"Georgia", serif', fontWeight: 300 }}
+            >
               {pad(v)}
             </div>
             <span className="text-[9px] uppercase tracking-[0.2em] mt-1.5" style={{ color: accent, fontFamily: 'Inter, sans-serif' }}>{label}</span>
@@ -76,116 +78,12 @@ function Countdown({ targetDate, primary, accent }: { targetDate: string; primar
   )
 }
 
-// ── Botanical wreath with event title inside ───────────────────────────────────
-function BotanicalWreath({ title, gold, primary }: { title: string; gold: string; primary: string }) {
-  // leaf(L, W) = right-pointing canonical leaf path
-  const lf = (L: number, W: number) =>
-    `M 0,0 C ${L * 0.2},${-W} ${L * 0.55},${-(W * 1.2)} ${L},0 C ${L * 0.55},${W * 1.2} ${L * 0.2},${W} 0,0 Z`
-
-  const d1 = '#2D4A1E'
-  const d2 = '#3D5C2A'
-  const d3 = '#4E7038'
-  const d4 = '#6A8F52'
-  const d5 = '#8DAA72'
-  const d6 = '#A8BFA0'
-  const fw = 'rgba(232,242,225,0.92)'
-  const fs = '#9BB88A'
-
-  return (
-    <div className="relative" style={{ width: '100%', maxWidth: 320, margin: '0 auto' }}>
-      <svg viewBox="0 0 320 320" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%', display: 'block' }}>
-
-        {/* ── Gold rings (rendered first so leaves appear on top) ── */}
-        <circle cx="160" cy="160" r="121" stroke={gold} strokeWidth="2.2" fill="none" />
-        <circle cx="160" cy="160" r="126" stroke={gold} strokeWidth="0.9" fill="none" opacity="0.45" />
-
-        {/* ── RIGHT cluster: stems near ring, leaves extend outward ── */}
-        {/* Large main leaves */}
-        <path d={lf(90, 18)} fill={d1} transform="translate(216,48) rotate(-55)" />
-        <path d={lf(82, 17)} fill={d2} transform="translate(248,80) rotate(-37)" opacity="0.95" />
-        <path d={lf(84, 20)} fill={d1} transform="translate(268,116) rotate(-18)" />
-        <path d={lf(76, 18)} fill={d3} transform="translate(280,160) rotate(1)" opacity="0.88" />
-        <path d={lf(78, 17)} fill={d2} transform="translate(268,202) rotate(19)" opacity="0.93" />
-        <path d={lf(68, 15)} fill={d1} transform="translate(248,238) rotate(38)" />
-        <path d={lf(58, 13)} fill={d3} transform="translate(218,264) rotate(58)" opacity="0.82" />
-
-        {/* Accent / secondary leaves right */}
-        <path d={lf(64, 13)} fill={d4} transform="translate(235,58) rotate(-47)" opacity="0.72" />
-        <path d={lf(60, 20)} fill={d5} transform="translate(275,140) rotate(-8)" opacity="0.62" />
-        <path d={lf(54, 12)} fill={d4} transform="translate(244,250) rotate(46)" opacity="0.68" />
-        <path d={lf(44, 10)} fill={d6} transform="translate(230,272) rotate(65)" opacity="0.55" />
-        <path d={lf(40, 9)} fill={d5} transform="translate(225,52) rotate(-63)" opacity="0.5" />
-        <path d={lf(36, 8)} fill={d6} transform="translate(258,94) rotate(-28)" opacity="0.45" />
-
-        {/* White flower sprigs — right */}
-        <line x1="256" y1="66" x2="272" y2="50" stroke={fs} strokeWidth="0.9" strokeLinecap="round" />
-        <circle cx="272" cy="50" r="2.8" fill={fw} />
-        <circle cx="266" cy="55" r="2.2" fill={fw} opacity="0.8" />
-        <circle cx="260" cy="60" r="1.8" fill={fw} opacity="0.65" />
-
-        <line x1="276" y1="138" x2="294" y2="128" stroke={fs} strokeWidth="0.9" strokeLinecap="round" />
-        <circle cx="294" cy="128" r="2.6" fill={fw} />
-        <circle cx="288" cy="132" r="2" fill={fw} opacity="0.75" />
-        <circle cx="282" cy="136" r="1.6" fill={fw} opacity="0.6" />
-
-        {/* ── LEFT cluster ── */}
-        <path d={lf(88, 18)} fill={d1} transform="translate(102,268) rotate(118)" />
-        <path d={lf(84, 18)} fill={d2} transform="translate(56,228) rotate(150)" opacity="0.95" />
-        <path d={lf(78, 17)} fill={d1} transform="translate(38,185) rotate(170)" />
-        <path d={lf(72, 16)} fill={d3} transform="translate(42,140) rotate(191)" opacity="0.88" />
-        <path d={lf(82, 18)} fill={d2} transform="translate(60,98) rotate(218)" opacity="0.93" />
-        <path d={lf(76, 16)} fill={d1} transform="translate(98,63) rotate(242)" />
-        <path d={lf(62, 13)} fill={d3} transform="translate(138,44) rotate(262)" opacity="0.82" />
-
-        {/* Accent left */}
-        <path d={lf(62, 13)} fill={d4} transform="translate(64,110) rotate(206)" opacity="0.72" />
-        <path d={lf(58, 19)} fill={d5} transform="translate(40,160) rotate(180)" opacity="0.62" />
-        <path d={lf(52, 11)} fill={d4} transform="translate(68,232) rotate(142)" opacity="0.68" />
-        <path d={lf(44, 10)} fill={d6} transform="translate(107,262) rotate(126)" opacity="0.55" />
-        <path d={lf(40, 9)} fill={d5} transform="translate(100,55) rotate(252)" opacity="0.5" />
-        <path d={lf(36, 8)} fill={d6} transform="translate(62,76) rotate(232)" opacity="0.45" />
-
-        {/* White flower sprigs — left */}
-        <line x1="64" y1="218" x2="48" y2="204" stroke={fs} strokeWidth="0.9" strokeLinecap="round" />
-        <circle cx="48" cy="204" r="2.8" fill={fw} />
-        <circle cx="54" cy="210" r="2.2" fill={fw} opacity="0.8" />
-        <circle cx="60" cy="215" r="1.8" fill={fw} opacity="0.65" />
-
-        <line x1="44" y1="142" x2="27" y2="134" stroke={fs} strokeWidth="0.9" strokeLinecap="round" />
-        <circle cx="27" cy="134" r="2.6" fill={fw} />
-        <circle cx="33" cy="138" r="2" fill={fw} opacity="0.75" />
-        <circle cx="39" cy="141" r="1.6" fill={fw} opacity="0.6" />
-
-        {/* ── Small gold circles at bottom ── */}
-        <circle cx="148" cy="282" r="3.8" stroke={gold} strokeWidth="1.6" fill="none" opacity="0.72" />
-        <circle cx="160" cy="286" r="4.8" stroke={gold} strokeWidth="2" fill="none" opacity="0.9" />
-        <circle cx="172" cy="282" r="3.8" stroke={gold} strokeWidth="1.6" fill="none" opacity="0.72" />
-      </svg>
-
-      {/* Title text centered inside the ring */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ paddingBottom: 10 }}>
-        <div className="text-center px-10">
-          <p style={{
-            fontFamily: '"Marck Script", "Dancing Script", Georgia, serif',
-            fontSize: 'clamp(1.5rem, 7.5vw, 2.2rem)',
-            color: primary,
-            lineHeight: 1.35,
-            whiteSpace: 'pre-line',
-          }}>
-            {title}
-          </p>
-        </div>
-      </div>
-    </div>
-  )
-}
-
 function GoldDividerSmall({ accent }: { accent: string }) {
   return (
     <div className="flex items-center justify-center gap-3">
-      <div className="h-px w-12" style={{ background: `linear-gradient(to right, transparent, ${accent}75)` }} />
-      <svg width="9" height="9" viewBox="0 0 9 9"><polygon points="4.5,0 9,4.5 4.5,9 0,4.5" fill={accent} opacity="0.85" /></svg>
-      <div className="h-px w-12" style={{ background: `linear-gradient(to left, transparent, ${accent}75)` }} />
+      <div className="h-px w-14" style={{ background: `linear-gradient(to right, transparent, ${accent}70)` }} />
+      <svg width="8" height="8" viewBox="0 0 8 8"><polygon points="4,0 8,4 4,8 0,4" fill={accent} opacity="0.8" /></svg>
+      <div className="h-px w-14" style={{ background: `linear-gradient(to left, transparent, ${accent}70)` }} />
     </div>
   )
 }
@@ -193,12 +91,12 @@ function GoldDividerSmall({ accent }: { accent: string }) {
 function GoldDividerFull({ accent }: { accent: string }) {
   return (
     <div className="flex items-center gap-2">
-      <div className="h-px flex-1" style={{ background: `linear-gradient(to right, transparent, ${accent}48)` }} />
-      <svg width="13" height="13" viewBox="0 0 13 13">
-        <polygon points="6.5,1 12,6.5 6.5,12 1,6.5" fill="none" stroke={accent} strokeWidth="0.8" opacity="0.65" />
-        <polygon points="6.5,4 9.5,6.5 6.5,9 3.5,6.5" fill={accent} opacity="0.7" />
+      <div className="h-px flex-1" style={{ background: `linear-gradient(to right, transparent, ${accent}45)` }} />
+      <svg width="12" height="12" viewBox="0 0 12 12">
+        <polygon points="6,1 11,6 6,11 1,6" fill="none" stroke={accent} strokeWidth="0.8" opacity="0.6" />
+        <polygon points="6,3.5 8.5,6 6,8.5 3.5,6" fill={accent} opacity="0.65" />
       </svg>
-      <div className="h-px flex-1" style={{ background: `linear-gradient(to left, transparent, ${accent}48)` }} />
+      <div className="h-px flex-1" style={{ background: `linear-gradient(to left, transparent, ${accent}45)` }} />
     </div>
   )
 }
@@ -206,26 +104,29 @@ function GoldDividerFull({ accent }: { accent: string }) {
 function DateCircles({ dateInfo, accent, primary }: { dateInfo: ReturnType<typeof formatDateKk>; accent: string; primary: string }) {
   return (
     <div className="flex items-end justify-center gap-4">
+      {/* Time */}
       <div className="flex flex-col items-center gap-2">
-        <div style={{ width: 82, height: 82, borderRadius: '50%', border: `1.5px solid ${accent}55`, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', backgroundColor: `${accent}06` }}>
-          <div style={{ position: 'absolute', inset: 5, borderRadius: '50%', border: `0.75px dashed ${accent}38` }} />
-          <span style={{ fontSize: '1.1rem', fontWeight: 600, color: primary }}>{dateInfo.time}</span>
+        <div style={{ width: 82, height: 82, borderRadius: '50%', border: `1.5px solid ${accent}50`, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', backgroundColor: `${accent}08` }}>
+          <div style={{ position: 'absolute', inset: 5, borderRadius: '50%', border: `0.75px dashed ${accent}35` }} />
+          <span style={{ fontSize: '1.05rem', fontWeight: 600, color: primary, fontFamily: '"Georgia", serif' }}>{dateInfo.time}</span>
         </div>
         <span style={{ fontSize: 9, color: accent, letterSpacing: '0.25em', textTransform: 'uppercase', fontFamily: 'Inter, sans-serif' }}>уақыт</span>
       </div>
 
+      {/* Day — center, larger */}
       <div className="flex flex-col items-center gap-2">
-        <div style={{ width: 106, height: 106, borderRadius: '50%', border: `2px solid ${accent}`, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', background: `radial-gradient(circle, ${accent}20 0%, ${accent}07 100%)`, boxShadow: `0 0 0 5px ${accent}10, 0 4px 18px ${accent}18` }}>
-          <div style={{ position: 'absolute', inset: 7, borderRadius: '50%', border: `0.75px dashed ${accent}48` }} />
-          <span style={{ fontSize: '2.5rem', fontWeight: 300, color: primary, lineHeight: 1 }}>{dateInfo.date}</span>
+        <div style={{ width: 108, height: 108, borderRadius: '50%', border: `2px solid ${accent}`, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', background: `radial-gradient(circle, ${accent}1A 0%, ${accent}06 100%)`, boxShadow: `0 0 0 5px ${accent}0F, 0 4px 18px ${accent}16` }}>
+          <div style={{ position: 'absolute', inset: 7, borderRadius: '50%', border: `0.75px dashed ${accent}45` }} />
+          <span style={{ fontSize: '2.6rem', fontWeight: 300, color: primary, lineHeight: 1, fontFamily: '"Georgia", serif' }}>{dateInfo.date}</span>
         </div>
         <span style={{ fontSize: 9, color: accent, letterSpacing: '0.25em', textTransform: 'uppercase', fontFamily: 'Inter, sans-serif' }}>күні</span>
       </div>
 
+      {/* Month + Year */}
       <div className="flex flex-col items-center gap-2">
-        <div style={{ width: 82, height: 82, borderRadius: '50%', border: `1.5px solid ${accent}55`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative', backgroundColor: `${accent}06` }}>
-          <div style={{ position: 'absolute', inset: 5, borderRadius: '50%', border: `0.75px dashed ${accent}38` }} />
-          <span style={{ fontSize: '0.65rem', fontWeight: 700, color: primary, textAlign: 'center', lineHeight: 1.5 }}>
+        <div style={{ width: 82, height: 82, borderRadius: '50%', border: `1.5px solid ${accent}50`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative', backgroundColor: `${accent}08` }}>
+          <div style={{ position: 'absolute', inset: 5, borderRadius: '50%', border: `0.75px dashed ${accent}35` }} />
+          <span style={{ fontSize: '0.65rem', fontWeight: 700, color: primary, textAlign: 'center', lineHeight: 1.5, fontFamily: '"Georgia", serif' }}>
             {dateInfo.year}<br />{dateInfo.month}
           </span>
         </div>
@@ -240,47 +141,76 @@ export function KazakhTemplate({ event, rsvpToken, onAccept, onDecline, rsvpLoad
   const s: TemplateSettings = event.templateSettings ?? {}
   const bg      = s.backgroundColor ?? '#FAFAF7'
   const primary = s.primaryColor    ?? '#2D4A1E'
-  const accent  = s.accentColor     ?? '#C4A84C'
+  const accent  = s.accentColor     ?? '#B8963C'
   const dateInfo = formatDateKk(event.eventDate)
+
+  // Script font for all Kazakh text
+  const script = '"Marck Script", Georgia, serif'
+  const serif  = '"Georgia", "Times New Roman", serif'
 
   return (
     <div className="min-h-screen relative overflow-x-hidden" style={{ backgroundColor: bg, color: primary }}>
-      {/* Google Font — Marck Script (Cyrillic cursive) */}
+      {/* Marck Script — Cyrillic cursive */}
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Marck+Script&display=swap');`}</style>
 
-      {/* Subtle dot texture */}
-      <div className="absolute inset-0 pointer-events-none" style={{ opacity: 0.012, backgroundImage: `radial-gradient(circle at 1px 1px, ${primary} 0.8px, transparent 0)`, backgroundSize: '24px 24px' }} />
+      {/* Subtle texture */}
+      <div className="absolute inset-0 pointer-events-none" style={{ opacity: 0.01, backgroundImage: `radial-gradient(circle at 1px 1px, ${primary} 0.8px, transparent 0)`, backgroundSize: '24px 24px' }} />
 
       <div className="relative z-10 max-w-md mx-auto">
 
-        {/* ── МЕРЕЙ ТОЙҒА ШАҚЫРУ label at very top ── */}
+        {/* ── МЕРЕЙ ТОЙҒА ШАҚЫРУ ── */}
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1, duration: 0.8 }}
-          className="text-center pt-8 pb-2">
-          <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.6rem', letterSpacing: '0.55em', textTransform: 'uppercase', color: accent, fontWeight: 600 }}>
+          className="text-center pt-8 pb-1">
+          <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.58rem', letterSpacing: '0.55em', textTransform: 'uppercase', color: accent, fontWeight: 600 }}>
             МЕРЕЙ ТОЙҒА ШАҚЫРУ
           </p>
         </motion.div>
 
-        {/* ── Botanical wreath with event title ── */}
-        <motion.div initial={{ opacity: 0, scale: 0.94 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2, duration: 1 }}
-          className="px-4">
-          <BotanicalWreath title={event.title} gold={accent} primary={primary} />
+        {/* ── Real wreath image with event title overlaid ── */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.2, duration: 1 }}
+          className="relative px-2"
+          style={{ userSelect: 'none' }}
+        >
+          <Image
+            src="/shablon-img.png"
+            alt="Botanical wreath"
+            width={700}
+            height={700}
+            style={{ width: '100%', height: 'auto', display: 'block' }}
+            priority
+          />
+          {/* Title centered inside the wreath ring */}
+          <div className="absolute inset-0 flex items-center justify-center" style={{ paddingBottom: '6%' }}>
+            <div className="text-center" style={{ width: '52%' }}>
+              <p style={{
+                fontFamily: script,
+                fontSize: 'clamp(1.3rem, 6.5vw, 2rem)',
+                color: primary,
+                lineHeight: 1.35,
+                whiteSpace: 'pre-line',
+              }}>
+                {event.title}
+              </p>
+            </div>
+          </div>
         </motion.div>
 
         <div className="px-6 pb-10 space-y-7">
 
-          {/* ── Greeting / "Кто зовёт" ── */}
+          {/* ── Greeting / organizer ── */}
           <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5, duration: 0.7 }}
             className="text-center space-y-2.5">
-            <p style={{ fontSize: 'clamp(1.55rem, 7.5vw, 2.1rem)', color: primary, fontFamily: '"Marck Script", Georgia, serif', lineHeight: 1.3 }}>
+            <p style={{ fontSize: 'clamp(1.5rem, 7vw, 2rem)', color: primary, fontFamily: script, lineHeight: 1.3 }}>
               Құрметті қонақтар!
             </p>
             <GoldDividerSmall accent={accent} />
-            <p style={{ fontSize: '1.05rem', color: primary, fontFamily: '"Georgia", serif' }}>
+            <p style={{ fontSize: '1.05rem', color: primary, fontFamily: serif }}>
               {event.organizerDisplayName}
             </p>
-            {/* "сізді шақырады" in Marck Script cursive */}
-            <p style={{ fontFamily: '"Marck Script", Georgia, serif', fontSize: '1.3rem', color: accent, letterSpacing: '0.03em' }}>
+            <p style={{ fontFamily: script, fontSize: '1.35rem', color: primary, opacity: 0.85 }}>
               сізді шақырады
             </p>
           </motion.div>
@@ -289,8 +219,8 @@ export function KazakhTemplate({ event, rsvpToken, onAccept, onDecline, rsvpLoad
           {event.description && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.68 }}>
               <GoldDividerFull accent={accent} />
-              <p className="text-center text-sm leading-[2.1] italic whitespace-pre-line mt-5"
-                style={{ color: primary, opacity: 0.82, fontFamily: '"Georgia", serif' }}>
+              <p className="text-center text-sm leading-[2.1] whitespace-pre-line mt-5"
+                style={{ color: primary, opacity: 0.8, fontFamily: script, fontSize: '1rem' }}>
                 {event.description}
               </p>
             </motion.div>
@@ -315,18 +245,18 @@ export function KazakhTemplate({ event, rsvpToken, onAccept, onDecline, rsvpLoad
           {/* ── Location ── */}
           {event.locationName && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.95 }}
-              className="rounded-2xl overflow-hidden" style={{ border: `1px solid ${accent}28` }}>
-              <div className="flex items-center gap-2 px-5 py-2.5" style={{ backgroundColor: `${accent}14` }}>
+              className="rounded-2xl overflow-hidden" style={{ border: `1px solid ${accent}30` }}>
+              <div className="flex items-center gap-2 px-5 py-2.5" style={{ backgroundColor: `${accent}12` }}>
                 <MapPin size={12} style={{ color: accent }} />
                 <span className="text-[9px] uppercase tracking-[0.42em]" style={{ color: accent, fontFamily: 'Inter, sans-serif' }}>Мекенжай</span>
               </div>
               <div className="px-5 py-4 text-center space-y-3" style={{ backgroundColor: `${accent}05` }}>
-                <p className="text-base leading-snug" style={{ color: primary }}>{event.locationName}</p>
+                <p style={{ fontSize: '1rem', color: primary, fontFamily: script, lineHeight: 1.4 }}>{event.locationName}</p>
                 {event.gisLink && (
                   <a href={event.gisLink} target="_blank" rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 text-xs px-5 py-2 rounded-full transition-all hover:opacity-80"
-                    style={{ backgroundColor: accent, color: '#FFF7E8', fontFamily: 'Inter, sans-serif' }}>
-                    <MapPin size={11} />Картада ашу
+                    style={{ backgroundColor: accent, color: '#FFF7E8', fontFamily: 'Inter, sans-serif', letterSpacing: '0.04em' }}>
+                    <MapPin size={11} /> Картада ашу
                   </a>
                 )}
               </div>
@@ -341,12 +271,12 @@ export function KazakhTemplate({ event, rsvpToken, onAccept, onDecline, rsvpLoad
               <div className="flex flex-col gap-3 pt-1">
                 <button onClick={onAccept} disabled={rsvpLoading}
                   className="w-full py-3.5 text-sm rounded-xl transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-50"
-                  style={{ backgroundColor: primary, color: '#FFF7E8', letterSpacing: '0.07em', fontFamily: 'Inter, sans-serif' }}>
+                  style={{ backgroundColor: primary, color: '#F5F0E8', letterSpacing: '0.06em', fontFamily: 'Inter, sans-serif' }}>
                   {bi.acceptFull}
                 </button>
                 <button onClick={onDecline} disabled={rsvpLoading}
                   className="w-full py-3.5 text-sm rounded-xl border transition-all hover:opacity-80 disabled:opacity-50"
-                  style={{ borderColor: `${accent}48`, color: primary, backgroundColor: `${accent}07`, fontFamily: 'Inter, sans-serif' }}>
+                  style={{ borderColor: `${accent}50`, color: primary, backgroundColor: `${accent}07`, fontFamily: 'Inter, sans-serif' }}>
                   {bi.decline}
                 </button>
               </div>
@@ -360,7 +290,7 @@ export function KazakhTemplate({ event, rsvpToken, onAccept, onDecline, rsvpLoad
               <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ type: 'spring', damping: 15 }}
                 className="rounded-2xl p-6 text-center" style={{ backgroundColor: `${accent}10`, border: `1px solid ${accent}28` }}>
                 <div className="text-4xl mb-3">🎉</div>
-                <p style={{ color: primary }}>{bi.waitingCelebration}</p>
+                <p style={{ color: primary, fontFamily: serif }}>{bi.waitingCelebration}</p>
               </motion.div>
             )}
 
@@ -368,14 +298,14 @@ export function KazakhTemplate({ event, rsvpToken, onAccept, onDecline, rsvpLoad
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                 className="rounded-2xl p-6 text-center" style={{ backgroundColor: `${accent}06` }}>
                 <div className="text-4xl mb-3">💙</div>
-                <p className="text-sm" style={{ color: primary }}>{bi.declinedMsg}</p>
+                <p style={{ color: primary, fontFamily: serif, fontSize: '0.9rem' }}>{bi.declinedMsg}</p>
               </motion.div>
             )}
           </motion.div>
 
           <div className="flex justify-center pt-2">
             <Image src="/made-with-toyla.png" alt="Made with Toyla" width={130} height={40}
-              className="opacity-45 hover:opacity-80 transition-opacity duration-300" />
+              className="opacity-40 hover:opacity-75 transition-opacity duration-300" />
           </div>
         </div>
       </div>
