@@ -45,6 +45,7 @@ function getTimeLeft(target: string) {
 
 function pad(n: number) { return String(n).padStart(2, '0') }
 
+// ── Countdown ──────────────────────────────────────────────────────────────────
 function Countdown({ targetDate, primary, accent }: { targetDate: string; primary: string; accent: string }) {
   const [t, setT] = useState(() => getTimeLeft(targetDate))
   useEffect(() => {
@@ -62,15 +63,15 @@ function Countdown({ targetDate, primary, accent }: { targetDate: string; primar
   ]
 
   return (
-    <div className="flex gap-1.5 justify-center flex-wrap mb-4">
+    <div className="flex gap-2 justify-center flex-wrap">
       {units.map(({ v, label }, i) => (
-        <div key={label} className="flex items-center gap-1.5">
+        <div key={label} className="flex items-center gap-2">
           <div className="flex flex-col items-center">
             <div
-              className="w-[54px] h-[54px] flex items-center justify-center rounded-xl text-[20px]"
+              className="w-[58px] h-[58px] flex items-center justify-center rounded-2xl text-[22px]"
               style={{
                 border: `1px solid ${accent}45`,
-                background: `linear-gradient(145deg, ${accent}14, ${accent}05)`,
+                background: `linear-gradient(145deg, ${accent}18, ${accent}06)`,
                 color: primary,
                 fontFamily: '"Georgia", serif',
                 fontWeight: 300,
@@ -79,11 +80,11 @@ function Countdown({ targetDate, primary, accent }: { targetDate: string; primar
             >
               {pad(v)}
             </div>
-            <span className="text-[9px] uppercase tracking-[0.18em] mt-1.5" style={{ color: accent, fontFamily: 'Inter, sans-serif' }}>
+            <span className="text-[9px] uppercase tracking-[0.2em] mt-1.5" style={{ color: accent, fontFamily: 'Inter, sans-serif' }}>
               {label}
             </span>
           </div>
-          {i < 3 && <span className="text-xl -mt-5 select-none" style={{ color: `${accent}55` }}>·</span>}
+          {i < 3 && <span className="text-lg -mt-5 select-none opacity-30" style={{ color: accent }}>·</span>}
         </div>
       ))}
     </div>
@@ -108,7 +109,6 @@ function FloralBanner({ flip }: { flip?: boolean }) {
       <path d="M240 108 Q302 84 362 44" stroke="#7A8F55" strokeWidth="1.2" fill="none" strokeLinecap="round"/>
       <path d="M240 108 Q286 79 328 53" stroke="#7A8F55" strokeWidth="0.75" fill="none" strokeLinecap="round"/>
       <path d="M240 108 Q318 70 392 20" stroke="#7A8F55" strokeWidth="1" fill="none" strokeLinecap="round"/>
-
       {/* Left leaves */}
       <ellipse cx="174" cy="60" rx="22" ry="7" transform="rotate(-38 174 60)" fill="#8A9E5A" opacity="0.70"/>
       <ellipse cx="147" cy="44" rx="18" ry="6" transform="rotate(-50 147 44)" fill="#7A8F55" opacity="0.63"/>
@@ -123,41 +123,36 @@ function FloralBanner({ flip }: { flip?: boolean }) {
       <ellipse cx="391" cy="16" rx="12" ry="4" transform="rotate(66  391 16)" fill="#5C6B3A" opacity="0.48"/>
       <ellipse cx="280" cy="75" rx="14" ry="5" transform="rotate(22  280 75)" fill="#9AAF6A" opacity="0.58"/>
       <ellipse cx="260" cy="88" rx="11" ry="4" transform="rotate(12  260 88)" fill="#8A9E5A" opacity="0.48"/>
-
-      {/* Flowers — left cluster */}
-      {/* Big flower left */}
+      {/* Flowers left */}
       {[0,45,90,135,180,225,270,315].map((angle, i) => {
         const r = angle * Math.PI / 180
         return <ellipse key={`fl-${i}`} cx={88 + Math.cos(r)*13} cy={16 + Math.sin(r)*13} rx="9" ry="14"
-          fill="#F4EFE3" opacity="0.82" transform={`rotate(${angle} ${88 + Math.cos(r)*13} ${16 + Math.sin(r)*13})`} />
+          fill="#F4EFE3" opacity="0.8" transform={`rotate(${angle} ${88 + Math.cos(r)*13} ${16 + Math.sin(r)*13})`} />
       })}
       <circle cx="88" cy="16" r="8" fill="#F0E8CF" opacity="0.92"/>
       <circle cx="88" cy="16" r="4" fill="#DBC98A" opacity="0.85"/>
-      {/* Small flower left */}
       {[0,60,120,180,240,300].map((angle, i) => {
         const r = angle * Math.PI / 180
         return <ellipse key={`fls-${i}`} cx={114 + Math.cos(r)*9} cy={28 + Math.sin(r)*9} rx="6" ry="9"
-          fill="#F4EFE3" opacity="0.75" transform={`rotate(${angle} ${114 + Math.cos(r)*9} ${28 + Math.sin(r)*9})`} />
+          fill="#F4EFE3" opacity="0.72" transform={`rotate(${angle} ${114 + Math.cos(r)*9} ${28 + Math.sin(r)*9})`} />
       })}
       <circle cx="114" cy="28" r="5.5" fill="#F0E8CF" opacity="0.88"/>
       <circle cx="114" cy="28" r="2.5" fill="#DBC98A" opacity="0.8"/>
-
-      {/* Flowers — right cluster */}
+      {/* Flowers right */}
       {[0,45,90,135,180,225,270,315].map((angle, i) => {
         const r = angle * Math.PI / 180
         return <ellipse key={`fr-${i}`} cx={391 + Math.cos(r)*13} cy={16 + Math.sin(r)*13} rx="9" ry="14"
-          fill="#F4EFE3" opacity="0.82" transform={`rotate(${angle} ${391 + Math.cos(r)*13} ${16 + Math.sin(r)*13})`} />
+          fill="#F4EFE3" opacity="0.8" transform={`rotate(${angle} ${391 + Math.cos(r)*13} ${16 + Math.sin(r)*13})`} />
       })}
       <circle cx="391" cy="16" r="8" fill="#F0E8CF" opacity="0.92"/>
       <circle cx="391" cy="16" r="4" fill="#DBC98A" opacity="0.85"/>
       {[0,60,120,180,240,300].map((angle, i) => {
         const r = angle * Math.PI / 180
         return <ellipse key={`frs-${i}`} cx={366 + Math.cos(r)*9} cy={28 + Math.sin(r)*9} rx="6" ry="9"
-          fill="#F4EFE3" opacity="0.75" transform={`rotate(${angle} ${366 + Math.cos(r)*9} ${28 + Math.sin(r)*9})`} />
+          fill="#F4EFE3" opacity="0.72" transform={`rotate(${angle} ${366 + Math.cos(r)*9} ${28 + Math.sin(r)*9})`} />
       })}
       <circle cx="366" cy="28" r="5.5" fill="#F0E8CF" opacity="0.88"/>
       <circle cx="366" cy="28" r="2.5" fill="#DBC98A" opacity="0.8"/>
-
       {/* Gold buds */}
       <circle cx="147" cy="41" r="3.5" fill="#C4943A" opacity="0.68"/>
       <circle cx="113" cy="26" r="3"   fill="#C4943A" opacity="0.58"/>
@@ -171,14 +166,149 @@ function FloralBanner({ flip }: { flip?: boolean }) {
   )
 }
 
+// ── Decorative stamp circles ───────────────────────────────────────────────────
+function DecorativeStamps({ accent, primary }: { accent: string; primary: string }) {
+  return (
+    <div className="flex items-center justify-center gap-5 py-1">
+      {/* Left small stamp */}
+      <div className="flex flex-col items-center gap-2">
+        <div
+          style={{
+            width: 62, height: 62, borderRadius: '50%',
+            border: `1.5px solid ${accent}55`,
+            display: 'flex', flexDirection: 'column',
+            alignItems: 'center', justifyContent: 'center',
+            position: 'relative', backgroundColor: `${accent}06`,
+          }}
+        >
+          <div style={{ position: 'absolute', inset: 5, borderRadius: '50%', border: `0.75px dashed ${accent}38` }} />
+          <span style={{ fontSize: '1.05rem', color: accent }}>✦</span>
+        </div>
+        <span style={{ fontSize: 8, color: accent, letterSpacing: '0.25em', textTransform: 'uppercase', fontFamily: 'Inter, sans-serif' }}>
+          шақыру
+        </span>
+      </div>
+
+      {/* Center large stamp */}
+      <div className="flex flex-col items-center gap-2">
+        <div
+          style={{
+            width: 88, height: 88, borderRadius: '50%',
+            border: `2px solid ${accent}`,
+            display: 'flex', flexDirection: 'column',
+            alignItems: 'center', justifyContent: 'center',
+            position: 'relative',
+            background: `radial-gradient(circle, ${accent}18 0%, ${accent}06 100%)`,
+            boxShadow: `0 0 0 5px ${accent}10`,
+          }}
+        >
+          <div style={{ position: 'absolute', inset: 6, borderRadius: '50%', border: `0.75px dashed ${accent}50` }} />
+          <span style={{ fontSize: '0.9rem', fontWeight: 700, color: primary, letterSpacing: '0.12em', fontFamily: 'Inter, sans-serif' }}>ТОЙ</span>
+          <span style={{ fontSize: 7, color: accent, letterSpacing: '0.15em', marginTop: 2, fontFamily: 'Inter, sans-serif' }}>✦ ✦ ✦</span>
+        </div>
+        <span style={{ fontSize: 8, color: accent, letterSpacing: '0.25em', textTransform: 'uppercase', fontFamily: 'Inter, sans-serif' }}>
+          мерей
+        </span>
+      </div>
+
+      {/* Right small stamp */}
+      <div className="flex flex-col items-center gap-2">
+        <div
+          style={{
+            width: 62, height: 62, borderRadius: '50%',
+            border: `1.5px solid ${accent}55`,
+            display: 'flex', flexDirection: 'column',
+            alignItems: 'center', justifyContent: 'center',
+            position: 'relative', backgroundColor: `${accent}06`,
+          }}
+        >
+          <div style={{ position: 'absolute', inset: 5, borderRadius: '50%', border: `0.75px dashed ${accent}38` }} />
+          <span style={{ fontSize: '1.05rem', color: accent }}>✦</span>
+        </div>
+        <span style={{ fontSize: 8, color: accent, letterSpacing: '0.25em', textTransform: 'uppercase', fontFamily: 'Inter, sans-serif' }}>
+          шақыру
+        </span>
+      </div>
+    </div>
+  )
+}
+
+// ── Date circles ───────────────────────────────────────────────────────────────
+function DateCircles({ dateInfo, accent, primary }: { dateInfo: ReturnType<typeof formatDateKk>; accent: string; primary: string }) {
+  return (
+    <div className="flex items-end justify-center gap-4">
+      {/* Time */}
+      <div className="flex flex-col items-center gap-2">
+        <div
+          style={{
+            width: 82, height: 82, borderRadius: '50%',
+            border: `1.5px solid ${accent}55`,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            position: 'relative', backgroundColor: `${accent}06`,
+          }}
+        >
+          <div style={{ position: 'absolute', inset: 5, borderRadius: '50%', border: `0.75px dashed ${accent}38` }} />
+          <span style={{ fontSize: '1.1rem', fontWeight: 600, color: primary, letterSpacing: '0.02em' }}>{dateInfo.time}</span>
+        </div>
+        <span style={{ fontSize: 9, color: accent, letterSpacing: '0.25em', textTransform: 'uppercase', fontFamily: 'Inter, sans-serif' }}>
+          уақыт
+        </span>
+      </div>
+
+      {/* Day — center, larger */}
+      <div className="flex flex-col items-center gap-2">
+        <div
+          style={{
+            width: 108, height: 108, borderRadius: '50%',
+            border: `2px solid ${accent}`,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            position: 'relative',
+            background: `radial-gradient(circle, ${accent}22 0%, ${accent}08 100%)`,
+            boxShadow: `0 0 0 6px ${accent}10, 0 6px 24px ${accent}20`,
+          }}
+        >
+          <div style={{ position: 'absolute', inset: 7, borderRadius: '50%', border: `0.75px dashed ${accent}50` }} />
+          <span style={{ fontSize: '2.6rem', fontWeight: 300, color: primary, lineHeight: 1, letterSpacing: '-0.02em' }}>
+            {dateInfo.date}
+          </span>
+        </div>
+        <span style={{ fontSize: 9, color: accent, letterSpacing: '0.25em', textTransform: 'uppercase', fontFamily: 'Inter, sans-serif' }}>
+          күні
+        </span>
+      </div>
+
+      {/* Month + Year */}
+      <div className="flex flex-col items-center gap-2">
+        <div
+          style={{
+            width: 82, height: 82, borderRadius: '50%',
+            border: `1.5px solid ${accent}55`,
+            display: 'flex', flexDirection: 'column',
+            alignItems: 'center', justifyContent: 'center',
+            position: 'relative', backgroundColor: `${accent}06`,
+          }}
+        >
+          <div style={{ position: 'absolute', inset: 5, borderRadius: '50%', border: `0.75px dashed ${accent}38` }} />
+          <span style={{ fontSize: '0.65rem', fontWeight: 700, color: primary, letterSpacing: '0.05em', textAlign: 'center', lineHeight: 1.5 }}>
+            {dateInfo.year}<br/>{dateInfo.month}
+          </span>
+        </div>
+        <span style={{ fontSize: 9, color: accent, letterSpacing: '0.25em', textTransform: 'uppercase', fontFamily: 'Inter, sans-serif' }}>
+          жыл
+        </span>
+      </div>
+    </div>
+  )
+}
+
 function GoldDividerSmall({ accent }: { accent: string }) {
   return (
     <div className="flex items-center justify-center gap-3">
-      <div className="h-px w-14" style={{ background: `linear-gradient(to right, transparent, ${accent}75)` }}/>
+      <div className="h-px w-12" style={{ background: `linear-gradient(to right, transparent, ${accent}75)` }}/>
       <svg width="9" height="9" viewBox="0 0 9 9">
         <polygon points="4.5,0 9,4.5 4.5,9 0,4.5" fill={accent} opacity="0.85"/>
       </svg>
-      <div className="h-px w-14" style={{ background: `linear-gradient(to left, transparent, ${accent}75)` }}/>
+      <div className="h-px w-12" style={{ background: `linear-gradient(to left, transparent, ${accent}75)` }}/>
     </div>
   )
 }
@@ -196,12 +326,12 @@ function GoldDividerFull({ accent }: { accent: string }) {
   )
 }
 
+// ── Main template ──────────────────────────────────────────────────────────────
 export function KazakhTemplate({ event, rsvpToken, onAccept, onDecline, rsvpLoading, rsvpDone }: TemplateProps) {
   const s: TemplateSettings = event.templateSettings ?? {}
   const bg      = s.backgroundColor ?? '#FDFAF3'
   const primary = s.primaryColor    ?? '#3D2B1F'
   const accent  = s.accentColor     ?? '#C4943A'
-  const green   = '#5C6B3A'
   const dateInfo = formatDateKk(event.eventDate)
 
   return (
@@ -222,42 +352,67 @@ export function KazakhTemplate({ event, rsvpToken, onAccept, onDecline, rsvpLoad
       <div className="relative z-10 max-w-md mx-auto">
 
         {/* ── Top botanical banner ── */}
-        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1.1 }}>
+        <motion.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1.1 }}>
           <FloralBanner />
         </motion.div>
 
-        <div className="px-6 pb-10 space-y-7">
+        <div className="px-6 pb-10 space-y-8">
 
-          {/* ── Greeting ── */}
+          {/* ── Decorative stamp circles ── */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2, duration: 0.7 }}
+          >
+            <DecorativeStamps accent={accent} primary={primary} />
+          </motion.div>
+
+          {/* ── "Кто зовет" — greeting block ── */}
           <motion.div
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.7 }}
-            className="text-center space-y-2.5"
+            transition={{ delay: 0.35, duration: 0.7 }}
+            className="text-center space-y-3"
           >
-            <p className="text-[11px] uppercase tracking-[0.5em]" style={{ color: accent, fontFamily: 'Inter, sans-serif' }}>
+            {/* Big greeting */}
+            <p
+              className="leading-snug"
+              style={{
+                fontSize: 'clamp(1.5rem, 7vw, 2.2rem)',
+                color: primary,
+                fontStyle: 'italic',
+              }}
+            >
               Құрметті қонақтар!
             </p>
+
             <GoldDividerSmall accent={accent} />
-            <p className="text-base leading-snug" style={{ color: primary }}>
-              {event.organizerDisplayName}
-            </p>
-            <p className="text-[10px] italic tracking-[0.3em]" style={{ color: green, fontFamily: 'Inter, sans-serif' }}>
-              шақырады
-            </p>
+
+            {/* Organizer */}
+            <div className="space-y-1">
+              <p className="text-lg leading-snug" style={{ color: primary }}>
+                {event.organizerDisplayName}
+              </p>
+              <p
+                className="text-xs tracking-[0.4em] uppercase"
+                style={{ color: accent, fontFamily: 'Inter, sans-serif' }}
+              >
+                сізді шақырады
+              </p>
+            </div>
           </motion.div>
 
           {/* ── Event title — large gold ── */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.46, duration: 0.8 }}
+            transition={{ delay: 0.5, duration: 0.8 }}
             className="text-center"
           >
             <h1
-              className="leading-[1.05] mb-1 whitespace-pre-line"
+              className="leading-[1.05] whitespace-pre-line"
               style={{
-                fontSize: 'clamp(3.2rem, 14vw, 5.5rem)',
+                fontSize: 'clamp(3rem, 13vw, 5.2rem)',
                 background: `linear-gradient(160deg, #B8960A 0%, #E8C840 35%, #C4943A 65%, #8B6010 100%)`,
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
@@ -277,83 +432,46 @@ export function KazakhTemplate({ event, rsvpToken, onAccept, onDecline, rsvpLoad
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.65 }}
-              className="text-center text-sm leading-[2] italic whitespace-pre-line"
+              className="text-center text-sm leading-[2.1] italic whitespace-pre-line"
               style={{ color: '#6A4E38' }}
             >
               {event.description}
             </motion.p>
           )}
 
-          {/* ── Date info — three boxes ── */}
+          {/* ── Countdown (when enabled) ── */}
+          {s.countdownEnabled && (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.75 }}
+              className="rounded-2xl py-5 px-3"
+              style={{
+                background: `linear-gradient(150deg, ${accent}08, ${accent}03)`,
+                border: `1px solid ${accent}22`,
+              }}
+            >
+              <p
+                className="text-center text-[9px] uppercase tracking-[0.4em] mb-4"
+                style={{ color: accent, fontFamily: 'Inter, sans-serif' }}
+              >
+                дейін қалды
+              </p>
+              <Countdown
+                targetDate={s.countdownTargetDate ?? event.eventDate}
+                primary={primary}
+                accent={accent}
+              />
+            </motion.div>
+          )}
+
+          {/* ── Date circles ── */}
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8 }}
+            transition={{ delay: 0.82 }}
           >
-            {s.countdownEnabled && s.countdownTargetDate && (
-              <div className="mb-5">
-                <Countdown targetDate={s.countdownTargetDate} primary={primary} accent={accent} />
-              </div>
-            )}
-
-            <div className="flex items-stretch justify-center">
-              {/* Time */}
-              <div
-                className="flex-1 flex flex-col items-center justify-center py-5 px-3"
-                style={{ border: `1px solid ${accent}50`, borderRight: 'none', borderRadius: '14px 0 0 14px', backgroundColor: `${accent}05` }}
-              >
-                <span
-                  className="text-3xl font-semibold leading-none"
-                  style={{ color: primary }}
-                >
-                  {dateInfo.time}
-                </span>
-                <span
-                  className="text-[9px] uppercase tracking-[0.3em] mt-2"
-                  style={{ color: accent, fontFamily: 'Inter, sans-serif' }}
-                >
-                  уақыт
-                </span>
-              </div>
-
-              {/* Day — highlighted center */}
-              <div
-                className="flex flex-col items-center justify-center py-5 px-6"
-                style={{ backgroundColor: `${accent}18`, border: `1px solid ${accent}55` }}
-              >
-                <span
-                  className="leading-none"
-                  style={{ fontSize: '3.2rem', fontWeight: 300, color: primary, letterSpacing: '-0.02em' }}
-                >
-                  {dateInfo.date}
-                </span>
-                <span
-                  className="text-[9px] uppercase tracking-[0.3em] mt-2"
-                  style={{ color: accent, fontFamily: 'Inter, sans-serif' }}
-                >
-                  күні
-                </span>
-              </div>
-
-              {/* Month + Year */}
-              <div
-                className="flex-1 flex flex-col items-center justify-center py-5 px-3"
-                style={{ border: `1px solid ${accent}50`, borderLeft: 'none', borderRadius: '0 14px 14px 0', backgroundColor: `${accent}05` }}
-              >
-                <span
-                  className="text-sm font-semibold leading-tight text-center"
-                  style={{ color: primary }}
-                >
-                  {dateInfo.year}
-                </span>
-                <span
-                  className="text-sm font-semibold leading-tight text-center mt-0.5"
-                  style={{ color: primary }}
-                >
-                  {dateInfo.month}
-                </span>
-              </div>
-            </div>
+            <DateCircles dateInfo={dateInfo} accent={accent} primary={primary} />
           </motion.div>
 
           {/* ── Location ── */}
@@ -389,7 +507,7 @@ export function KazakhTemplate({ event, rsvpToken, onAccept, onDecline, rsvpLoad
             </motion.div>
           )}
 
-          {/* ── RSVP / Guest registration ── */}
+          {/* ── RSVP / Registration ── */}
           <motion.div
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
