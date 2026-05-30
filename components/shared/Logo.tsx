@@ -34,7 +34,7 @@ export function Logo({ size = 'md', href = '/', dark = false }: LogoProps) {
           lineHeight: 1,
         }}
       >
-        Toyla<span style={{ color: dark ? '#C8A24B' : '#A8492A' }}>.</span>
+        Toyla
       </span>
     </span>
   )

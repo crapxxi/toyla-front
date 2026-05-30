@@ -1,5 +1,5 @@
 'use client'
-import { Check, X, Crown, MessageCircle } from 'lucide-react'
+import { Check, X, Crown, MessageCircle, AlertTriangle } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useTariffs, useTariff } from '@/hooks/useTariff'
 import { ADMIN_WHATSAPP } from '@/components/shared/UpgradeModal'
@@ -18,7 +18,7 @@ function PlanCard({ plan, current }: { plan: TariffPlanInfo; current: boolean })
   const features: Feature[] = [
     { label: t.featEvents(plan.maxEvents), ok: true },
     { label: t.featGuests(plan.maxGuestsPerEvent), ok: true },
-    { label: plan.allTemplates ? t.featTemplatesAll : t.featTemplateElegant, ok: plan.allTemplates },
+    { label: plan.allTemplates ? t.featTemplatesAll : t.featTemplateElegant, ok: true },
     { label: plan.mediaAllowed ? t.featMedia : t.featNoMedia, ok: plan.mediaAllowed },
     { label: plan.remindersAllowed ? t.featReminders : t.featNoReminders, ok: plan.remindersAllowed },
     { label: plan.showWatermark ? t.featWatermark : t.featNoWatermark, ok: !plan.showWatermark },
@@ -87,6 +87,19 @@ export default function PricingPage() {
         <h1 className="text-2xl font-semibold" style={{ color: 'var(--ink)' }}>{t.pricingTitle}</h1>
         <p className="text-sm mt-1" style={{ color: 'var(--ink-soft)' }}>{t.pricingSubtitle}</p>
       </div>
+
+      {tariff?.expired && (
+        <div className="mb-6 max-w-4xl flex items-start gap-2.5 rounded-2xl border px-4 py-3 bg-red-50"
+          style={{ borderColor: '#fecaca' }}>
+          <AlertTriangle size={18} className="text-red-500 mt-0.5 flex-shrink-0" />
+          <div className="text-sm">
+            <p className="font-semibold text-red-700">{t.tariffExpired}</p>
+            {tariff.storedPlan && (
+              <p className="text-xs text-red-600 mt-0.5">{tariff.storedPlan.displayName}</p>
+            )}
+          </div>
+        </div>
+      )}
 
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">

@@ -13,7 +13,12 @@ export interface TariffPlanInfo {
 }
 
 export interface TariffMeResponse {
+  /** Effective tariff — already rolled back to FREE when expired. */
   plan: TariffPlanInfo
+  /** Tariff assigned by the admin (what was bought); present from the new API. */
+  storedPlan?: TariffPlanInfo
+  /** True when the stored paid plan has expired and FREE limits now apply. */
+  expired?: boolean
   expiresAt: string | null
   eventsUsed: number
   eventsLimit: number

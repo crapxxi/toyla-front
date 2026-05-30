@@ -32,8 +32,13 @@ export interface AdminUserResponse {
   role: Role
   enabled: boolean
   toysCount: number
+  /** Plan stored in the DB ("what was bought") — never auto-downgraded to FREE. */
   tariffPlan: TariffPlan
+  /** Plan effectively in force right now (FREE once the paid plan has expired). */
+  effectivePlan?: TariffPlan
   tariffExpiresAt: string | null
+  /** True when a paid plan's expiry date is in the past. */
+  tariffExpired?: boolean
 }
 
 export interface TemplateSettings {

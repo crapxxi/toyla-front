@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" fill="none">
+  <rect width="1200" height="630" fill="#F4ECDF"/>
+  <g opacity="0.06" stroke="#A8492A" stroke-width="2" fill="none">
+    <circle cx="980" cy="150" r="260"/>
+    <circle cx="980" cy="150" r="190"/>
+    <path d="M790 150h380M980 -40v380M845 15l270 270M1115 15L845 285"/>
+  </g>
+  <text x="100" y="190" font-family="Georgia, 'Times New Roman', serif" font-size="46" fill="#B0843A" letter-spacing="8">TOYLA · ТОЙ-КӨМЕКШІ</text>
+  <text x="96" y="320" font-family="Georgia, 'Times New Roman', serif" font-size="104" font-weight="600" fill="#261B11">Тойға сайт</text>
+  <text x="100" y="430" font-family="Georgia, 'Times New Roman', serif" font-size="104" font-weight="600" font-style="italic" fill="#A8492A">бір сілтемемен</text>
+  <text x="100" y="510" font-family="Arial, Helvetica, sans-serif" font-size="34" fill="#6E6151">Электронды шақыру · қонақтар тізімі · еске салулар</text>
+  <text x="100" y="558" font-family="Arial, Helvetica, sans-serif" font-size="30" fill="#6E6151">Сайт-приглашение на той и любое мероприятие</text>
+  <text x="100" y="598" font-family="Arial, Helvetica, sans-serif" font-size="26" fill="#A8492A" font-weight="700">toyla.app</text>
+</svg>

@@ -1,7 +1,15 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Read(//tmp/**)",
+      "Read(//private/tmp/**)",
+      "Bash(npx tsc *)",
+      "Bash(echo \"exit=$?\")",
+      "Bash(ls lib *)"
+    ],
+    "additionalDirectories": [
+      "/tmp"
     ]
   }
 }
