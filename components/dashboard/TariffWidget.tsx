@@ -31,7 +31,8 @@ export function TariffWidget() {
           <span>{t.tariffExpired}</span>
         </div>
       ) : expiringSoon ? (
-        <div className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm bg-amber-50 text-amber-700 border border-amber-100">
+        <div className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm border"
+          style={{ background: 'rgba(176,132,58,0.10)', color: 'var(--gold)', borderColor: 'rgba(176,132,58,0.28)' }}>
           <AlertTriangle size={15} className="flex-shrink-0" />
           <span>{t.tariffExpiringSoon(formatDateOnly(expiresAt!, lang))}</span>
         </div>

@@ -7,14 +7,14 @@ import './globals.css'
 const SITE_URL = 'https://toyla.app'
 
 const spectral = Spectral({
-  subsets: ['latin', 'cyrillic'],
+  subsets: ['latin', 'cyrillic', 'cyrillic-ext'],
   weight: ['300', '400', '500', '600'],
   style: ['normal', 'italic'],
   variable: '--font-spectral',
 })
 
 const manrope = Manrope({
-  subsets: ['latin', 'cyrillic'],
+  subsets: ['latin', 'cyrillic', 'cyrillic-ext'],
   weight: ['400', '500', '600', '700'],
   variable: '--font-manrope',
 })

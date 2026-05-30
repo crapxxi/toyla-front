@@ -74,13 +74,13 @@ export default function DashboardPage() {
 
       {(toys?.length ?? 0) > 0 || isLoading ? (
         <div className="mb-6">
-          <div className="relative max-w-xs">
-            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <div className="relative w-full sm:max-w-md">
+            <Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
             <Input
               placeholder={t.search}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-9 rounded-xl border-gray-200"
+              className="h-11 pl-11 text-base md:text-base rounded-xl"
             />
           </div>
         </div>

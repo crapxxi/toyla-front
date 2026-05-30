@@ -139,14 +139,14 @@ export default function GuestsPage() {
         </div>
       </div>
 
-      <div className="flex mb-4">
-        <div className="relative">
-          <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" />
+      <div className="mb-4">
+        <div className="relative w-full sm:max-w-md">
+          <Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
           <Input
             placeholder={t.search}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-8 h-8 text-xs w-36 rounded-full border-gray-200"
+            className="h-11 pl-11 text-base md:text-base rounded-xl"
           />
         </div>
       </div>
