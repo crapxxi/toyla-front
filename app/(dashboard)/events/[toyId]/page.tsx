@@ -308,68 +308,68 @@ export default function EventPage() {
 
       {/* Edit sheet */}
       <Sheet open={showEdit} onOpenChange={(open) => { if (!open) setShowEdit(false) }}>
-        <SheetContent className="sm:max-w-md overflow-y-auto">
+        <SheetContent className="sm:max-w-sm px-6 overflow-y-auto">
           <SheetHeader>
-            <SheetTitle className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-[#EDE9FE] flex items-center justify-center">
-                <Pencil size={15} className="text-[#8B5CF6]" />
+            <SheetTitle className="flex items-center gap-2 text-sm">
+              <div className="w-7 h-7 rounded-xl bg-[#EDE9FE] flex items-center justify-center flex-shrink-0">
+                <Pencil size={13} className="text-[#8B5CF6]" />
               </div>
               Изменить мероприятие
             </SheetTitle>
           </SheetHeader>
 
-          <div className="mt-6 space-y-4">
+          <div className="mt-5 space-y-3.5">
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1.5">Название *</label>
-              <Input {...form.register('title')} className="rounded-xl h-11" />
+              <label className="block text-[11px] font-medium text-gray-500 mb-1">Название *</label>
+              <Input {...form.register('title')} className="rounded-xl h-10 text-sm" />
               {form.formState.errors.title && (
-                <p className="text-xs text-red-500 mt-1">{form.formState.errors.title.message}</p>
+                <p className="text-[11px] text-red-500 mt-1">{form.formState.errors.title.message}</p>
               )}
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1.5">Текст приглашения *</label>
-              <Textarea {...form.register('description')} rows={4} className="rounded-xl resize-none" />
+              <label className="block text-[11px] font-medium text-gray-500 mb-1">Текст приглашения *</label>
+              <Textarea {...form.register('description')} rows={4} className="rounded-xl resize-none text-sm" />
               {form.formState.errors.description && (
-                <p className="text-xs text-red-500 mt-1">{form.formState.errors.description.message}</p>
+                <p className="text-[11px] text-red-500 mt-1">{form.formState.errors.description.message}</p>
               )}
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1.5">Дата и время *</label>
-              <Input type="datetime-local" {...form.register('eventDate')} className="rounded-xl h-11" />
+              <label className="block text-[11px] font-medium text-gray-500 mb-1">Дата и время *</label>
+              <Input type="datetime-local" {...form.register('eventDate')} className="rounded-xl h-10 text-sm" />
               {form.formState.errors.eventDate && (
-                <p className="text-xs text-red-500 mt-1">{form.formState.errors.eventDate.message}</p>
+                <p className="text-[11px] text-red-500 mt-1">{form.formState.errors.eventDate.message}</p>
               )}
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1.5">Место проведения</label>
-              <Input {...form.register('locationName')} className="rounded-xl h-11" />
+              <label className="block text-[11px] font-medium text-gray-500 mb-1">Место проведения</label>
+              <Input {...form.register('locationName')} className="rounded-xl h-10 text-sm" />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1.5">Ссылка на 2GIS / карту</label>
-              <Input {...form.register('gisLink')} placeholder="https://2gis.kz/..." className="rounded-xl h-11" />
+              <label className="block text-[11px] font-medium text-gray-500 mb-1">Ссылка на 2GIS / карту</label>
+              <Input {...form.register('gisLink')} placeholder="https://2gis.kz/..." className="rounded-xl h-10 text-sm" />
               {form.formState.errors.gisLink && (
-                <p className="text-xs text-red-500 mt-1">{form.formState.errors.gisLink.message}</p>
+                <p className="text-[11px] text-red-500 mt-1">{form.formState.errors.gisLink.message}</p>
               )}
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1.5">Организатор / Шақырушы</label>
-              <Input {...form.register('organizerName')} placeholder="Семья Абылай" className="rounded-xl h-11" />
-              <p className="text-xs text-gray-400 mt-1">Отображается на странице приглашения</p>
+              <label className="block text-[11px] font-medium text-gray-500 mb-1">Организатор / Шақырушы</label>
+              <Input {...form.register('organizerName')} placeholder="Семья Абылай" className="rounded-xl h-10 text-sm" />
+              <p className="text-[11px] text-gray-400 mt-1">Отображается на странице приглашения</p>
             </div>
 
-            <div className="flex gap-3 pt-2">
-              <Button variant="outline" onClick={() => setShowEdit(false)} className="flex-1 rounded-xl">
+            <div className="flex gap-2.5 pt-1">
+              <Button variant="outline" onClick={() => setShowEdit(false)} className="flex-1 rounded-xl h-10 text-xs">
                 Отмена
               </Button>
               <Button
                 onClick={handleEdit}
                 disabled={updateToy.isPending}
-                className="flex-1 bg-[#8B5CF6] hover:bg-[#7C3AED] rounded-xl"
+                className="flex-1 bg-[#8B5CF6] hover:bg-[#7C3AED] rounded-xl h-10 text-xs"
               >
                 {updateToy.isPending ? 'Сохранение...' : 'Сохранить'}
               </Button>
