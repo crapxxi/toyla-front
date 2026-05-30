@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Phone, User } from 'lucide-react'
+import { Phone, User, Users } from 'lucide-react'
 import axios from 'axios'
 import { api } from '@/lib/api'
 import { bi } from './strings'
@@ -19,6 +19,7 @@ export function GuestRegisterForm({ toyId, primaryColor, accentColor, variant, t
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [phone, setPhone] = useState('')
+  const [partySize, setPartySize] = useState(1)
   const [loading, setLoading] = useState(false)
   const [done, setDone] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -34,6 +35,7 @@ export function GuestRegisterForm({ toyId, primaryColor, accentColor, variant, t
         firstName: firstName.trim(),
         lastName: lastName.trim() || undefined,
         phoneNumber: phone,
+        partySize,
       })
       setDone(true)
     } catch (err) {
@@ -115,6 +117,33 @@ export function GuestRegisterForm({ toyId, primaryColor, accentColor, variant, t
           className="w-full pl-9 pr-3 py-2.5 text-sm rounded-xl outline-none transition-all"
           style={inputStyle}
         />
+      </div>
+
+      {/* Party size */}
+      <div className="rounded-xl px-3 py-2.5 flex items-center justify-between gap-3" style={inputStyle}>
+        <div className="flex items-center gap-2">
+          <Users size={13} style={{ color: iconColor }} />
+          <span className="text-xs" style={{ color: iconColor }}>
+            {partySize === 1 ? bi.partySizeAlone : bi.partySizeWith(partySize - 1)}
+          </span>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setPartySize(s => Math.max(1, s - 1))}
+            disabled={partySize <= 1}
+            className="w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold transition-all disabled:opacity-30"
+            style={{ background: `${primaryColor}30`, color: primaryColor }}
+          >−</button>
+          <span className="text-sm font-semibold w-4 text-center" style={{ color: primaryColor }}>{partySize}</span>
+          <button
+            type="button"
+            onClick={() => setPartySize(s => Math.min(10, s + 1))}
+            disabled={partySize >= 10}
+            className="w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold transition-all disabled:opacity-30"
+            style={{ background: `${primaryColor}30`, color: primaryColor }}
+          >+</button>
+        </div>
       </div>
 
       {/* Phone */}

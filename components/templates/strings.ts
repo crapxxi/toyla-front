@@ -37,4 +37,9 @@ export const bi = {
   eventFull: 'Мероприятие заполнено / Мероприятие заполнено',
   tooManyRequests: 'Тым жиі. Кейінірек қайталаңыз / Слишком много запросов, попробуйте позже',
   genericError: 'Қате. Кейінірек қайталаңыз / Ошибка. Попробуйте позже',
+
+  // Party size (companions)
+  partySizeLabel: 'Кіммен келесіз? / С кем придёте?',
+  partySizeAlone: 'Жалғыз / Один',
+  partySizeWith: (n: number) => `+${n} адам / +${n} чел.`,
 }
