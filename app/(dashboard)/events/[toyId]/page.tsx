@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod/v4'
 import {
   Users, MapPin, Calendar, ChevronRight, Trash2,
-  Copy, ExternalLink, Settings, LayoutGrid, User, Send, Bell, AlarmClock, Pencil,
+  Copy, ExternalLink, Settings, LayoutGrid, User, Send, Bell, AlarmClock, Pencil, Lock,
 } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Badge } from '@/components/ui/badge'
@@ -19,8 +19,10 @@ import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { useGetToy, useDeleteToy, useUpdateToy } from '@/hooks/useToys'
 import { useGetGuests } from '@/hooks/useGuests'
 import { useSendInvites, useSendReminders, useSendSeating } from '@/hooks/useNotifications'
+import { useTariffGate } from '@/hooks/useTariff'
 import { useAuthStore } from '@/store/auth.store'
 import { useLangStore } from '@/store/lang.store'
+import { useUpgradeStore } from '@/store/upgrade.store'
 import { formatEventDate, isPastEvent, daysUntilDelete } from '@/lib/formatters'
 import i18n from '@/lib/i18n'
 import toast from 'react-hot-toast'
@@ -48,6 +50,8 @@ export default function EventPage() {
   const sendInvites = useSendInvites(toyId)
   const sendReminders = useSendReminders(toyId)
   const sendSeating = useSendSeating(toyId)
+  const { canRemind } = useTariffGate()
+  const openUpgrade = useUpgradeStore((s) => s.openUpgrade)
   const [showDelete, setShowDelete] = useState(false)
   const [showEdit, setShowEdit] = useState(false)
 
@@ -230,10 +234,13 @@ export default function EventPage() {
               <p className="text-xs text-gray-400">{t.firstWhatsapp}</p>
             </div>
           </button>
-          <button onClick={() => sendReminders.mutate()} disabled={sendReminders.isPending}
-            className="flex items-center gap-3 p-3.5 rounded-xl border border-gray-100 hover:border-amber-200 hover:bg-amber-50/40 transition-all text-left disabled:opacity-50">
+          <button
+            onClick={() => canRemind ? sendReminders.mutate() : openUpgrade(t.remindersLockedHint)}
+            disabled={sendReminders.isPending}
+            title={canRemind ? undefined : t.remindersLockedHint}
+            className={`flex items-center gap-3 p-3.5 rounded-xl border border-gray-100 hover:border-amber-200 hover:bg-amber-50/40 transition-all text-left disabled:opacity-50 ${!canRemind ? 'opacity-60' : ''}`}>
             <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center flex-shrink-0">
-              <Bell size={14} className="text-amber-600" />
+              {canRemind ? <Bell size={14} className="text-amber-600" /> : <Lock size={14} className="text-amber-600" />}
             </div>
             <div>
               <p className="text-sm font-medium text-gray-800">{sendReminders.isPending ? t.sending : t.reminder}</p>

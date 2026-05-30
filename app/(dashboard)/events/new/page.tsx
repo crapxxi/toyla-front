@@ -10,8 +10,10 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { useCreateToy } from '@/hooks/useToys'
+import { useTariffGate } from '@/hooks/useTariff'
 import { useAuthStore } from '@/store/auth.store'
 import { useLangStore } from '@/store/lang.store'
+import { useUpgradeStore } from '@/store/upgrade.store'
 import { EventTemplate } from '@/types'
 import i18n from '@/lib/i18n'
 
@@ -21,6 +23,8 @@ interface TemplateConfig {
   desc: string
   colors: [string, string, string]
   available: boolean
+  /** Implemented but locked behind a higher tariff. */
+  tariffLocked?: boolean
 }
 
 function KazakhMiniPreview() {
@@ -105,8 +109,15 @@ function TemplateCard({ tmpl, selected, onClick }: { tmpl: TemplateConfig; selec
         : 'border-gray-100 opacity-60 cursor-not-allowed',
       ].join(' ')}
     >
-      <div className="overflow-hidden">
+      <div className="relative overflow-hidden">
         {tmpl.available ? <KazakhMiniPreview /> : <ComingSoonPreview colors={tmpl.colors} soon={t.soon} />}
+        {tmpl.tariffLocked && (
+          <div className="absolute inset-0 bg-white/55 backdrop-blur-[1px] flex items-center justify-center">
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full bg-white shadow-sm text-[#A8492A]">
+              <Lock size={13} /> {t.upgradeToDara}
+            </span>
+          </div>
+        )}
       </div>
       <div className="bg-white px-4 py-3.5 flex items-center gap-3">
         <div className="flex gap-1">
@@ -171,17 +182,24 @@ export default function NewEventPage() {
   const { lang } = useLangStore()
   const t = i18n[lang]
   const createToy = useCreateToy(userId ?? 0)
+  const { eventsReached, canTpl } = useTariffGate()
+  const openUpgrade = useUpgradeStore((s) => s.openUpgrade)
 
   const TEMPLATES: TemplateConfig[] = [
-    { id: 'ELEGANT',    label: t.tmplKazakhLabel, desc: t.tmplKazakhDesc,  colors: ['#FDFAF3', '#C4943A', '#6B7C3E'], available: true },
-    { id: 'MODERN',     label: t.tmplModernLabel, desc: t.tmplModernDesc,  colors: ['#09090F', '#A8492A', '#C4B5FD'], available: false },
-    { id: 'ROMANTIC',   label: t.tmplRomLabel,    desc: t.tmplRomDesc,     colors: ['#FFF0F5', '#BE4B7A', '#F5A7C7'], available: false },
-    { id: 'FESTIVE',    label: t.tmplFestLabel,   desc: t.tmplFestDesc,    colors: ['#0D0221', '#FFE66D', '#FF6B6B'], available: false },
+    { id: 'ELEGANT',  label: t.tmplKazakhLabel, desc: t.tmplKazakhDesc, colors: ['#FDFAF3', '#C4943A', '#6B7C3E'], available: true,  tariffLocked: !canTpl('ELEGANT') },
+    { id: 'MODERN',   label: t.tmplModernLabel, desc: t.tmplModernDesc, colors: ['#09090F', '#A8492A', '#C4B5FD'], available: false, tariffLocked: false },
+    { id: 'ROMANTIC', label: t.tmplRomLabel,    desc: t.tmplRomDesc,    colors: ['#FFF0F5', '#BE4B7A', '#F5A7C7'], available: false, tariffLocked: false },
+    { id: 'FESTIVE',  label: t.tmplFestLabel,   desc: t.tmplFestDesc,   colors: ['#0D0221', '#FFE66D', '#FF6B6B'], available: false, tariffLocked: false },
   ]
 
   const [step, setStep] = useState(0)
   const [selectedTemplate, setSelectedTemplate] = useState<EventTemplate>('ELEGANT')
   const [createdId, setCreatedId] = useState<string | null>(null)
+
+  const handlePickTemplate = (tmpl: TemplateConfig) => {
+    if (!canTpl(tmpl.id)) { openUpgrade(t.templateLockedHint); return }
+    setSelectedTemplate(tmpl.id)
+  }
 
   const form = useForm<DetailsForm>({
     resolver: zodResolver(detailsSchema),
@@ -274,10 +292,17 @@ export default function NewEventPage() {
               </div>
               <div className="space-y-3">
                 {TEMPLATES.map((tmpl) => (
-                  <TemplateCard key={tmpl.id} tmpl={tmpl} selected={selectedTemplate === tmpl.id} onClick={() => setSelectedTemplate(tmpl.id)} />
+                  <TemplateCard key={tmpl.id} tmpl={tmpl} selected={selectedTemplate === tmpl.id} onClick={() => handlePickTemplate(tmpl)} />
                 ))}
               </div>
-              <Button onClick={handleCreate} disabled={createToy.isPending} className="w-full bg-[#A8492A] hover:bg-[#8A3A20] rounded-xl h-12 text-base">
+              {eventsReached && (
+                <p className="text-xs text-amber-600 text-center -mb-1">{t.limitEventsReached}</p>
+              )}
+              <Button
+                onClick={eventsReached ? () => openUpgrade(t.limitEventsReached) : handleCreate}
+                disabled={createToy.isPending}
+                title={eventsReached ? t.limitEventsReached : undefined}
+                className={`w-full rounded-xl h-12 text-base ${eventsReached ? 'bg-[#A8492A]/60 hover:bg-[#A8492A]/60 cursor-not-allowed' : 'bg-[#A8492A] hover:bg-[#8A3A20]'}`}>
                 {createToy.isPending ? t.creating : t.createBtn}
               </Button>
             </motion.div>

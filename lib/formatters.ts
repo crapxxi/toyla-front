@@ -16,6 +16,20 @@ export function formatDateFull(dateStr: string, lang: Lang = 'kk'): string {
   return format(new Date(dateStr), 'EEEE, d MMMM yyyy HH:mm', { locale: lang === 'kk' ? kkLocale : ru })
 }
 
+export function formatDateOnly(dateStr: string, lang: Lang = 'kk'): string {
+  return format(new Date(dateStr), 'd MMMM yyyy', { locale: lang === 'kk' ? kkLocale : ru })
+}
+
+/** Whole days from now until `dateStr` (negative if already past). */
+export function daysUntil(dateStr: string): number {
+  return differenceInDays(new Date(dateStr), new Date())
+}
+
+/** `6 990 ₸` — tenge with a thin-space thousands separator. */
+export function formatTenge(amount: number): string {
+  return `${amount.toLocaleString('ru-RU').replace(/ /g, ' ')} ₸`
+}
+
 export function formatPhone(phone: string): string {
   return '+' + phone
 }

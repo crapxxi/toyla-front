@@ -1,3 +1,6 @@
+import type { TariffPlan } from './tariff'
+export * from './tariff'
+
 export type NotificationType = 'INITIAL_INVITE' | 'REMINDER_24H' | 'MORNING_SEATING'
 export type DeliveryStatus   = 'PENDING' | 'DELIVERED' | 'FAILED' | 'ERROR'
 export type EventTemplate    = 'ELEGANT' | 'FESTIVE' | 'MINIMALIST' | 'ROMANTIC' | 'MODERN'
@@ -17,6 +20,8 @@ export interface UserResponse {
   lastName: string | null
   role: Role
   enabled: boolean
+  tariffPlan: TariffPlan
+  tariffExpiresAt: string | null
 }
 
 export interface AdminUserResponse {
@@ -27,6 +32,8 @@ export interface AdminUserResponse {
   role: Role
   enabled: boolean
   toysCount: number
+  tariffPlan: TariffPlan
+  tariffExpiresAt: string | null
 }
 
 export interface TemplateSettings {
@@ -104,6 +111,7 @@ export interface PublicToyResponse {
   organizerDisplayName: string
   images: ToyImageResponse[]
   musicUrl: string | null
+  showWatermark: boolean
 }
 
 export interface ToyRequest {
@@ -133,6 +141,8 @@ export const queryKeys = {
   logs:        (toyId: string)           => ['logs', toyId],
   publicEvent: (userId: number, toyId: string) => ['public', userId, toyId],
   adminUsers:  ()                        => ['admin', 'users'],
+  tariffMe:    ()                        => ['tariff', 'me'],
+  tariffs:     ()                        => ['tariffs'],
 }
 
 export const statusColors: Record<DeliveryStatus, string> = {

@@ -13,7 +13,9 @@ import { Button } from '@/components/ui/button'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { EmptyState } from '@/components/shared/EmptyState'
 import { useGetGuests, useAddGuest, useDeleteGuest } from '@/hooks/useGuests'
+import { useTariffGate } from '@/hooks/useTariff'
 import { useLangStore } from '@/store/lang.store'
+import { useUpgradeStore } from '@/store/upgrade.store'
 import { formatPhone } from '@/lib/formatters'
 import i18n from '@/lib/i18n'
 
@@ -46,6 +48,8 @@ export default function GuestsPage() {
   const { data: guests, isLoading } = useGetGuests(toyId)
   const addGuest = useAddGuest(toyId)
   const deleteGuest = useDeleteGuest(toyId)
+  const { guestsLimitPerEvent } = useTariffGate()
+  const openUpgrade = useUpgradeStore((s) => s.openUpgrade)
 
   const [sheetOpen, setSheetOpen] = useState(false)
   const [deleteId, setDeleteId] = useState<number | null>(null)
@@ -100,6 +104,12 @@ export default function GuestsPage() {
   }
 
   const total = guests?.length ?? 0
+  const limitReached = guestsLimitPerEvent > 0 && total >= guestsLimitPerEvent
+
+  const openSheet = () => {
+    if (limitReached) { openUpgrade(t.limitGuestsReached); return }
+    setSheetOpen(true)
+  }
 
   return (
     <div>
@@ -110,7 +120,10 @@ export default function GuestsPage() {
         <div className="flex-1">
           <h1 className="text-xl font-semibold text-gray-900">{t.guestsTitle}</h1>
         </div>
-        <Button onClick={() => setSheetOpen(true)} className="bg-[#A8492A] hover:bg-[#8A3A20] rounded-xl gap-2">
+        <Button
+          onClick={openSheet}
+          title={limitReached ? t.limitGuestsReached : undefined}
+          className={`rounded-xl gap-2 ${limitReached ? 'bg-[#A8492A]/60 hover:bg-[#A8492A]/60 cursor-not-allowed' : 'bg-[#A8492A] hover:bg-[#8A3A20]'}`}>
           <Plus size={16} />
           <span className="hidden sm:block">{t.addGuestBtn}</span>
         </Button>
@@ -119,7 +132,9 @@ export default function GuestsPage() {
       <div className="mb-5">
         <div className="rounded-2xl border p-3 flex flex-col items-center gap-0.5 bg-[#FBF5F1] border-violet-100 inline-flex min-w-[80px]">
           <Users size={14} className="text-[#A8492A]" />
-          <span className="text-lg font-bold leading-none text-[#A8492A]">{total}</span>
+          <span className="text-lg font-bold leading-none text-[#A8492A]">
+            {total}{guestsLimitPerEvent > 0 ? ` / ${guestsLimitPerEvent}` : ''}
+          </span>
           <span className="text-[10px] text-gray-500">{t.totalLabel}</span>
         </div>
       </div>
@@ -154,7 +169,7 @@ export default function GuestsPage() {
             title={t.noGuests}
             description={t.noGuestsDesc}
             icon={<UserPlus size={44} className="text-gray-300" />}
-            action={{ label: t.addGuestTitle, onClick: () => setSheetOpen(true) }}
+            action={{ label: t.addGuestTitle, onClick: openSheet }}
           />
         ) : (
           <div className="text-center py-10 text-gray-400 text-sm">{t.noGuestsFilter}</div>

@@ -2,17 +2,33 @@
 import { useState, useMemo, useRef } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
-import { ChevronLeft, Save, Monitor, Music2, Timer, Eye, Upload, Trash2, ImageIcon, X } from 'lucide-react'
+import { ChevronLeft, Save, Monitor, Music2, Timer, Eye, Upload, Trash2, ImageIcon, X, Lock } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Separator } from '@/components/ui/separator'
 import { useGetToy, useUploadMusic, useDeleteMusic, useUploadImage, useDeleteImage } from '@/hooks/useToys'
 import { useTemplateSettings } from '@/hooks/useTemplateSettings'
+import { useTariffGate } from '@/hooks/useTariff'
 import { KazakhTemplate } from '@/components/templates/KazakhTemplate'
 import { useLangStore } from '@/store/lang.store'
+import { useUpgradeStore } from '@/store/upgrade.store'
 import { PublicToyResponse } from '@/types'
 import i18n from '@/lib/i18n'
 import Image from 'next/image'
+
+/** Small banner shown in media sections when the plan doesn't allow uploads. */
+function MediaLockedNote({ hint, onUpgrade, cta }: { hint: string; onUpgrade: () => void; cta: string }) {
+  return (
+    <div className="flex items-center gap-3 rounded-xl px-4 py-3 bg-[#FBF5F1] border border-[#E8C5B5]">
+      <Lock size={15} className="text-[#A8492A] flex-shrink-0" />
+      <p className="text-xs text-gray-600 flex-1">{hint}</p>
+      <button onClick={onUpgrade}
+        className="text-xs font-semibold text-white px-3 py-1.5 rounded-lg bg-[#A8492A] hover:bg-[#8A3A20] transition-colors flex-shrink-0">
+        {cta}
+      </button>
+    </div>
+  )
+}
 
 function Toggle({ label, sublabel, checked, onChange }: { label: string; sublabel?: string; checked: boolean; onChange: (v: boolean) => void }) {
   return (
@@ -51,6 +67,8 @@ export default function TemplatePage() {
   const t = i18n[lang]
   const { data: toy, isLoading } = useGetToy(toyId)
   const [showPreview, setShowPreview] = useState(false)
+  const { canMedia, tariff } = useTariffGate()
+  const openUpgrade = useUpgradeStore((s) => s.openUpgrade)
 
   const uploadMusic = useUploadMusic(toyId)
   const deleteMusic = useDeleteMusic(toyId)
@@ -86,6 +104,7 @@ export default function TemplatePage() {
     organizerDisplayName: toy.organizerName,
     images: toy.images ?? [],
     musicUrl: toy.musicUrl,
+    showWatermark: tariff?.plan.showWatermark ?? true,
   }
 
   const handleMusicUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -145,6 +164,7 @@ export default function TemplatePage() {
           {/* Images — max 1 */}
           <SectionCard icon={ImageIcon} title={t.eventPhotos}>
             <p className="text-xs text-gray-400 -mt-2">{t.photosHint}</p>
+            {!canMedia && <MediaLockedNote hint={t.mediaLockedHint} cta={t.upgradeToDara} onUpgrade={() => openUpgrade(t.mediaLockedHint)} />}
 
             {images.length > 0 && (
               <div className="relative group rounded-xl overflow-hidden aspect-video bg-gray-50">
@@ -166,7 +186,7 @@ export default function TemplatePage() {
                 <input ref={imageInputRef} type="file" accept="image/jpeg,image/png,image/webp,image/gif" className="hidden" onChange={handleImageUpload} />
                 <button
                   onClick={() => imageInputRef.current?.click()}
-                  disabled={uploadImage.isPending || deleteImage.isPending}
+                  disabled={uploadImage.isPending || deleteImage.isPending || !canMedia}
                   className="w-full border-2 border-dashed border-gray-200 rounded-xl py-4 flex flex-col items-center gap-1.5 text-gray-400 hover:border-[#A8492A] hover:text-[#A8492A] transition-colors disabled:opacity-50"
                 >
                   <Upload size={18} />
@@ -181,7 +201,7 @@ export default function TemplatePage() {
             {images.length > 0 && (
               <button
                 onClick={() => imageInputRef.current?.click()}
-                disabled={uploadImage.isPending || deleteImage.isPending}
+                disabled={uploadImage.isPending || deleteImage.isPending || !canMedia}
                 className="w-full border border-gray-200 rounded-xl py-2 flex items-center justify-center gap-2 text-xs text-gray-500 hover:border-[#A8492A] hover:text-[#A8492A] transition-colors disabled:opacity-50"
               >
                 <Upload size={13} />
@@ -193,6 +213,7 @@ export default function TemplatePage() {
 
           {/* Music */}
           <SectionCard icon={Music2} title={t.musicSection}>
+            {!canMedia && <MediaLockedNote hint={t.mediaLockedHint} cta={t.upgradeToDara} onUpgrade={() => openUpgrade(t.mediaLockedHint)} />}
             {currentMusicUrl ? (
               <div className="flex items-center gap-3 bg-[#FBF5F1] rounded-xl px-4 py-3">
                 <div className="w-8 h-8 rounded-lg bg-[#A8492A] flex items-center justify-center flex-shrink-0">
@@ -212,7 +233,7 @@ export default function TemplatePage() {
             ) : (
               <>
                 <input ref={musicInputRef} type="file" accept="audio/mpeg,audio/wav,audio/ogg,audio/mp4" className="hidden" onChange={handleMusicUpload} />
-                <button onClick={() => musicInputRef.current?.click()} disabled={uploadMusic.isPending}
+                <button onClick={() => musicInputRef.current?.click()} disabled={uploadMusic.isPending || !canMedia}
                   className="w-full border-2 border-dashed border-gray-200 rounded-xl py-4 flex flex-col items-center gap-1.5 text-gray-400 hover:border-[#A8492A] hover:text-[#A8492A] transition-colors disabled:opacity-50">
                   <Upload size={18} />
                   <span className="text-xs font-medium">{uploadMusic.isPending ? t.uploading : t.uploadMusic}</span>

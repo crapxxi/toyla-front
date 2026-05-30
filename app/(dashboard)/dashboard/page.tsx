@@ -6,10 +6,13 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Input } from '@/components/ui/input'
 import { EventCard } from '@/components/dashboard/EventCard'
 import { EmptyState } from '@/components/shared/EmptyState'
+import { TariffWidget } from '@/components/dashboard/TariffWidget'
 import { useGetToys } from '@/hooks/useToys'
 import { useGetGuests } from '@/hooks/useGuests'
+import { useTariffGate } from '@/hooks/useTariff'
 import { useAuthStore } from '@/store/auth.store'
 import { useLangStore } from '@/store/lang.store'
+import { useUpgradeStore } from '@/store/upgrade.store'
 import { ToyResponse } from '@/types'
 import i18n from '@/lib/i18n'
 
@@ -26,6 +29,8 @@ export default function DashboardPage() {
   const { lang } = useLangStore()
   const t = i18n[lang]
   const { data: toys, isLoading } = useGetToys(userId ?? 0)
+  const { eventsReached } = useTariffGate()
+  const openUpgrade = useUpgradeStore((s) => s.openUpgrade)
   const [search, setSearch] = useState('')
 
   const filtered = (toys ?? []).filter(
@@ -43,15 +48,29 @@ export default function DashboardPage() {
             {toys ? t.eventsCount(toys.length) : t.loading}
           </p>
         </div>
-        <Link
-          href="/events/new"
-          className="inline-flex items-center gap-2 px-4 py-2.5 text-white text-sm font-semibold rounded-xl transition-colors shadow-sm"
-          style={{ background: 'var(--clay)' }}
-        >
-          <Plus size={16} />
-          {t.createEvent}
-        </Link>
+        {eventsReached ? (
+          <button
+            onClick={() => openUpgrade(t.limitEventsReached)}
+            title={t.limitEventsReached}
+            className="inline-flex items-center gap-2 px-4 py-2.5 text-white text-sm font-semibold rounded-xl shadow-sm opacity-60 cursor-not-allowed"
+            style={{ background: 'var(--clay)' }}
+          >
+            <Plus size={16} />
+            {t.createEvent}
+          </button>
+        ) : (
+          <Link
+            href="/events/new"
+            className="inline-flex items-center gap-2 px-4 py-2.5 text-white text-sm font-semibold rounded-xl transition-colors shadow-sm"
+            style={{ background: 'var(--clay)' }}
+          >
+            <Plus size={16} />
+            {t.createEvent}
+          </Link>
+        )}
       </div>
+
+      <TariffWidget />
 
       {(toys?.length ?? 0) > 0 || isLoading ? (
         <div className="mb-6">

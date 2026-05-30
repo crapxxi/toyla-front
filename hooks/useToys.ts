@@ -38,6 +38,7 @@ export function useCreateToy(organizerId: number) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.toys(organizerId) })
+      queryClient.invalidateQueries({ queryKey: queryKeys.tariffMe() })
       toast.success(i18n[lang].eventCreated)
     },
     onError: (err) => handleApiError(err),
@@ -71,6 +72,7 @@ export function useDeleteToy(organizerId: number) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.toys(organizerId) })
+      queryClient.invalidateQueries({ queryKey: queryKeys.tariffMe() })
       toast.success(i18n[lang].eventDeleted)
     },
     onError: (err) => handleApiError(err),

@@ -94,11 +94,11 @@ function Countdown({ targetDate, primary, accent }: { targetDate: string; primar
           <div className="flex flex-col items-center">
             <div
               className="w-[58px] h-[58px] flex items-center justify-center rounded-2xl"
-              style={{ border: `1px solid ${accent}50`, background: `linear-gradient(145deg, ${accent}14, ${accent}04)`, color: primary, fontFamily: 'var(--font-display)', fontSize: '1.25rem', fontWeight: 300 }}
+              style={{ border: `1px solid ${accent}50`, background: `linear-gradient(145deg, ${accent}14, ${accent}04)`, color: primary, fontFamily: 'var(--font-display)', fontSize: '1.5rem', fontWeight: 300 }}
             >
               {pad(v)}
             </div>
-            <span className="mt-1.5" style={{ fontSize: 9, color: accent, letterSpacing: '0.2em', textTransform: 'uppercase', fontFamily: 'var(--font-label)' }}>{label}</span>
+            <span className="mt-1.5" style={{ fontSize: 11, color: accent, letterSpacing: '0.2em', textTransform: 'uppercase', fontFamily: 'var(--font-label)' }}>{label}</span>
           </div>
           {i < 3 && <span className="text-lg -mt-5 opacity-20" style={{ color: accent }}>·</span>}
         </div>
@@ -137,28 +137,28 @@ function DateCircles({ dateInfo, accent, primary }: { dateInfo: ReturnType<typeo
       <div className="flex flex-col items-center gap-2">
         <div style={{ ...circleBase, width: 84, height: 84, border: `1.5px solid ${accent}45`, backgroundColor: `${accent}06` }}>
           <div style={inner()} />
-          <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.1rem', fontWeight: 500, color: primary }}>{dateInfo.time}</span>
+          <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.3rem', fontWeight: 500, color: primary }}>{dateInfo.time}</span>
         </div>
-        <span style={{ fontFamily: 'var(--font-label)', fontSize: 9, color: accent, letterSpacing: '0.28em', textTransform: 'uppercase' }}>уақыт</span>
+        <span style={{ fontFamily: 'var(--font-label)', fontSize: 11, color: accent, letterSpacing: '0.28em', textTransform: 'uppercase' }}>уақыт</span>
       </div>
 
       {/* Day + Month — centre, prominent */}
       <div className="flex flex-col items-center gap-2">
         <div style={{ ...circleBase, width: 110, height: 110, border: `2px solid ${accent}`, background: `radial-gradient(circle, ${accent}18 0%, ${accent}05 100%)`, boxShadow: `0 0 0 6px ${accent}0C, 0 6px 22px ${accent}14`, flexDirection: 'column' }}>
           <div style={inner(7)} />
-          <span style={{ fontFamily: 'var(--font-display)', fontSize: '2.5rem', fontWeight: 300, color: primary, lineHeight: 1 }}>{dateInfo.date}</span>
-          <span style={{ fontFamily: 'var(--font-label)', fontSize: '0.6rem', color: accent, letterSpacing: '0.12em', marginTop: 2 }}>{dateInfo.month}</span>
+          <span style={{ fontFamily: 'var(--font-display)', fontSize: '2.8rem', fontWeight: 300, color: primary, lineHeight: 1 }}>{dateInfo.date}</span>
+          <span style={{ fontFamily: 'var(--font-label)', fontSize: '0.72rem', color: accent, letterSpacing: '0.12em', marginTop: 2 }}>{dateInfo.month}</span>
         </div>
-        <span style={{ fontFamily: 'var(--font-label)', fontSize: 9, color: accent, letterSpacing: '0.28em', textTransform: 'uppercase' }}>күні</span>
+        <span style={{ fontFamily: 'var(--font-label)', fontSize: 11, color: accent, letterSpacing: '0.28em', textTransform: 'uppercase' }}>күні</span>
       </div>
 
       {/* Year only */}
       <div className="flex flex-col items-center gap-2">
         <div style={{ ...circleBase, width: 84, height: 84, border: `1.5px solid ${accent}45`, backgroundColor: `${accent}06` }}>
           <div style={inner()} />
-          <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.05rem', fontWeight: 500, color: primary }}>{dateInfo.year}</span>
+          <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.25rem', fontWeight: 500, color: primary }}>{dateInfo.year}</span>
         </div>
-        <span style={{ fontFamily: 'var(--font-label)', fontSize: 9, color: accent, letterSpacing: '0.28em', textTransform: 'uppercase' }}>жыл</span>
+        <span style={{ fontFamily: 'var(--font-label)', fontSize: 11, color: accent, letterSpacing: '0.28em', textTransform: 'uppercase' }}>жыл</span>
       </div>
     </div>
   )
@@ -189,7 +189,7 @@ export function KazakhTemplate({ event, rsvpToken, onAccept, onDecline, rsvpLoad
         {/* ── "МЕРЕЙ ТОЙҒА ШАҚЫРУ" top label ── */}
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1, duration: 0.9 }}
           className="text-center pt-9 pb-1">
-          <p style={{ fontFamily: 'var(--font-sc)', fontSize: '0.65rem', letterSpacing: '0.55em', color: accent, fontWeight: 400 }}>
+          <p style={{ fontFamily: 'var(--font-sc)', fontSize: '0.74rem', letterSpacing: '0.5em', color: accent, fontWeight: 400 }}>
             МЕРЕЙ ТОЙҒА ШАҚЫРУ
           </p>
         </motion.div>
@@ -234,14 +234,14 @@ export function KazakhTemplate({ event, rsvpToken, onAccept, onDecline, rsvpLoad
           {/* ── Greeting / organizer ── */}
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.52, duration: 0.8 }}
             className="text-center space-y-3">
-            <p style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.45rem, 6.5vw, 2rem)', fontStyle: 'italic', fontWeight: 400, color: primary, lineHeight: 1.3 }}>
+            <p style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.7rem, 7vw, 2.35rem)', fontStyle: 'italic', fontWeight: 400, color: primary, lineHeight: 1.3 }}>
               Құрметті қонақтар!
             </p>
             <Divider accent={accent} />
-            <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.3rem', fontStyle: 'italic', fontWeight: 300, color: primary, opacity: 0.8 }}>
+            <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.55rem', fontStyle: 'italic', fontWeight: 300, color: primary, opacity: 0.8 }}>
               той иесі
             </p>
-            <p style={{ fontFamily: 'var(--font-sc)', fontSize: '1rem', fontWeight: 400, color: primary, letterSpacing: '0.06em' }}>
+            <p style={{ fontFamily: 'var(--font-sc)', fontSize: '1.2rem', fontWeight: 400, color: primary, letterSpacing: '0.06em' }}>
               {event.organizerDisplayName}
             </p>
           </motion.div>
@@ -251,7 +251,7 @@ export function KazakhTemplate({ event, rsvpToken, onAccept, onDecline, rsvpLoad
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.65 }}
               className="space-y-4">
               <Divider accent={accent} full />
-              <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.05rem', fontStyle: 'italic', fontWeight: 300, color: primary, lineHeight: 2, textAlign: 'center', whiteSpace: 'pre-line', opacity: 0.82 }}>
+              <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.25rem', fontStyle: 'italic', fontWeight: 300, color: primary, lineHeight: 1.9, textAlign: 'center', whiteSpace: 'pre-line', opacity: 0.82 }}>
                 {event.description}
               </p>
             </motion.div>
@@ -264,7 +264,7 @@ export function KazakhTemplate({ event, rsvpToken, onAccept, onDecline, rsvpLoad
             <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.72 }}
               className="rounded-3xl py-6 px-4"
               style={{ background: `linear-gradient(150deg, ${accent}08, ${accent}03)`, border: `1px solid ${accent}20` }}>
-              <p className="text-center mb-4" style={{ fontFamily: 'var(--font-sc)', fontSize: '0.65rem', letterSpacing: '0.35em', color: accent }}>
+              <p className="text-center mb-4" style={{ fontFamily: 'var(--font-sc)', fontSize: '0.74rem', letterSpacing: '0.35em', color: accent }}>
                 ДЕЙІН ҚАЛДЫ
               </p>
               <Countdown targetDate={s.countdownTargetDate ?? event.eventDate} primary={primary} accent={accent} />
@@ -282,18 +282,18 @@ export function KazakhTemplate({ event, rsvpToken, onAccept, onDecline, rsvpLoad
               className="rounded-3xl overflow-hidden" style={{ border: `1px solid ${accent}28` }}>
               <div className="flex items-center justify-center gap-2 px-5 py-2.5" style={{ backgroundColor: `${accent}0E` }}>
                 <MapPin size={11} style={{ color: accent }} />
-                <span style={{ fontFamily: 'var(--font-sc)', fontSize: '0.6rem', letterSpacing: '0.45em', color: accent }}>
+                <span style={{ fontFamily: 'var(--font-sc)', fontSize: '0.7rem', letterSpacing: '0.4em', color: accent }}>
                   МЕКЕНЖАЙ
                 </span>
               </div>
               <div className="px-5 py-5 text-center space-y-3" style={{ backgroundColor: `${accent}04` }}>
-                <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.1rem', fontStyle: 'italic', fontWeight: 400, color: primary, lineHeight: 1.45 }}>
+                <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.3rem', fontStyle: 'italic', fontWeight: 400, color: primary, lineHeight: 1.45 }}>
                   {event.locationName}
                 </p>
                 {event.gisLink && (
                   <a href={event.gisLink} target="_blank" rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 rounded-full transition-all hover:opacity-80"
-                    style={{ backgroundColor: accent, color: '#FFF8EC', fontFamily: 'var(--font-sc)', fontSize: '0.65rem', letterSpacing: '0.12em', padding: '0.5rem 1.4rem' }}>
+                    style={{ backgroundColor: accent, color: '#FFF8EC', fontFamily: 'var(--font-sc)', fontSize: '0.8rem', letterSpacing: '0.12em', padding: '0.6rem 1.5rem' }}>
                     <MapPin size={10} /> Картада ашу
                   </a>
                 )}
@@ -309,12 +309,12 @@ export function KazakhTemplate({ event, rsvpToken, onAccept, onDecline, rsvpLoad
               <div className="flex flex-col gap-3 pt-1">
                 <button onClick={onAccept} disabled={rsvpLoading}
                   className="w-full py-4 rounded-2xl transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-50"
-                  style={{ backgroundColor: primary, color: '#F8F3E8', fontFamily: 'var(--font-sc)', fontSize: '0.75rem', letterSpacing: '0.18em' }}>
+                  style={{ backgroundColor: primary, color: '#F8F3E8', fontFamily: 'var(--font-sc)', fontSize: '0.9rem', letterSpacing: '0.16em' }}>
                   {bi.acceptFull}
                 </button>
                 <button onClick={onDecline} disabled={rsvpLoading}
                   className="w-full py-4 rounded-2xl border transition-all hover:opacity-80 disabled:opacity-50"
-                  style={{ borderColor: `${accent}45`, color: primary, backgroundColor: `${accent}06`, fontFamily: 'var(--font-sc)', fontSize: '0.75rem', letterSpacing: '0.18em' }}>
+                  style={{ borderColor: `${accent}45`, color: primary, backgroundColor: `${accent}06`, fontFamily: 'var(--font-sc)', fontSize: '0.9rem', letterSpacing: '0.16em' }}>
                   {bi.decline}
                 </button>
               </div>
@@ -328,7 +328,7 @@ export function KazakhTemplate({ event, rsvpToken, onAccept, onDecline, rsvpLoad
               <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ type: 'spring', damping: 15 }}
                 className="rounded-3xl p-7 text-center" style={{ backgroundColor: `${accent}0A`, border: `1px solid ${accent}25` }}>
                 <div className="text-4xl mb-3">🎉</div>
-                <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.15rem', fontStyle: 'italic', color: primary }}>{bi.waitingCelebration}</p>
+                <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.35rem', fontStyle: 'italic', color: primary }}>{bi.waitingCelebration}</p>
               </motion.div>
             )}
 
@@ -336,11 +336,21 @@ export function KazakhTemplate({ event, rsvpToken, onAccept, onDecline, rsvpLoad
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                 className="rounded-3xl p-7 text-center" style={{ backgroundColor: `${accent}05` }}>
                 <div className="text-4xl mb-3">💙</div>
-                <p style={{ fontFamily: 'var(--font-display)', fontSize: '1rem', fontStyle: 'italic', color: primary, opacity: 0.75 }}>{bi.declinedMsg}</p>
+                <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.18rem', fontStyle: 'italic', color: primary, opacity: 0.75 }}>{bi.declinedMsg}</p>
               </motion.div>
             )}
           </motion.div>
 
+          {/* ── Closing invitation ── */}
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.1, duration: 0.9 }}
+            className="text-center space-y-4 pt-2">
+            <Divider accent={accent} />
+            <p style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.45rem, 6.2vw, 1.9rem)', fontStyle: 'italic', fontWeight: 400, color: primary, lineHeight: 1.45 }}>
+              Келіңіздер,<br />біз сіздерді күтеміз!
+            </p>
+          </motion.div>
+
+          {event.showWatermark !== false && (
           <div className="flex justify-center pt-2 pb-6">
             <a href="https://toyla.app" target="_blank" rel="noopener noreferrer"
               className="flex items-center gap-1.5 opacity-30 hover:opacity-60 transition-opacity duration-300 select-none"
@@ -362,6 +372,7 @@ export function KazakhTemplate({ event, rsvpToken, onAccept, onDecline, rsvpLoad
               </span>
             </a>
           </div>
+          )}
         </div>
       </div>
 

@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 import { api } from '@/lib/api'
 import { handleApiError } from '@/lib/handleApiError'
-import { AdminUserResponse, Role, queryKeys } from '@/types'
+import { AdminUserResponse, Role, TariffPlan, queryKeys } from '@/types'
 import { useLangStore } from '@/store/lang.store'
 import i18n from '@/lib/i18n'
 
@@ -61,6 +61,24 @@ export function useSetRole() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.adminUsers() })
       toast.success(i18n[lang].roleUpdated)
+    },
+    onError: (err) => handleApiError(err),
+  })
+}
+
+export function useSetTariff() {
+  const queryClient = useQueryClient()
+  const { lang } = useLangStore()
+  return useMutation({
+    mutationFn: async ({ userId, plan, expiresAt }: { userId: number; plan: TariffPlan; expiresAt: string | null }) => {
+      // FREE never carries an expiry — backend nulls it anyway.
+      const body = { plan, expiresAt: plan === 'FREE' ? null : expiresAt }
+      const { data } = await api.patch<AdminUserResponse>(`/api/v1/admin/users/${userId}/tariff`, body)
+      return data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.adminUsers() })
+      toast.success(i18n[lang].tariffUpdated)
     },
     onError: (err) => handleApiError(err),
   })

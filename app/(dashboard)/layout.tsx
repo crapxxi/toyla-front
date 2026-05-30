@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Clock } from 'lucide-react'
 import { Sidebar } from '@/components/dashboard/Sidebar'
+import { UpgradeModal } from '@/components/shared/UpgradeModal'
 import { useAuthStore } from '@/store/auth.store'
 import { useLangStore } from '@/store/lang.store'
 import { useProfile } from '@/hooks/useProfile'
@@ -62,6 +63,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           {children}
         </div>
       </main>
+      <UpgradeModal />
     </div>
   )
 }

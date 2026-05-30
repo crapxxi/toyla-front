@@ -4,10 +4,61 @@ import { ShieldCheck, ShieldOff, Trash2, CheckCircle2, XCircle, Clock } from 'lu
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useProfile } from '@/hooks/useProfile'
-import { useAdminUsers, useEnableUser, useDisableUser, useSetRole, useDeleteAdminUser } from '@/hooks/useAdmin'
+import { useAdminUsers, useEnableUser, useDisableUser, useSetRole, useDeleteAdminUser, useSetTariff } from '@/hooks/useAdmin'
 import { useLangStore } from '@/store/lang.store'
+import { daysUntil } from '@/lib/formatters'
 import i18n from '@/lib/i18n'
-import { AdminUserResponse, Role } from '@/types'
+import { AdminUserResponse, Role, TariffPlan } from '@/types'
+
+const TARIFF_PLANS: TariffPlan[] = ['FREE', 'DARA', 'TOY']
+
+function TariffCells({ user }: { user: AdminUserResponse }) {
+  const { lang } = useLangStore()
+  const t = i18n[lang]
+  const setTariff = useSetTariff()
+  const isFree = user.tariffPlan === 'FREE'
+
+  const commit = (plan: TariffPlan, expiresLocal: string) => {
+    const expiresAt =
+      plan === 'FREE' || !expiresLocal
+        ? null
+        : expiresLocal.length === 16 ? `${expiresLocal}:00` : expiresLocal
+    setTariff.mutate({ userId: user.id, plan, expiresAt })
+  }
+
+  const days = user.tariffExpiresAt ? daysUntil(user.tariffExpiresAt) : null
+  const expiringSoon = days !== null && days < 7
+  const foreverNonFree = !isFree && !user.tariffExpiresAt
+
+  return (
+    <>
+      <td className="py-3 px-4">
+        <select
+          value={user.tariffPlan}
+          disabled={setTariff.isPending}
+          onChange={(e) => commit(e.target.value as TariffPlan, user.tariffExpiresAt?.slice(0, 16) ?? '')}
+          className="text-xs font-medium rounded-lg border px-2 py-1.5 bg-white disabled:opacity-50"
+          style={{ borderColor: 'var(--line)', color: 'var(--ink)' }}
+        >
+          {TARIFF_PLANS.map((p) => <option key={p} value={p}>{p}</option>)}
+        </select>
+      </td>
+      <td className="py-3 px-4">
+        <div className="flex flex-col gap-0.5">
+          <input
+            type="datetime-local"
+            value={user.tariffExpiresAt?.slice(0, 16) ?? ''}
+            disabled={isFree || setTariff.isPending}
+            onChange={(e) => commit(user.tariffPlan, e.target.value)}
+            className={`text-xs rounded-lg border px-2 py-1.5 bg-white disabled:opacity-40 ${expiringSoon ? 'border-red-300 text-red-600' : ''}`}
+            style={expiringSoon ? undefined : { borderColor: 'var(--line)', color: 'var(--ink)' }}
+          />
+          {foreverNonFree && <span className="text-[10px] text-green-600">{t.foreverLabel}</span>}
+        </div>
+      </td>
+    </>
+  )
+}
 
 function formatPhone(phone: string): string {
   const d = phone.replace(/\D/g, '')
@@ -62,6 +113,7 @@ function UserRow({ user, currentUserId }: { user: AdminUserResponse; currentUser
         )}
       </td>
       <td className="py-3 px-4 text-sm" style={{ color: 'var(--ink-soft)' }}>{user.toysCount}</td>
+      <TariffCells user={user} />
       <td className="py-3 px-4">
         <div className="flex items-center gap-2">
           {!user.enabled ? (
@@ -152,7 +204,7 @@ export default function AdminUsersPage() {
             <table className="w-full">
               <thead>
                 <tr style={{ borderBottom: '1px solid var(--line)' }}>
-                  {[t.userCol, t.roleCol, t.statusCol, t.toysCol, t.actionsCol].map((h) => (
+                  {[t.userCol, t.roleCol, t.statusCol, t.toysCol, t.tariffCol, t.expiresCol, t.actionsCol].map((h) => (
                     <th key={h} className="text-left text-xs font-semibold px-4 py-2.5" style={{ color: 'var(--ink-soft)' }}>{h}</th>
                   ))}
                 </tr>
@@ -184,7 +236,7 @@ export default function AdminUsersPage() {
             <table className="w-full">
               <thead>
                 <tr style={{ borderBottom: '1px solid var(--line)' }}>
-                  {[t.userCol, t.roleCol, t.statusCol, t.toysCol, t.actionsCol].map((h) => (
+                  {[t.userCol, t.roleCol, t.statusCol, t.toysCol, t.tariffCol, t.expiresCol, t.actionsCol].map((h) => (
                     <th key={h} className="text-left text-xs font-semibold px-4 py-2.5" style={{ color: 'var(--ink-soft)' }}>{h}</th>
                   ))}
                 </tr>

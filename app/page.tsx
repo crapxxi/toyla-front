@@ -27,6 +27,7 @@ const DEMO_EVENT: PublicToyResponse = {
   organizerDisplayName: 'Семья Абылай',
   images: [],
   musicUrl: null,
+  showWatermark: true,
 }
 
 // ── Reusable buttons ──────────────────────────────────────────────────────────

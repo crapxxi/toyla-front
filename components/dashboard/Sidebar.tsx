@@ -2,7 +2,7 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { LayoutDashboard, Settings, LogOut, Menu, X, ShieldCheck } from 'lucide-react'
+import { LayoutDashboard, Settings, LogOut, Menu, X, ShieldCheck, Crown } from 'lucide-react'
 import { useAuthStore } from '@/store/auth.store'
 import { useUIStore } from '@/store/ui.store'
 import { useLangStore } from '@/store/lang.store'
@@ -42,6 +42,7 @@ export function Sidebar() {
 
   const navItems = [
     { href: '/dashboard', label: t.home, icon: LayoutDashboard },
+    { href: '/pricing', label: t.pricingNav, icon: Crown },
     { href: '/settings', label: t.settings, icon: Settings },
     ...(isAdmin
       ? [{ href: '/admin/users', label: t.users, icon: ShieldCheck, badge: pendingCount }]

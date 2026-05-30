@@ -1,7 +1,12 @@
 import axios from 'axios'
 import { useAuthStore } from '@/store/auth.store'
+import { useUpgradeStore } from '@/store/upgrade.store'
 
 export const api = axios.create({ baseURL: process.env.NEXT_PUBLIC_API_URL })
+
+/** A 403 whose message mentions the tariff means a plan limit was hit. */
+export const isTariffForbidden = (status?: number, message?: unknown) =>
+  status === 403 && typeof message === 'string' && /тариф|tariff/i.test(message)
 
 api.interceptors.request.use((config) => {
   const token = useAuthStore.getState().token
@@ -27,9 +32,15 @@ async function logout401() {
 api.interceptors.response.use(
   (res) => res,
   (err) => {
-    if (err.response?.status === 401 && typeof window !== 'undefined') {
+    const status = err.response?.status
+    if (status === 401 && typeof window !== 'undefined') {
       logout401()
       return new Promise(() => {})
+    }
+    // Even with UI gating, the backend is the source of truth — surface the
+    // upgrade modal whenever it rejects an action because of the tariff.
+    if (typeof window !== 'undefined' && isTariffForbidden(status, err.response?.data?.error)) {
+      useUpgradeStore.getState().openUpgrade(err.response.data.error)
     }
     return Promise.reject(err)
   }

@@ -1,6 +1,7 @@
 import axios from 'axios'
 import toast from 'react-hot-toast'
 import { useAuthStore } from '@/store/auth.store'
+import { isTariffForbidden } from '@/lib/api'
 
 async function logout401() {
   useAuthStore.getState().clearAuth()
@@ -20,7 +21,11 @@ export function handleApiError(err: unknown) {
     logout401()
     return
   }
-  if (status === 403) { toast.error('Доступ запрещён'); return }
+  if (status === 403) {
+    // Tariff-related 403s are handled by the global upgrade modal — don't double up.
+    if (!isTariffForbidden(status, data?.error)) toast.error(data?.error ?? 'Доступ запрещён')
+    return
+  }
   if (status === 404) { toast.error('Не найдено'); return }
   if (status === 409) { toast.error(data?.error ?? 'Конфликт'); return }
   if (status === 429) {
