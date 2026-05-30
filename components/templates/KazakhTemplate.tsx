@@ -238,11 +238,11 @@ export function KazakhTemplate({ event, rsvpToken, onAccept, onDecline, rsvpLoad
               Құрметті қонақтар!
             </p>
             <Divider accent={accent} />
+            <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.3rem', fontStyle: 'italic', fontWeight: 300, color: primary, opacity: 0.8 }}>
+              той иесі
+            </p>
             <p style={{ fontFamily: 'var(--font-sc)', fontSize: '1rem', fontWeight: 400, color: primary, letterSpacing: '0.06em' }}>
               {event.organizerDisplayName}
-            </p>
-            <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.3rem', fontStyle: 'italic', fontWeight: 300, color: primary, opacity: 0.8 }}>
-              сізді шақырады
             </p>
           </motion.div>
 
