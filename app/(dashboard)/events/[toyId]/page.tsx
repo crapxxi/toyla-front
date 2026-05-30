@@ -75,7 +75,7 @@ export default function EventPage() {
     await updateToy.mutateAsync({
       title:         values.title,
       description:   values.description,
-      eventDate:     new Date(values.eventDate).toISOString().replace('Z', '').slice(0, 19),
+      eventDate:     values.eventDate.length === 16 ? values.eventDate + ':00' : values.eventDate,
       locationName:  values.locationName  || undefined,
       gisLink:       values.gisLink       || undefined,
       organizerName: values.organizerName || undefined,
