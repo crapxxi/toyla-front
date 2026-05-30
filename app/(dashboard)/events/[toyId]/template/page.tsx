@@ -1,17 +1,16 @@
 'use client'
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useRef } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
-import { ChevronLeft, Save, Monitor, Music2, Timer, Eye } from 'lucide-react'
-import { Input } from '@/components/ui/input'
+import { ChevronLeft, Save, Monitor, Music2, Timer, Eye, Upload, Trash2, ImageIcon, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Separator } from '@/components/ui/separator'
-import { useGetToy } from '@/hooks/useToys'
+import { useGetToy, useUploadMusic, useDeleteMusic, useUploadImage, useDeleteImage } from '@/hooks/useToys'
 import { useTemplateSettings } from '@/hooks/useTemplateSettings'
 import { KazakhTemplate } from '@/components/templates/KazakhTemplate'
 import { PublicToyResponse } from '@/types'
-
+import Image from 'next/image'
 
 function Toggle({ label, sublabel, checked, onChange }: { label: string; sublabel?: string; checked: boolean; onChange: (v: boolean) => void }) {
   return (
@@ -44,11 +43,18 @@ function SectionCard({ icon: Icon, title, children }: { icon: React.ElementType;
   )
 }
 
-
 export default function TemplatePage() {
   const { toyId } = useParams<{ toyId: string }>()
   const { data: toy, isLoading } = useGetToy(toyId)
   const [showPreview, setShowPreview] = useState(false)
+
+  const uploadMusic = useUploadMusic(toyId)
+  const deleteMusic = useDeleteMusic(toyId)
+  const uploadImage = useUploadImage(toyId)
+  const deleteImage = useDeleteImage(toyId)
+
+  const musicInputRef = useRef<HTMLInputElement>(null)
+  const imageInputRef = useRef<HTMLInputElement>(null)
 
   const initialSettings = useMemo(() => toy?.templateSettings ?? {}, [toy])
   const { settings, updateSettings, saveSettings, isSaving } = useTemplateSettings(
@@ -77,9 +83,32 @@ export default function TemplatePage() {
     templateId: toy.templateId,
     templateSettings: settings,
     organizerDisplayName: 'Организатор',
+    images: toy.images ?? [],
+    musicUrl: toy.musicUrl,
   }
 
-  const TemplateComponent = KazakhTemplate
+  const handleMusicUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const url = await uploadMusic.mutateAsync(file)
+    updateSettings({ musicUrl: url })
+    if (musicInputRef.current) musicInputRef.current.value = ''
+  }
+
+  const handleMusicDelete = async () => {
+    await deleteMusic.mutateAsync()
+    updateSettings({ musicUrl: undefined })
+  }
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    await uploadImage.mutateAsync(file)
+    if (imageInputRef.current) imageInputRef.current.value = ''
+  }
+
+  const currentMusicUrl = toy.musicUrl ?? settings.musicUrl
+  const images = toy.images ?? []
 
   return (
     <div>
@@ -118,18 +147,97 @@ export default function TemplatePage() {
       <div className={`grid gap-5 ${showPreview ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1 max-w-xl'}`}>
         {/* Settings */}
         <div className="space-y-4">
+
+          {/* Images */}
+          <SectionCard icon={ImageIcon} title="Фото мероприятия">
+            <p className="text-xs text-gray-400 -mt-2">Заменяет декоративный рисунок в шаблоне. Макс. 10 фото.</p>
+
+            {images.length > 0 && (
+              <div className="grid grid-cols-3 gap-2">
+                {images.map((img) => (
+                  <div key={img.id} className="relative group rounded-xl overflow-hidden aspect-square bg-gray-50">
+                    <Image src={img.url} alt="" fill className="object-cover" sizes="120px" />
+                    <button
+                      onClick={() => deleteImage.mutate(img.id)}
+                      disabled={deleteImage.isPending}
+                      className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100"
+                    >
+                      <div className="w-7 h-7 rounded-full bg-white/90 flex items-center justify-center">
+                        <X size={13} className="text-red-500" />
+                      </div>
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {images.length < 10 && (
+              <>
+                <input
+                  ref={imageInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  className="hidden"
+                  onChange={handleImageUpload}
+                />
+                <button
+                  onClick={() => imageInputRef.current?.click()}
+                  disabled={uploadImage.isPending}
+                  className="w-full border-2 border-dashed border-gray-200 rounded-xl py-4 flex flex-col items-center gap-1.5 text-gray-400 hover:border-[#8B5CF6] hover:text-[#8B5CF6] transition-colors disabled:opacity-50"
+                >
+                  <Upload size={18} />
+                  <span className="text-xs font-medium">
+                    {uploadImage.isPending ? 'Загрузка...' : 'Загрузить фото'}
+                  </span>
+                  <span className="text-[10px]">JPG, PNG, WEBP, GIF · до 10 МБ</span>
+                </button>
+              </>
+            )}
+          </SectionCard>
+
           {/* Music */}
           <SectionCard icon={Music2} title="Музыка">
-            <div>
-              <label className="block text-sm text-gray-700 mb-1.5">Ссылка на MP3</label>
-              <Input
-                value={settings.musicUrl ?? ''}
-                onChange={(e) => updateSettings({ musicUrl: e.target.value })}
-                placeholder="https://example.com/music.mp3"
-                className="rounded-xl text-sm"
-              />
-              <p className="text-xs text-gray-400 mt-1.5">Прямая ссылка на аудиофайл</p>
-            </div>
+            {currentMusicUrl ? (
+              <div className="flex items-center gap-3 bg-violet-50 rounded-xl px-4 py-3">
+                <div className="w-8 h-8 rounded-lg bg-[#8B5CF6] flex items-center justify-center flex-shrink-0">
+                  <Music2 size={14} className="text-white" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-gray-900 truncate">
+                    {currentMusicUrl.split('/').pop() ?? 'Аудиофайл'}
+                  </p>
+                  <p className="text-xs text-gray-400">Загружен</p>
+                </div>
+                <button
+                  onClick={handleMusicDelete}
+                  disabled={deleteMusic.isPending}
+                  className="w-7 h-7 rounded-lg flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors flex-shrink-0"
+                >
+                  <Trash2 size={14} />
+                </button>
+              </div>
+            ) : (
+              <>
+                <input
+                  ref={musicInputRef}
+                  type="file"
+                  accept="audio/mpeg,audio/wav,audio/ogg,audio/mp4"
+                  className="hidden"
+                  onChange={handleMusicUpload}
+                />
+                <button
+                  onClick={() => musicInputRef.current?.click()}
+                  disabled={uploadMusic.isPending}
+                  className="w-full border-2 border-dashed border-gray-200 rounded-xl py-4 flex flex-col items-center gap-1.5 text-gray-400 hover:border-[#8B5CF6] hover:text-[#8B5CF6] transition-colors disabled:opacity-50"
+                >
+                  <Upload size={18} />
+                  <span className="text-xs font-medium">
+                    {uploadMusic.isPending ? 'Загрузка...' : 'Загрузить музыку'}
+                  </span>
+                  <span className="text-[10px]">MP3, WAV, OGG, M4A · до 20 МБ</span>
+                </button>
+              </>
+            )}
             <Separator />
             <Toggle
               label="Автовоспроизведение"
@@ -179,11 +287,11 @@ export default function TemplatePage() {
                 <Separator />
                 <div>
                   <label className="block text-sm text-gray-700 mb-1.5">Дата и время события</label>
-                  <Input
+                  <input
                     type="datetime-local"
                     value={settings.countdownTargetDate?.slice(0, 16) ?? toy.eventDate.slice(0, 16)}
                     onChange={(e) => updateSettings({ countdownTargetDate: e.target.value + ':00' })}
-                    className="rounded-xl text-sm"
+                    className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#8B5CF6]/30"
                   />
                 </div>
               </>
@@ -208,17 +316,11 @@ export default function TemplatePage() {
                   </div>
                 </div>
               </div>
-              {/*
-                transform: translateZ(0) here is critical:
-                it creates a new containing block for position:fixed children,
-                preventing the music player and other fixed elements from
-                escaping the preview box and overlapping settings controls.
-              */}
               <div
                 className="overflow-auto"
                 style={{ maxHeight: '70vh', transform: 'translateZ(0)', position: 'relative' }}
               >
-                <TemplateComponent event={mockEvent} />
+                <KazakhTemplate event={mockEvent} />
               </div>
             </div>
           </div>

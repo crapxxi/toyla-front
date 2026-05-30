@@ -8,6 +8,35 @@ import { GuestRegisterForm } from './GuestRegisterForm'
 import { bi } from './strings'
 import { BackgroundMusicPlayer } from '@/components/shared/BackgroundMusicPlayer'
 
+function BotanicalPlaceholder({ accent }: { accent: string }) {
+  return (
+    <div className="w-full flex items-center justify-center py-4" style={{ opacity: 0.35 }}>
+      <svg viewBox="0 0 300 160" fill="none" className="w-full max-w-xs" style={{ maxHeight: 160 }}>
+        <path d="M150 158 Q112 130 72 90"  stroke={accent} strokeWidth="1.2" strokeLinecap="round"/>
+        <path d="M150 158 Q188 130 228 90" stroke={accent} strokeWidth="1.2" strokeLinecap="round"/>
+        <path d="M150 158 Q98 118 54 70"   stroke={accent} strokeWidth="0.9" strokeLinecap="round"/>
+        <path d="M150 158 Q202 118 246 70"  stroke={accent} strokeWidth="0.9" strokeLinecap="round"/>
+        <path d="M150 158 Q130 100 110 50"  stroke={accent} strokeWidth="0.7" strokeLinecap="round"/>
+        <path d="M150 158 Q170 100 190 50"  stroke={accent} strokeWidth="0.7" strokeLinecap="round"/>
+        <ellipse cx="108" cy="98"  rx="18" ry="6"  transform="rotate(-38 108 98)"  fill={accent} opacity="0.55"/>
+        <ellipse cx="84"  cy="76"  rx="14" ry="4.5" transform="rotate(-52 84  76)"  fill={accent} opacity="0.45"/>
+        <ellipse cx="60"  cy="54"  rx="10" ry="3.5" transform="rotate(-60 60  54)"  fill={accent} opacity="0.35"/>
+        <ellipse cx="192" cy="98"  rx="18" ry="6"  transform="rotate( 38 192 98)"  fill={accent} opacity="0.55"/>
+        <ellipse cx="216" cy="76"  rx="14" ry="4.5" transform="rotate( 52 216 76)"  fill={accent} opacity="0.45"/>
+        <ellipse cx="240" cy="54"  rx="10" ry="3.5" transform="rotate( 60 240 54)"  fill={accent} opacity="0.35"/>
+        <ellipse cx="130" cy="72"  rx="12" ry="4"  transform="rotate(-20 130 72)"  fill={accent} opacity="0.4"/>
+        <ellipse cx="170" cy="72"  rx="12" ry="4"  transform="rotate( 20 170 72)"  fill={accent} opacity="0.4"/>
+        <circle cx="84"  cy="72" r="3.5" fill={accent} opacity="0.6"/>
+        <circle cx="216" cy="72" r="3.5" fill={accent} opacity="0.6"/>
+        <circle cx="60"  cy="50" r="2.5" fill={accent} opacity="0.5"/>
+        <circle cx="240" cy="50" r="2.5" fill={accent} opacity="0.5"/>
+        <circle cx="150" cy="156" r="4" fill={accent} opacity="0.75"/>
+        <circle cx="150" cy="156" r="2" fill={accent} opacity="0.9"/>
+      </svg>
+    </div>
+  )
+}
+
 export interface TemplateProps {
   event: PublicToyResponse
   rsvpToken?: string
@@ -165,17 +194,21 @@ export function KazakhTemplate({ event, rsvpToken, onAccept, onDecline, rsvpLoad
           </p>
         </motion.div>
 
-        {/* ── Wreath image — clean, no overlay ── */}
+        {/* ── Cover image or botanical placeholder ── */}
         <motion.div initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.18, duration: 1.1 }}
           className="px-6">
-          <Image
-            src="/shablon-img.png"
-            alt="Венок"
-            width={700}
-            height={700}
-            style={{ width: '100%', height: 'auto', display: 'block' }}
-            priority
-          />
+          {event.images && event.images.length > 0 ? (
+            <Image
+              src={event.images[0].url}
+              alt={event.title}
+              width={700}
+              height={700}
+              style={{ width: '100%', height: 'auto', display: 'block', borderRadius: 12 }}
+              priority
+            />
+          ) : (
+            <BotanicalPlaceholder accent={accent} />
+          )}
         </motion.div>
 
         {/* ── Event title — standing alone, beautiful ── */}
@@ -315,8 +348,8 @@ export function KazakhTemplate({ event, rsvpToken, onAccept, onDecline, rsvpLoad
         </div>
       </div>
 
-      {s.musicUrl && (
-        <BackgroundMusicPlayer musicUrl={s.musicUrl} autoplay={s.musicAutoplay} loop={s.musicLoop} volume={s.musicVolume} />
+      {(s.musicUrl ?? event.musicUrl) && (
+        <BackgroundMusicPlayer musicUrl={(s.musicUrl ?? event.musicUrl)!} autoplay={s.musicAutoplay} loop={s.musicLoop} volume={s.musicVolume} />
       )}
     </div>
   )

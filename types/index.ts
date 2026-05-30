@@ -36,6 +36,11 @@ export interface TemplateSettings {
   countdownPosition?: 'top' | 'bottom' | 'floating'
 }
 
+export interface ToyImageResponse {
+  id: number
+  url: string
+}
+
 export interface ToyResponse {
   id: string
   title: string
@@ -47,6 +52,8 @@ export interface ToyResponse {
   language: MessageLanguage
   templateSettings: TemplateSettings | null
   organizerName: string
+  images: ToyImageResponse[]
+  musicUrl: string | null
 }
 
 export interface GuestResponse {
@@ -85,6 +92,8 @@ export interface PublicToyResponse {
   templateId: EventTemplate
   templateSettings: TemplateSettings | null
   organizerDisplayName: string
+  images: ToyImageResponse[]
+  musicUrl: string | null
 }
 
 export interface ToyRequest {

@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 import { api } from '@/lib/api'
 import { handleApiError } from '@/lib/handleApiError'
-import { ToyResponse, ToyRequest, TemplateSettings, queryKeys } from '@/types'
+import { ToyResponse, ToyRequest, TemplateSettings, ToyImageResponse, queryKeys } from '@/types'
 
 export function useGetToys(organizerId: number) {
   return useQuery({
@@ -82,6 +82,72 @@ export function usePatchTemplate(toyId: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.toy(toyId) })
       toast.success('Шаблон сохранён')
+    },
+    onError: (err) => handleApiError(err),
+  })
+}
+
+export function useUploadMusic(toyId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData()
+      formData.append('file', file)
+      const { data } = await api.post<string>(`/api/v1/toys/${toyId}/music`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      })
+      return data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.toy(toyId) })
+      toast.success('Музыка загружена')
+    },
+    onError: (err) => handleApiError(err),
+  })
+}
+
+export function useDeleteMusic(toyId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async () => {
+      await api.delete(`/api/v1/toys/${toyId}/music`)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.toy(toyId) })
+      toast.success('Музыка удалена')
+    },
+    onError: (err) => handleApiError(err),
+  })
+}
+
+export function useUploadImage(toyId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData()
+      formData.append('file', file)
+      const { data } = await api.post<ToyImageResponse>(`/api/v1/toys/${toyId}/images`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      })
+      return data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.toy(toyId) })
+      toast.success('Изображение загружено')
+    },
+    onError: (err) => handleApiError(err),
+  })
+}
+
+export function useDeleteImage(toyId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (imageId: number) => {
+      await api.delete(`/api/v1/toys/${toyId}/images/${imageId}`)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.toy(toyId) })
+      toast.success('Изображение удалено')
     },
     onError: (err) => handleApiError(err),
   })

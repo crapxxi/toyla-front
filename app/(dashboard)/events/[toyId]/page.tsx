@@ -2,14 +2,21 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod/v4'
 import {
   Users, MapPin, Calendar, ChevronRight, Trash2,
-  Copy, ExternalLink, Settings, LayoutGrid, User, Send, Bell, AlarmClock,
+  Copy, ExternalLink, Settings, LayoutGrid, User, Send, Bell, AlarmClock, Pencil,
 } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
-import { useGetToy, useDeleteToy } from '@/hooks/useToys'
+import { useGetToy, useDeleteToy, useUpdateToy } from '@/hooks/useToys'
 import { useGetGuests } from '@/hooks/useGuests'
 import { useSendInvites, useSendReminders, useSendSeating } from '@/hooks/useNotifications'
 import { useAuthStore } from '@/store/auth.store'
@@ -21,6 +28,16 @@ const TEMPLATE_LABELS: Record<string, string> = {
   ROMANTIC: 'Романтичный', MODERN: 'Современный',
 }
 
+const editSchema = z.object({
+  title:         z.string().min(2, 'Минимум 2 символа').max(100),
+  description:   z.string().min(10, 'Минимум 10 символов').max(1000),
+  eventDate:     z.string().min(1, 'Укажите дату'),
+  locationName:  z.string().optional(),
+  gisLink:       z.string().url('Введите корректную ссылку').optional().or(z.literal('')),
+  organizerName: z.string().max(128).optional(),
+})
+type EditForm = z.infer<typeof editSchema>
+
 export default function EventPage() {
   const { toyId } = useParams<{ toyId: string }>()
   const router = useRouter()
@@ -28,10 +45,44 @@ export default function EventPage() {
   const { data: toy, isLoading } = useGetToy(toyId)
   const { data: guests } = useGetGuests(toyId)
   const deleteToy = useDeleteToy(userId ?? 0)
+  const updateToy = useUpdateToy(toyId, userId ?? 0)
   const sendInvites = useSendInvites(toyId)
   const sendReminders = useSendReminders(toyId)
   const sendSeating = useSendSeating(toyId)
   const [showDelete, setShowDelete] = useState(false)
+  const [showEdit, setShowEdit] = useState(false)
+
+  const form = useForm<EditForm>({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(editSchema) as any,
+    defaultValues: { title: '', description: '', eventDate: '', locationName: '', gisLink: '', organizerName: '' },
+  })
+
+  const openEdit = () => {
+    if (!toy) return
+    form.reset({
+      title:         toy.title,
+      description:   toy.description,
+      eventDate:     toy.eventDate.slice(0, 16),
+      locationName:  toy.locationName ?? '',
+      gisLink:       toy.gisLink ?? '',
+      organizerName: toy.organizerName ?? '',
+    })
+    setShowEdit(true)
+  }
+
+  const handleEdit = form.handleSubmit(async (values) => {
+    await updateToy.mutateAsync({
+      title:         values.title,
+      description:   values.description,
+      eventDate:     new Date(values.eventDate).toISOString().replace('Z', '').slice(0, 19),
+      locationName:  values.locationName  || undefined,
+      gisLink:       values.gisLink       || undefined,
+      organizerName: values.organizerName || undefined,
+      templateId:    toy!.templateId,
+    })
+    setShowEdit(false)
+  })
 
   if (isLoading) {
     return (
@@ -91,6 +142,13 @@ export default function EventPage() {
           </div>
         </div>
         <div className="flex gap-2">
+          <button
+            onClick={openEdit}
+            className="flex items-center gap-2 px-3 py-2 rounded-xl border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition-colors"
+          >
+            <Pencil size={14} />
+            <span className="hidden sm:block">Изменить</span>
+          </button>
           <button
             onClick={handleCopyLink}
             className="flex items-center gap-2 px-3 py-2 rounded-xl border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition-colors"
@@ -247,6 +305,78 @@ export default function EventPage() {
           )
         })}
       </div>
+
+      {/* Edit sheet */}
+      <Sheet open={showEdit} onOpenChange={(open) => { if (!open) setShowEdit(false) }}>
+        <SheetContent className="sm:max-w-md overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-xl bg-[#EDE9FE] flex items-center justify-center">
+                <Pencil size={15} className="text-[#8B5CF6]" />
+              </div>
+              Изменить мероприятие
+            </SheetTitle>
+          </SheetHeader>
+
+          <div className="mt-6 space-y-4">
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1.5">Название *</label>
+              <Input {...form.register('title')} className="rounded-xl h-11" />
+              {form.formState.errors.title && (
+                <p className="text-xs text-red-500 mt-1">{form.formState.errors.title.message}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1.5">Текст приглашения *</label>
+              <Textarea {...form.register('description')} rows={4} className="rounded-xl resize-none" />
+              {form.formState.errors.description && (
+                <p className="text-xs text-red-500 mt-1">{form.formState.errors.description.message}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1.5">Дата и время *</label>
+              <Input type="datetime-local" {...form.register('eventDate')} className="rounded-xl h-11" />
+              {form.formState.errors.eventDate && (
+                <p className="text-xs text-red-500 mt-1">{form.formState.errors.eventDate.message}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1.5">Место проведения</label>
+              <Input {...form.register('locationName')} className="rounded-xl h-11" />
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1.5">Ссылка на 2GIS / карту</label>
+              <Input {...form.register('gisLink')} placeholder="https://2gis.kz/..." className="rounded-xl h-11" />
+              {form.formState.errors.gisLink && (
+                <p className="text-xs text-red-500 mt-1">{form.formState.errors.gisLink.message}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1.5">Организатор / Шақырушы</label>
+              <Input {...form.register('organizerName')} placeholder="Семья Абылай" className="rounded-xl h-11" />
+              <p className="text-xs text-gray-400 mt-1">Отображается на странице приглашения</p>
+            </div>
+
+            <div className="flex gap-3 pt-2">
+              <Button variant="outline" onClick={() => setShowEdit(false)} className="flex-1 rounded-xl">
+                Отмена
+              </Button>
+              <Button
+                onClick={handleEdit}
+                disabled={updateToy.isPending}
+                className="flex-1 bg-[#8B5CF6] hover:bg-[#7C3AED] rounded-xl"
+              >
+                {updateToy.isPending ? 'Сохранение...' : 'Сохранить'}
+              </Button>
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
 
       <ConfirmDialog
         open={showDelete}

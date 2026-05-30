@@ -19,7 +19,7 @@ import { formatPhone } from '@/lib/formatters'
 
 const guestSchema = z.object({
   firstName: z.string().min(1, 'Введите имя'),
-  lastName: z.string().min(1, 'Введите фамилию'),
+  lastName: z.string().optional(),
   phoneNumber: z.string().min(11, 'Введите номер полностью'),
   partySize: z.coerce.number().min(1).max(20),
 })
@@ -50,7 +50,6 @@ export default function GuestsPage() {
   const [deleteId, setDeleteId] = useState<number | null>(null)
   const [search, setSearch] = useState('')
 
-  // Phone field — separate from react-hook-form to handle formatting
   const [phoneDisplay, setPhoneDisplay] = useState('+7')
   const [phoneRaw, setPhoneRaw] = useState('')
   const [partySize, setPartySize] = useState(1)
@@ -87,7 +86,7 @@ export default function GuestsPage() {
     const data = rawData as GuestForm
     await addGuest.mutateAsync({
       firstName: data.firstName,
-      lastName: data.lastName,
+      lastName: data.lastName ?? '',
       phoneNumber: phoneRaw,
       partySize,
     })
@@ -178,22 +177,19 @@ export default function GuestsPage() {
               key={guest.id}
               className="bg-white rounded-2xl border border-gray-100 px-4 py-3.5 flex items-center gap-3 hover:border-gray-200 hover:shadow-sm transition-all"
             >
-              {/* Avatar */}
               <div className="w-10 h-10 rounded-full bg-[#EDE9FE] flex items-center justify-center flex-shrink-0">
                 <span className="text-sm font-semibold text-[#8B5CF6]">
                   {getInitials(guest.firstName, guest.lastName)}
                 </span>
               </div>
 
-              {/* Info */}
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-900 truncate">
-                  {guest.firstName} {guest.lastName}
+                  {guest.firstName}{guest.lastName ? ` ${guest.lastName}` : ''}
                 </p>
                 <p className="text-xs text-gray-400">{formatPhone(guest.phoneNumber)}</p>
               </div>
 
-              {/* Right */}
               <div className="flex items-center gap-2 flex-shrink-0">
                 {guest.partySize > 1 && (
                   <span className="text-[11px] font-medium bg-gray-100 text-gray-500 rounded-full px-2 py-0.5 flex items-center gap-1">
@@ -215,46 +211,51 @@ export default function GuestsPage() {
 
       {/* Add guest sheet */}
       <Sheet open={sheetOpen} onOpenChange={(open) => { if (!open) resetSheet(); else setSheetOpen(true) }}>
-        <SheetContent className="sm:max-w-md">
-          <SheetHeader>
-            <SheetTitle className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-[#EDE9FE] flex items-center justify-center">
+        <SheetContent side="bottom" className="rounded-t-2xl max-h-[92dvh] overflow-y-auto pb-safe">
+          <SheetHeader className="pb-1">
+            <SheetTitle className="flex items-center gap-2 text-base">
+              <div className="w-8 h-8 rounded-xl bg-[#EDE9FE] flex items-center justify-center flex-shrink-0">
                 <UserPlus size={15} className="text-[#8B5CF6]" />
               </div>
               Добавить гостя
             </SheetTitle>
           </SheetHeader>
 
-          <div className="mt-6 space-y-4">
+          <div className="mt-5 space-y-4">
             {/* Name row */}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1.5">Имя *</label>
+                <label className="block text-xs font-medium text-gray-500 mb-1.5">
+                  Имя <span className="text-red-400">*</span>
+                </label>
                 <Input
                   {...form.register('firstName')}
                   placeholder="Айгерим"
                   className="rounded-xl h-11"
+                  autoComplete="off"
                 />
                 {form.formState.errors.firstName && (
                   <p className="text-xs text-red-500 mt-1">{form.formState.errors.firstName.message}</p>
                 )}
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1.5">Фамилия *</label>
+                <label className="block text-xs font-medium text-gray-500 mb-1.5">
+                  Фамилия
+                </label>
                 <Input
                   {...form.register('lastName')}
                   placeholder="Сейткали"
                   className="rounded-xl h-11"
+                  autoComplete="off"
                 />
-                {form.formState.errors.lastName && (
-                  <p className="text-xs text-red-500 mt-1">{form.formState.errors.lastName.message}</p>
-                )}
               </div>
             </div>
 
             {/* Phone */}
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1.5">Телефон *</label>
+              <label className="block text-xs font-medium text-gray-500 mb-1.5">
+                Телефон <span className="text-red-400">*</span>
+              </label>
               <Input
                 type="tel"
                 value={phoneDisplay}
@@ -267,6 +268,7 @@ export default function GuestsPage() {
                 }}
                 placeholder="+7 (___) ___-__-__"
                 className="rounded-xl h-11"
+                inputMode="tel"
               />
               {form.formState.errors.phoneNumber && (
                 <p className="text-xs text-red-500 mt-1">{form.formState.errors.phoneNumber.message}</p>
@@ -278,35 +280,37 @@ export default function GuestsPage() {
               <label className="block text-xs font-medium text-gray-500 mb-1.5">С кем придёт</label>
               <div className="flex items-center justify-between rounded-xl border border-gray-200 bg-white px-4 py-3 h-11">
                 <span className="text-sm text-gray-600">
-                  {partySize === 1 ? 'Только сам(а)' : `+${partySize - 1} ${partySize - 1 === 1 ? 'человек' : partySize - 1 < 5 ? 'человека' : 'человек'}`}
+                  {partySize === 1
+                    ? 'Только сам(а)'
+                    : `+${partySize - 1} ${partySize - 1 === 1 ? 'человек' : partySize - 1 < 5 ? 'человека' : 'человек'}`}
                 </span>
                 <div className="flex items-center gap-3">
                   <button
                     type="button"
-                    onClick={() => { setPartySize(s => Math.max(1, s - 1)); form.setValue('partySize', Math.max(1, partySize - 1)) }}
+                    onClick={() => { const next = Math.max(1, partySize - 1); setPartySize(next); form.setValue('partySize', next) }}
                     disabled={partySize <= 1}
-                    className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-600 hover:bg-gray-200 disabled:opacity-30 transition-all"
+                    className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-600 hover:bg-gray-200 disabled:opacity-30 transition-all"
                   >−</button>
-                  <span className="text-sm font-semibold text-gray-900 w-4 text-center">{partySize}</span>
+                  <span className="text-sm font-semibold text-gray-900 w-5 text-center">{partySize}</span>
                   <button
                     type="button"
-                    onClick={() => { setPartySize(s => Math.min(20, s + 1)); form.setValue('partySize', Math.min(20, partySize + 1)) }}
+                    onClick={() => { const next = Math.min(20, partySize + 1); setPartySize(next); form.setValue('partySize', next) }}
                     disabled={partySize >= 20}
-                    className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-600 hover:bg-gray-200 disabled:opacity-30 transition-all"
+                    className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-600 hover:bg-gray-200 disabled:opacity-30 transition-all"
                   >+</button>
                 </div>
               </div>
             </div>
 
             {/* Buttons */}
-            <div className="flex gap-3 pt-2">
-              <Button variant="outline" onClick={resetSheet} className="flex-1 rounded-xl">
+            <div className="flex gap-3 pt-1 pb-2">
+              <Button variant="outline" onClick={resetSheet} className="flex-1 rounded-xl h-11">
                 Отмена
               </Button>
               <Button
                 onClick={handleAdd}
                 disabled={addGuest.isPending}
-                className="flex-1 bg-[#8B5CF6] hover:bg-[#7C3AED] rounded-xl"
+                className="flex-1 bg-[#8B5CF6] hover:bg-[#7C3AED] rounded-xl h-11"
               >
                 {addGuest.isPending ? 'Добавление...' : 'Добавить'}
               </Button>
