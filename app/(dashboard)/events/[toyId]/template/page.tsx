@@ -198,7 +198,7 @@ export default function TemplatePage() {
                   <Input
                     type="datetime-local"
                     value={settings.countdownTargetDate?.slice(0, 16) ?? toy.eventDate.slice(0, 16)}
-                    onChange={(e) => updateSettings({ countdownTargetDate: new Date(e.target.value).toISOString() })}
+                    onChange={(e) => updateSettings({ countdownTargetDate: e.target.value + ':00' })}
                     className="rounded-xl text-sm"
                   />
                 </div>

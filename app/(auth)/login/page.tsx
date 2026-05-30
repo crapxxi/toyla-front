@@ -149,10 +149,6 @@ export default function LoginPage() {
     }
   }, [otp, phoneRaw, setAuth, tr.loginSuccess])
 
-  useEffect(() => {
-    if (otp.length === 6) handleVerify()
-  }, [otp, handleVerify])
-
   const slideVariants = {
     enter: (dir: number) => ({ x: dir * 40, opacity: 0 }),
     center: { x: 0, opacity: 1 },

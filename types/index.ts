@@ -10,6 +10,13 @@ export interface AuthResponse {
   token: string
 }
 
+export interface UserResponse {
+  id: number
+  phoneNumber: string
+  name: string | null
+  lastName: string | null
+}
+
 export interface TemplateSettings {
   primaryColor?: string
   backgroundColor?: string
