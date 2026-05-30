@@ -4,11 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import axios from 'axios'
 import toast from 'react-hot-toast'
 import { PublicToyResponse } from '@/types'
-import { ElegantTemplate } from '@/components/templates/ElegantTemplate'
-import { FestiveTemplate } from '@/components/templates/FestiveTemplate'
-import { MinimalistTemplate } from '@/components/templates/MinimalistTemplate'
-import { RomanticTemplate } from '@/components/templates/RomanticTemplate'
-import { ModernTemplate } from '@/components/templates/ModernTemplate'
+import { KazakhTemplate } from '@/components/templates/KazakhTemplate'
 import { api } from '@/lib/api'
 
 interface Props {
@@ -16,19 +12,11 @@ interface Props {
   rsvpToken?: string
 }
 
-const TEMPLATE_MAP = {
-  ELEGANT: ElegantTemplate,
-  FESTIVE: FestiveTemplate,
-  MINIMALIST: MinimalistTemplate,
-  ROMANTIC: RomanticTemplate,
-  MODERN: ModernTemplate,
-}
-
 export function PublicEventClient({ event, rsvpToken }: Props) {
   const [rsvpDone, setRsvpDone] = useState<'accepted' | 'declined' | null>(null)
   const [rsvpLoading, setRsvpLoading] = useState(false)
 
-  const TemplateComponent = TEMPLATE_MAP[event.templateId] ?? ElegantTemplate
+  const TemplateComponent = KazakhTemplate
 
   const handleRsvp = async (action: 'accept' | 'decline') => {
     if (!rsvpToken) return
