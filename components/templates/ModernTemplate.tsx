@@ -1,12 +1,13 @@
 'use client'
-import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { MapPin, Calendar, ArrowRight, Phone } from 'lucide-react'
+import { MapPin, Calendar, ArrowRight } from 'lucide-react'
 import { TemplateSettings } from '@/types'
 import { formatDateFull } from '@/lib/formatters'
 import { BackgroundMusicPlayer } from '@/components/shared/BackgroundMusicPlayer'
 import { EventCountdown } from '@/components/shared/EventCountdown'
 import type { TemplateProps } from './ElegantTemplate'
+import { bi } from './strings'
+import { GuestRegisterForm } from './GuestRegisterForm'
 
 export function ModernTemplate({ event, rsvpToken, onAccept, onDecline, rsvpLoading, rsvpDone }: TemplateProps) {
   const s: TemplateSettings = event.templateSettings ?? {}
@@ -14,9 +15,6 @@ export function ModernTemplate({ event, rsvpToken, onAccept, onDecline, rsvpLoad
   const primary = s.primaryColor ?? '#8B5CF6'
   const accent = s.accentColor ?? '#C4B5FD'
   const greeting = s.greetingText ?? event.organizerDisplayName
-
-  const [guestPhone, setGuestPhone] = useState('')
-  const [phoneSent, setPhoneSent] = useState(false)
 
   const slideUp = {
     hidden: { opacity: 0, y: 32 },
@@ -124,7 +122,7 @@ export function ModernTemplate({ event, rsvpToken, onAccept, onDecline, rsvpLoad
                 className="flex-1 flex items-center justify-center gap-2 py-4 text-white text-sm font-bold rounded-xl transition-all disabled:opacity-50"
                 style={{ background: `linear-gradient(135deg, ${primary}, ${accent})` }}
               >
-                Принять приглашение <ArrowRight size={16} />
+                {bi.acceptFull} <ArrowRight size={16} />
               </motion.button>
               <motion.button
                 whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
@@ -132,56 +130,18 @@ export function ModernTemplate({ event, rsvpToken, onAccept, onDecline, rsvpLoad
                 className="px-6 py-4 text-sm font-medium rounded-xl border transition-all disabled:opacity-50"
                 style={{ borderColor: '#333', color: '#888' }}
               >
-                Отказаться
+                {bi.decline}
               </motion.button>
             </div>
           )}
 
-          {!rsvpToken && !phoneSent && (
-            <div
-              className="rounded-2xl p-6"
-              style={{ background: 'rgba(139,92,246,0.08)', border: `1px solid ${primary}30`, backdropFilter: 'blur(8px)' }}
-            >
-              <p className="text-xs uppercase tracking-[0.3em] mb-4" style={{ color: accent }}>
-                Найти моё приглашение
-              </p>
-              <div className="flex gap-2">
-                <div className="relative flex-1">
-                  <Phone size={13} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: primary }} />
-                  <input
-                    type="tel"
-                    value={guestPhone}
-                    onChange={(e) => setGuestPhone(e.target.value)}
-                    placeholder="+7 (___) ___-__-__"
-                    className="w-full pl-9 pr-3 py-3.5 text-sm rounded-xl outline-none transition-all"
-                    style={{
-                      background: 'rgba(255,255,255,0.05)',
-                      border: `1px solid ${primary}40`,
-                      color: '#F1F0FF',
-                    }}
-                  />
-                </div>
-                <motion.button
-                  whileHover={{ scale: 1.05, boxShadow: `0 0 20px ${primary}60` }}
-                  onClick={() => setPhoneSent(true)}
-                  disabled={guestPhone.length < 10}
-                  className="px-4 py-3.5 text-white text-sm font-bold rounded-xl transition-all disabled:opacity-40"
-                  style={{ background: `linear-gradient(135deg, ${primary}, ${accent})` }}
-                >
-                  →
-                </motion.button>
-              </div>
-            </div>
-          )}
-
-          {!rsvpToken && phoneSent && (
-            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
-              className="rounded-2xl p-6 text-center"
-              style={{ background: 'rgba(139,92,246,0.1)', border: `1px solid ${primary}30` }}>
-              <div className="text-3xl mb-3">📱</div>
-              <p className="font-bold mb-1" style={{ color: accent }}>Проверьте WhatsApp</p>
-              <p className="text-sm" style={{ color: '#A0A0C0' }}>Ссылка на ваше приглашение отправлена</p>
-            </motion.div>
+          {!rsvpToken && (
+            <GuestRegisterForm
+              toyId={event.id}
+              primaryColor={primary}
+              accentColor={accent}
+              variant="dark"
+            />
           )}
 
           {rsvpDone === 'accepted' && (
@@ -189,7 +149,7 @@ export function ModernTemplate({ event, rsvpToken, onAccept, onDecline, rsvpLoad
               className="p-6 rounded-2xl text-center border"
               style={{ borderColor: `${primary}40`, backgroundColor: `${primary}12` }}>
               <div className="text-5xl mb-3">🎉</div>
-              <p className="text-xl font-bold" style={{ color: accent }}>Ждём вас!</p>
+              <p className="text-xl font-bold" style={{ color: accent }}>{bi.waitingForYou}</p>
             </motion.div>
           )}
 
@@ -197,7 +157,7 @@ export function ModernTemplate({ event, rsvpToken, onAccept, onDecline, rsvpLoad
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
               className="p-6 rounded-2xl text-center border border-gray-800 bg-gray-900/50">
               <div className="text-4xl mb-3">💙</div>
-              <p style={{ color: '#888' }}>Жаль, что не получится. Спасибо за ответ</p>
+              <p style={{ color: '#888' }}>{bi.declinedMsg}</p>
             </motion.div>
           )}
         </motion.div>

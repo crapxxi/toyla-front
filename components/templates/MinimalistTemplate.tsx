@@ -1,12 +1,13 @@
 'use client'
-import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { MapPin, Calendar, Phone } from 'lucide-react'
+import { MapPin, Calendar } from 'lucide-react'
 import { TemplateSettings } from '@/types'
 import { formatDateFull } from '@/lib/formatters'
 import { BackgroundMusicPlayer } from '@/components/shared/BackgroundMusicPlayer'
 import { EventCountdown } from '@/components/shared/EventCountdown'
 import type { TemplateProps } from './ElegantTemplate'
+import { bi } from './strings'
+import { GuestRegisterForm } from './GuestRegisterForm'
 
 export function MinimalistTemplate({ event, rsvpToken, onAccept, onDecline, rsvpLoading, rsvpDone }: TemplateProps) {
   const s: TemplateSettings = event.templateSettings ?? {}
@@ -15,9 +16,6 @@ export function MinimalistTemplate({ event, rsvpToken, onAccept, onDecline, rsvp
   const accent = s.accentColor ?? '#9CA3AF'
   const greeting = s.greetingText ?? event.organizerDisplayName
   const fontFamily = s.fontFamily === 'serif' ? '"Georgia", serif' : s.fontFamily === 'cursive' ? 'cursive' : 'Inter, sans-serif'
-
-  const [guestPhone, setGuestPhone] = useState('')
-  const [phoneSent, setPhoneSent] = useState(false)
 
   const fade = (delay: number) => ({ hidden: { opacity: 0, y: 6 }, visible: { opacity: 1, y: 0, transition: { delay, duration: 0.5 } } })
 
@@ -91,63 +89,37 @@ export function MinimalistTemplate({ event, rsvpToken, onAccept, onDecline, rsvp
                 className="flex-1 py-3.5 text-sm font-medium text-white transition-opacity hover:opacity-80 disabled:opacity-50"
                 style={{ backgroundColor: primary }}
               >
-                Принять
+                {bi.accept}
               </button>
               <button
                 onClick={onDecline} disabled={rsvpLoading}
                 className="flex-1 py-3.5 text-sm font-medium border transition-colors disabled:opacity-50 hover:bg-gray-50"
                 style={{ borderColor: primary, color: primary }}
               >
-                Отказаться
+                {bi.decline}
               </button>
             </div>
           )}
 
-          {!rsvpToken && !phoneSent && (
-            <div>
-              <p className="text-xs uppercase tracking-[0.3em] mb-4" style={{ color: accent }}>Подтвердить участие</p>
-              <div className="flex gap-2">
-                <div className="relative flex-1">
-                  <Phone size={12} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: accent }} />
-                  <input
-                    type="tel"
-                    value={guestPhone}
-                    onChange={(e) => setGuestPhone(e.target.value)}
-                    placeholder="Номер телефона"
-                    className="w-full pl-8 pr-3 py-3 text-sm border outline-none transition-colors"
-                    style={{ borderColor: `${primary}20`, color: primary, backgroundColor: bg }}
-                    onFocus={(e) => { e.target.style.borderColor = primary }}
-                    onBlur={(e) => { e.target.style.borderColor = `${primary}20` }}
-                  />
-                </div>
-                <button
-                  onClick={() => setPhoneSent(true)}
-                  disabled={guestPhone.length < 10}
-                  className="px-4 py-3 text-sm font-medium text-white transition-opacity hover:opacity-80 disabled:opacity-30"
-                  style={{ backgroundColor: primary }}
-                >
-                  →
-                </button>
-              </div>
-            </div>
-          )}
-
-          {!rsvpToken && phoneSent && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="py-6">
-              <p className="text-sm font-medium mb-1" style={{ color: primary }}>Проверьте WhatsApp</p>
-              <p className="text-sm" style={{ color: accent }}>Ссылка на приглашение отправлена</p>
-            </motion.div>
+          {!rsvpToken && (
+            <GuestRegisterForm
+              toyId={event.id}
+              primaryColor={primary}
+              accentColor={accent}
+              variant="light"
+              textColor={accent}
+            />
           )}
 
           {rsvpDone === 'accepted' && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="py-8 text-center">
-              <p className="text-xl font-light" style={{ color: primary }}>Ждём вас</p>
+              <p className="text-xl font-light" style={{ color: primary }}>{bi.waitingMinimalist}</p>
             </motion.div>
           )}
 
           {rsvpDone === 'declined' && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="py-8">
-              <p className="text-sm" style={{ color: accent }}>Жаль, что не получится. Спасибо за ответ</p>
+              <p className="text-sm" style={{ color: accent }}>{bi.declinedMsg}</p>
             </motion.div>
           )}
         </motion.div>

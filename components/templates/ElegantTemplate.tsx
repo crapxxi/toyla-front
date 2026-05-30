@@ -1,11 +1,12 @@
 'use client'
-import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { MapPin, Calendar, Phone } from 'lucide-react'
+import { MapPin, Calendar } from 'lucide-react'
 import { PublicToyResponse, TemplateSettings } from '@/types'
 import { formatDateFull } from '@/lib/formatters'
 import { BackgroundMusicPlayer } from '@/components/shared/BackgroundMusicPlayer'
 import { EventCountdown } from '@/components/shared/EventCountdown'
+import { bi } from './strings'
+import { GuestRegisterForm } from './GuestRegisterForm'
 
 export interface TemplateProps {
   event: PublicToyResponse
@@ -44,10 +45,7 @@ export function ElegantTemplate({
   const primary = s.primaryColor ?? '#8B6914'
   const accent = s.accentColor ?? '#C9A84C'
   const font = s.fontFamily === 'sans-serif' ? 'Inter, sans-serif' : s.fontFamily === 'cursive' ? '"Cormorant Garamond", cursive' : '"Georgia", "Times New Roman", serif'
-  const greeting = s.greetingText ?? `${event.organizerDisplayName} приглашает вас`
-
-  const [guestPhone, setGuestPhone] = useState('')
-  const [phoneSent, setPhoneSent] = useState(false)
+  const greeting = s.greetingText ?? `${event.organizerDisplayName} ${bi.invites}`
 
   return (
     <div
@@ -165,7 +163,7 @@ export function ElegantTemplate({
                 className="px-8 py-3.5 text-white text-sm font-medium rounded-full transition-all hover:opacity-90 disabled:opacity-50 shadow-md"
                 style={{ backgroundColor: primary }}
               >
-                Принять приглашение
+                {bi.acceptFull}
               </button>
               <button
                 onClick={onDecline}
@@ -173,54 +171,19 @@ export function ElegantTemplate({
                 className="px-8 py-3.5 text-sm font-medium rounded-full border transition-all hover:opacity-80 disabled:opacity-50"
                 style={{ borderColor: accent, color: primary, backgroundColor: `${accent}10` }}
               >
-                Отказаться
+                {bi.decline}
               </button>
             </div>
           )}
 
-          {!rsvpToken && !phoneSent && (
-            <div className="border rounded-2xl p-6" style={{ borderColor: `${accent}40`, backgroundColor: `${accent}06` }}>
-              <p className="text-center text-xs uppercase tracking-widest mb-4" style={{ color: accent, fontFamily: 'Inter, sans-serif' }}>
-                Подтвердите присутствие
-              </p>
-              <p className="text-center text-sm mb-4" style={{ color: '#5C3D2A' }}>
-                Введите ваш номер телефона
-              </p>
-              <div className="flex gap-2">
-                <div className="relative flex-1">
-                  <Phone size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: accent }} />
-                  <input
-                    type="tel"
-                    value={guestPhone}
-                    onChange={(e) => setGuestPhone(e.target.value)}
-                    placeholder="+7 (___) ___-__-__"
-                    className="w-full pl-9 pr-3 py-3 text-sm rounded-xl border outline-none transition-all"
-                    style={{ borderColor: `${accent}60`, backgroundColor: 'white', color: '#2C1810' }}
-                  />
-                </div>
-                <button
-                  onClick={() => setPhoneSent(true)}
-                  disabled={guestPhone.length < 10}
-                  className="px-4 py-3 text-white text-sm rounded-xl transition-all hover:opacity-90 disabled:opacity-40 whitespace-nowrap"
-                  style={{ backgroundColor: primary }}
-                >
-                  Найти →
-                </button>
-              </div>
-            </div>
-          )}
-
-          {!rsvpToken && phoneSent && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="rounded-2xl p-6 text-center border"
-              style={{ borderColor: `${accent}40`, backgroundColor: `${accent}08` }}
-            >
-              <div className="text-3xl mb-3">📱</div>
-              <p className="font-medium mb-1" style={{ color: primary }}>Проверьте WhatsApp</p>
-              <p className="text-sm" style={{ color: '#5C3D2A' }}>Мы отправили ссылку на ваше приглашение</p>
-            </motion.div>
+          {!rsvpToken && (
+            <GuestRegisterForm
+              toyId={event.id}
+              primaryColor={primary}
+              accentColor={accent}
+              variant="light"
+              textColor="#5C3D2A"
+            />
           )}
 
           {rsvpDone === 'accepted' && (
@@ -232,7 +195,7 @@ export function ElegantTemplate({
               style={{ backgroundColor: `${primary}12` }}
             >
               <div className="text-4xl mb-3">🎉</div>
-              <p className="text-lg" style={{ color: primary }}>Ждём вас на торжестве!</p>
+              <p className="text-lg" style={{ color: primary }}>{bi.waitingCelebration}</p>
             </motion.div>
           )}
 
@@ -244,7 +207,7 @@ export function ElegantTemplate({
               style={{ backgroundColor: '#F5F0EC' }}
             >
               <div className="text-4xl mb-3">💙</div>
-              <p className="text-sm" style={{ color: '#5C3D2A' }}>Жаль, что не получится. Спасибо за ответ</p>
+              <p className="text-sm" style={{ color: '#5C3D2A' }}>{bi.declinedMsg}</p>
             </motion.div>
           )}
         </motion.div>

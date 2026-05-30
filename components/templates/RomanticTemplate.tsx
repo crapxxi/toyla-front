@@ -1,12 +1,13 @@
 'use client'
-import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { MapPin, Calendar, Phone } from 'lucide-react'
+import { MapPin, Calendar } from 'lucide-react'
 import { TemplateSettings } from '@/types'
 import { formatDateFull } from '@/lib/formatters'
 import { BackgroundMusicPlayer } from '@/components/shared/BackgroundMusicPlayer'
 import { EventCountdown } from '@/components/shared/EventCountdown'
 import type { TemplateProps } from './ElegantTemplate'
+import { bi } from './strings'
+import { GuestRegisterForm } from './GuestRegisterForm'
 
 function PetalDecor({ color, size = 100, opacity = 0.3 }: { color: string; size?: number; opacity?: number }) {
   return (
@@ -25,10 +26,7 @@ export function RomanticTemplate({ event, rsvpToken, onAccept, onDecline, rsvpLo
   const bg = s.backgroundColor ?? '#FFF0F5'
   const primary = s.primaryColor ?? '#BE4B7A'
   const accent = s.accentColor ?? '#F5A7C7'
-  const greeting = s.greetingText ?? `${event.organizerDisplayName} приглашает вас`
-
-  const [guestPhone, setGuestPhone] = useState('')
-  const [phoneSent, setPhoneSent] = useState(false)
+  const greeting = s.greetingText ?? `${event.organizerDisplayName} ${bi.invites}`
 
   return (
     <div
@@ -147,67 +145,40 @@ export function RomanticTemplate({ event, rsvpToken, onAccept, onDecline, rsvpLo
                 className="px-8 py-3.5 text-white text-sm rounded-full transition-all hover:opacity-90 disabled:opacity-50 shadow-md"
                 style={{ background: `linear-gradient(135deg, ${primary}, ${accent})` }}
               >
-                Приду ♥
+                {bi.acceptRomantic}
               </button>
               <button
                 onClick={onDecline} disabled={rsvpLoading}
                 className="px-8 py-3.5 text-sm rounded-full border transition-all hover:bg-pink-50 disabled:opacity-50"
                 style={{ borderColor: accent, color: primary }}
               >
-                Не смогу
+                {bi.cantMake}
               </button>
             </div>
           )}
 
-          {!rsvpToken && !phoneSent && (
-            <div className="rounded-2xl p-6" style={{ backgroundColor: `${accent}15`, border: `1px solid ${accent}50` }}>
-              <p className="text-sm italic mb-4" style={{ color: primary }}>Введите ваш номер телефона</p>
-              <div className="flex gap-2">
-                <div className="relative flex-1">
-                  <Phone size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: accent }} />
-                  <input
-                    type="tel"
-                    value={guestPhone}
-                    onChange={(e) => setGuestPhone(e.target.value)}
-                    placeholder="+7 (___) ___-__-__"
-                    className="w-full pl-9 pr-3 py-3 text-sm rounded-xl border outline-none"
-                    style={{ borderColor: `${accent}60`, backgroundColor: 'white', color: '#3D0A1E', fontFamily: 'Inter, sans-serif' }}
-                  />
-                </div>
-                <button
-                  onClick={() => setPhoneSent(true)}
-                  disabled={guestPhone.length < 10}
-                  className="px-4 py-3 text-white text-sm rounded-xl transition-all hover:opacity-90 disabled:opacity-40"
-                  style={{ background: `linear-gradient(135deg, ${primary}, ${accent})` }}
-                >
-                  →
-                </button>
-              </div>
-            </div>
-          )}
-
-          {!rsvpToken && phoneSent && (
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
-              className="rounded-2xl p-6 text-center"
-              style={{ backgroundColor: `${accent}20`, border: `1px solid ${accent}50` }}>
-              <div className="text-3xl mb-3">📱</div>
-              <p className="font-medium mb-1" style={{ color: primary }}>Проверьте WhatsApp</p>
-              <p className="text-sm" style={{ color: '#6B2040' }}>Ссылка на ваше приглашение отправлена</p>
-            </motion.div>
+          {!rsvpToken && (
+            <GuestRegisterForm
+              toyId={event.id}
+              primaryColor={primary}
+              accentColor={accent}
+              variant="light"
+              textColor="#6B2040"
+            />
           )}
 
           {rsvpDone === 'accepted' && (
             <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ type: 'spring', damping: 14 }}
               className="p-6 rounded-2xl text-center" style={{ backgroundColor: `${accent}25` }}>
               <div className="text-4xl mb-3">🌸</div>
-              <p className="text-lg font-light" style={{ color: primary }}>Ждём вас с радостью!</p>
+              <p className="text-lg font-light" style={{ color: primary }}>{bi.waitingRomantic}</p>
             </motion.div>
           )}
 
           {rsvpDone === 'declined' && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-6 rounded-2xl text-center bg-pink-50">
               <div className="text-4xl mb-3">💙</div>
-              <p className="text-base font-light" style={{ color: '#6B2040' }}>Жаль, что не получится. Спасибо</p>
+              <p className="text-base font-light" style={{ color: '#6B2040' }}>{bi.declinedMsg}</p>
             </motion.div>
           )}
         </motion.div>

@@ -11,7 +11,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { useCreateToy } from '@/hooks/useToys'
 import { useAuthStore } from '@/store/auth.store'
-import { EventTemplate, MessageLanguage } from '@/types'
+import { EventTemplate } from '@/types'
 
 interface TemplateConfig {
   id: EventTemplate
@@ -60,11 +60,6 @@ const TEMPLATES: TemplateConfig[] = [
   },
 ]
 
-const LANGUAGES: { id: MessageLanguage; label: string; flag: string }[] = [
-  { id: 'RUSSIAN', label: 'Русский', flag: '🇷🇺' },
-  { id: 'KAZAKH', label: 'Қазақша', flag: '🇰🇿' },
-]
-
 const detailsSchema = z.object({
   title: z.string().min(2, 'Минимум 2 символа').max(100),
   description: z.string().min(10, 'Минимум 10 символов').max(1000),
@@ -75,7 +70,7 @@ const detailsSchema = z.object({
 })
 
 type DetailsForm = z.infer<typeof detailsSchema>
-const steps = ['Детали', 'Шаблон', 'Язык', 'Готово']
+const steps = ['Детали', 'Шаблон', 'Готово']
 
 function TemplatePreviewCard({ tmpl, selected, onClick }: { tmpl: TemplateConfig; selected: boolean; onClick: () => void }) {
   const p = tmpl.preview
@@ -241,7 +236,6 @@ export default function NewEventPage() {
   const createToy = useCreateToy(userId ?? 0)
   const [step, setStep] = useState(0)
   const [selectedTemplate, setSelectedTemplate] = useState<EventTemplate>('ELEGANT')
-  const [selectedLang, setSelectedLang] = useState<MessageLanguage>('RUSSIAN')
   const [createdId, setCreatedId] = useState<string | null>(null)
 
   const form = useForm<DetailsForm>({
@@ -261,10 +255,9 @@ export default function NewEventPage() {
       gisLink: values.gisLink || undefined,
       organizerName: values.organizerName || undefined,
       templateId: selectedTemplate,
-      language: selectedLang,
     })
     setCreatedId(result.id)
-    setStep(3)
+    setStep(2)
   }
 
   return (
@@ -354,42 +347,14 @@ export default function NewEventPage() {
                   />
                 ))}
               </div>
-              <Button onClick={() => setStep(2)} className="w-full bg-[#8B5CF6] hover:bg-[#7C3AED] rounded-xl mt-4">Далее</Button>
-            </motion.div>
-          )}
-
-          {/* Step 2 — Language */}
-          {step === 2 && (
-            <motion.div key="language" variants={slideVariants} initial="enter" animate="center" exit="exit" transition={{ duration: 0.22 }} className="space-y-4">
-              <h2 className="text-base font-semibold text-gray-900">Язык приглашения</h2>
-              <p className="text-sm text-gray-500">Язык WhatsApp-сообщений для гостей</p>
-              <div className="grid grid-cols-2 gap-3">
-                {LANGUAGES.map((lng) => (
-                  <button
-                    key={lng.id}
-                    onClick={() => setSelectedLang(lng.id)}
-                    className={`p-5 rounded-2xl border-2 text-center transition-all ${
-                      selectedLang === lng.id ? 'border-[#8B5CF6] bg-[#EDE9FE]/50' : 'border-gray-100 bg-white hover:border-gray-200'
-                    }`}
-                  >
-                    <div className="text-3xl mb-2">{lng.flag}</div>
-                    <div className="font-medium text-gray-900 text-sm">{lng.label}</div>
-                    {selectedLang === lng.id && (
-                      <div className="mt-2 inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#8B5CF6]">
-                        <Check size={11} className="text-white" />
-                      </div>
-                    )}
-                  </button>
-                ))}
-              </div>
               <Button onClick={handleCreate} disabled={createToy.isPending} className="w-full bg-[#8B5CF6] hover:bg-[#7C3AED] rounded-xl mt-4">
                 {createToy.isPending ? 'Создание...' : 'Создать мероприятие'}
               </Button>
             </motion.div>
           )}
 
-          {/* Step 3 — Done */}
-          {step === 3 && createdId && (
+          {/* Step 2 — Done */}
+          {step === 2 && createdId && (
             <motion.div key="done" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.35, type: 'spring', damping: 20 }}
               className="bg-white rounded-2xl border border-gray-100 p-8 text-center">
               <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.1, type: 'spring', damping: 12 }}

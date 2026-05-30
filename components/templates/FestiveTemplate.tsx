@@ -1,12 +1,14 @@
 'use client'
-import { useState, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
-import { MapPin, Calendar, Phone } from 'lucide-react'
+import { MapPin, Calendar } from 'lucide-react'
 import { TemplateSettings } from '@/types'
 import { formatDateFull } from '@/lib/formatters'
 import { BackgroundMusicPlayer } from '@/components/shared/BackgroundMusicPlayer'
 import { EventCountdown } from '@/components/shared/EventCountdown'
 import type { TemplateProps } from './ElegantTemplate'
+import { bi } from './strings'
+import { GuestRegisterForm } from './GuestRegisterForm'
 
 function ConfettiCanvas({ active }: { active: boolean }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -52,10 +54,7 @@ export function FestiveTemplate({ event, rsvpToken, onAccept, onDecline, rsvpLoa
   const primary = s.primaryColor ?? '#FF6B6B'
   const bg = s.backgroundColor ?? '#0D0221'
   const accent = s.accentColor ?? '#FFE66D'
-  const greeting = s.greetingText ?? `${event.organizerDisplayName} приглашает вас!`
-
-  const [guestPhone, setGuestPhone] = useState('')
-  const [phoneSent, setPhoneSent] = useState(false)
+  const greeting = s.greetingText ?? `${event.organizerDisplayName} ${bi.invitesFestive}`
 
   const containerVariants = { hidden: {}, visible: { transition: { staggerChildren: 0.1 } } }
   const itemVariants = {
@@ -157,62 +156,32 @@ export function FestiveTemplate({ event, rsvpToken, onAccept, onDecline, rsvpLoa
                 className="px-8 py-3.5 text-sm font-bold rounded-full transition-all disabled:opacity-50 shadow-lg"
                 style={{ background: `linear-gradient(135deg, ${primary}, ${accent})`, color: '#0D0221' }}
               >
-                Приду! 🎉
+                {bi.acceptFestive}
               </motion.button>
               <motion.button
                 whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
                 onClick={onDecline} disabled={rsvpLoading}
                 className="px-8 py-3.5 text-sm font-medium rounded-full border border-white/25 text-white hover:bg-white/10 transition-all disabled:opacity-50"
               >
-                Не смогу
+                {bi.cantMake}
               </motion.button>
             </div>
           )}
 
-          {!rsvpToken && !phoneSent && (
-            <div className="rounded-2xl p-6 backdrop-blur-sm" style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)' }}>
-              <p className="text-xs uppercase tracking-widest mb-4 opacity-70" style={{ color: accent }}>
-                Найти моё приглашение
-              </p>
-              <div className="flex gap-2">
-                <div className="relative flex-1">
-                  <Phone size={14} className="absolute left-3 top-1/2 -translate-y-1/2 opacity-50" />
-                  <input
-                    type="tel"
-                    value={guestPhone}
-                    onChange={(e) => setGuestPhone(e.target.value)}
-                    placeholder="+7 (___) ___-__-__"
-                    className="w-full pl-9 pr-3 py-3 text-sm rounded-xl outline-none"
-                    style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: '#fff' }}
-                  />
-                </div>
-                <button
-                  onClick={() => setPhoneSent(true)}
-                  disabled={guestPhone.length < 10}
-                  className="px-4 py-3 text-sm font-bold rounded-xl transition-all hover:opacity-90 disabled:opacity-40"
-                  style={{ background: `linear-gradient(135deg, ${primary}, ${accent})`, color: '#0D0221' }}
-                >
-                  →
-                </button>
-              </div>
-            </div>
-          )}
-
-          {!rsvpToken && phoneSent && (
-            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
-              className="rounded-2xl p-6 text-center backdrop-blur-sm"
-              style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)' }}>
-              <div className="text-3xl mb-3">📱</div>
-              <p className="font-bold mb-1">Проверьте WhatsApp!</p>
-              <p className="text-sm opacity-70">Мы отправили ссылку на ваше приглашение</p>
-            </motion.div>
+          {!rsvpToken && (
+            <GuestRegisterForm
+              toyId={event.id}
+              primaryColor={primary}
+              accentColor={accent}
+              variant="glass"
+            />
           )}
 
           {rsvpDone === 'accepted' && (
             <motion.div initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} transition={{ type: 'spring', damping: 12 }}
               className="p-6 rounded-2xl border border-white/20 bg-white/10 backdrop-blur-sm text-center">
               <div className="text-5xl mb-3">🎉</div>
-              <p className="text-xl font-bold">Отлично! Ждём вас!</p>
+              <p className="text-xl font-bold">{bi.waitingFestive}</p>
             </motion.div>
           )}
 
@@ -220,7 +189,7 @@ export function FestiveTemplate({ event, rsvpToken, onAccept, onDecline, rsvpLoa
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
               className="p-6 rounded-2xl border border-white/15 bg-white/5 text-center">
               <div className="text-4xl mb-3">💙</div>
-              <p className="opacity-75">Жаль, что не получится. Спасибо за ответ</p>
+              <p className="opacity-75">{bi.declinedMsg}</p>
             </motion.div>
           )}
         </motion.div>

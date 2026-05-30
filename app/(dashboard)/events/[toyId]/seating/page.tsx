@@ -54,6 +54,9 @@ function GuestChip({
       </span>
       <span className="text-xs text-gray-700 flex-1 truncate">
         {guest.firstName} {guest.lastName}
+        {guest.partySize > 1 && (
+          <span className="ml-1 text-[10px] text-gray-400">+{guest.partySize - 1}</span>
+        )}
       </span>
       <button
         onClick={() => onRemove(guest.id)}
@@ -79,7 +82,7 @@ function TableCard({
     data: { type: 'table', table },
   })
 
-  const occupancy = table.guests.length
+  const occupancy = table.guests.reduce((sum, g) => sum + g.partySize, 0)
   const capacityPct = table.capacity > 0 ? Math.round((occupancy / table.capacity) * 100) : 0
 
   return (
@@ -288,7 +291,9 @@ export default function SeatingPage() {
             <div className="bg-gray-50 rounded-2xl border border-dashed border-gray-200 p-4">
               <div className="flex items-center gap-2 mb-3">
                 <span className="text-sm font-semibold text-gray-700">Без стола</span>
-                <Badge className="bg-gray-200 text-gray-600 text-xs">{unassignedGuests.length}</Badge>
+                <Badge className="bg-gray-200 text-gray-600 text-xs">
+                  {unassignedGuests.reduce((sum, g) => sum + g.partySize, 0)}
+                </Badge>
               </div>
               <SortableContext
                 items={unassignedGuests.map((g) => `guest-${g.id}`)}

@@ -40,11 +40,11 @@ export function PublicEventClient({ event, rsvpToken }: Props) {
     } catch (err) {
       if (axios.isAxiosError(err)) {
         if (err.response?.status === 404) {
-          toast.error('Приглашение не найдено или уже использовано')
+          toast.error('Шақырту табылмады / Приглашение не найдено или уже использовано')
         } else if (err.response?.status === 409) {
-          toast.error('Вы уже ответили на это приглашение')
+          toast.error('Сіз бұл шақыртуға жауап бердіңіз / Вы уже ответили на это приглашение')
         } else {
-          toast.error('Ошибка. Попробуйте позже')
+          toast.error('Қате. Кейінірек қайталаңыз / Ошибка. Попробуйте позже')
         }
       }
     } finally {

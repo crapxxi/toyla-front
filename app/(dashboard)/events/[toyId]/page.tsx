@@ -4,13 +4,14 @@ import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
 import {
   Users, MapPin, Calendar, ChevronRight, Trash2,
-  Copy, ExternalLink, Settings, LayoutGrid, User,
+  Copy, ExternalLink, Settings, LayoutGrid, User, Send, Bell, AlarmClock,
 } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Badge } from '@/components/ui/badge'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { useGetToy, useDeleteToy } from '@/hooks/useToys'
 import { useGetGuests } from '@/hooks/useGuests'
+import { useSendInvites, useSendReminders, useSendSeating } from '@/hooks/useNotifications'
 import { useAuthStore } from '@/store/auth.store'
 import { formatEventDate, isPastEvent, daysUntilDelete } from '@/lib/formatters'
 import toast from 'react-hot-toast'
@@ -27,6 +28,9 @@ export default function EventPage() {
   const { data: toy, isLoading } = useGetToy(toyId)
   const { data: guests } = useGetGuests(toyId)
   const deleteToy = useDeleteToy(userId ?? 0)
+  const sendInvites = useSendInvites(toyId)
+  const sendReminders = useSendReminders(toyId)
+  const sendSeating = useSendSeating(toyId)
   const [showDelete, setShowDelete] = useState(false)
 
   if (isLoading) {
@@ -174,6 +178,61 @@ export default function EventPage() {
             <div className="text-xs text-gray-400 mt-1">{stat.label}</div>
           </div>
         ))}
+      </div>
+
+      {/* Notifications */}
+      <div className="bg-white rounded-2xl border border-gray-100 p-5 mb-6">
+        <h2 className="text-sm font-semibold text-gray-900 mb-1">Уведомления</h2>
+        <p className="text-xs text-gray-400 mb-4">Отправить вручную прямо сейчас</p>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <button
+            onClick={() => sendInvites.mutate()}
+            disabled={sendInvites.isPending}
+            className="flex items-center gap-3 p-3.5 rounded-xl border border-gray-100 hover:border-violet-200 hover:bg-violet-50/40 transition-all text-left disabled:opacity-50"
+          >
+            <div className="w-8 h-8 rounded-lg bg-violet-50 flex items-center justify-center flex-shrink-0">
+              <Send size={14} className="text-violet-600" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-gray-800">
+                {sendInvites.isPending ? 'Отправка...' : 'Приглашения'}
+              </p>
+              <p className="text-xs text-gray-400">Первичный WhatsApp</p>
+            </div>
+          </button>
+
+          <button
+            onClick={() => sendReminders.mutate()}
+            disabled={sendReminders.isPending}
+            className="flex items-center gap-3 p-3.5 rounded-xl border border-gray-100 hover:border-amber-200 hover:bg-amber-50/40 transition-all text-left disabled:opacity-50"
+          >
+            <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center flex-shrink-0">
+              <Bell size={14} className="text-amber-600" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-gray-800">
+                {sendReminders.isPending ? 'Отправка...' : 'Напоминание'}
+              </p>
+              <p className="text-xs text-gray-400">За 24 часа</p>
+            </div>
+          </button>
+
+          <button
+            onClick={() => sendSeating.mutate()}
+            disabled={sendSeating.isPending}
+            className="flex items-center gap-3 p-3.5 rounded-xl border border-gray-100 hover:border-blue-200 hover:bg-blue-50/40 transition-all text-left disabled:opacity-50"
+          >
+            <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
+              <AlarmClock size={14} className="text-blue-600" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-gray-800">
+                {sendSeating.isPending ? 'Отправка...' : 'Рассадка'}
+              </p>
+              <p className="text-xs text-gray-400">Утреннее сообщение</p>
+            </div>
+          </button>
+        </div>
       </div>
 
       {/* Navigation cards */}

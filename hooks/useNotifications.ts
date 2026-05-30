@@ -18,12 +18,34 @@ export function useGetLogs(toyId: string) {
 export function useSendInvites(toyId: string) {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async () => {
-      await api.post(`/api/v1/toys/${toyId}/notifications/send-invites`)
-    },
+    mutationFn: () => api.post(`/api/v1/toys/${toyId}/notifications/invites`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.logs(toyId) })
       toast.success('Приглашения отправлены')
+    },
+    onError: (err) => handleApiError(err),
+  })
+}
+
+export function useSendReminders(toyId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: () => api.post(`/api/v1/toys/${toyId}/notifications/reminders`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.logs(toyId) })
+      toast.success('Напоминания отправлены')
+    },
+    onError: (err) => handleApiError(err),
+  })
+}
+
+export function useSendSeating(toyId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: () => api.post(`/api/v1/toys/${toyId}/notifications/seating`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.logs(toyId) })
+      toast.success('Рассадка отправлена')
     },
     onError: (err) => handleApiError(err),
   })
