@@ -49,9 +49,6 @@ export default function EventPage() {
 
   const past = isPastEvent(toy.eventDate)
   const daysLeft = past ? daysUntilDelete(toy.eventDate) : null
-  const accepted = guests?.filter((g) => g.status === 'ACCEPTED').length ?? 0
-  const declined = guests?.filter((g) => g.status === 'DECLINED').length ?? 0
-  const pending = guests?.filter((g) => g.status === 'PENDING').length ?? 0
   const total = guests?.length ?? 0
   const eventUrl = `https://toyla.app/${userId}/${toy.id}`
 
@@ -166,18 +163,11 @@ export default function EventPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-        {[
-          { label: 'Всего гостей', value: total, color: 'text-gray-900' },
-          { label: 'Приняли', value: accepted, color: 'text-green-600' },
-          { label: 'Отказали', value: declined, color: 'text-red-500' },
-          { label: 'Ожидают', value: pending, color: 'text-amber-500' },
-        ].map((stat) => (
-          <div key={stat.label} className="bg-white rounded-2xl border border-gray-100 p-4 text-center">
-            <div className={`text-2xl font-bold ${stat.color}`}>{stat.value}</div>
-            <div className="text-xs text-gray-400 mt-1">{stat.label}</div>
-          </div>
-        ))}
+      <div className="mb-6">
+        <div className="bg-white rounded-2xl border border-gray-100 p-4 text-center inline-block min-w-[120px]">
+          <div className="text-2xl font-bold text-gray-900">{total}</div>
+          <div className="text-xs text-gray-400 mt-1">Всего гостей</div>
+        </div>
       </div>
 
       {/* Notifications */}

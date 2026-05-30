@@ -4,7 +4,7 @@ import { useParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod/v4'
-import { Plus, Search, Trash2, Users, ChevronLeft, Check, X, Clock, UserPlus } from 'lucide-react'
+import { Plus, Search, Trash2, Users, ChevronLeft, UserPlus } from 'lucide-react'
 import Link from 'next/link'
 import {
   Sheet, SheetContent, SheetHeader, SheetTitle,
@@ -15,7 +15,6 @@ import { Button } from '@/components/ui/button'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { EmptyState } from '@/components/shared/EmptyState'
 import { useGetGuests, useAddGuest, useDeleteGuest } from '@/hooks/useGuests'
-import { RsvpStatus } from '@/types'
 import { formatPhone } from '@/lib/formatters'
 
 const guestSchema = z.object({
@@ -26,19 +25,6 @@ const guestSchema = z.object({
 })
 
 type GuestForm = z.infer<typeof guestSchema>
-
-const FILTER_TABS: { value: RsvpStatus | 'ALL'; label: string }[] = [
-  { value: 'ALL',      label: 'Все' },
-  { value: 'ACCEPTED', label: 'Приняли' },
-  { value: 'DECLINED', label: 'Отказали' },
-  { value: 'PENDING',  label: 'Ожидают' },
-]
-
-const STATUS_STYLES: Record<RsvpStatus, { bg: string; text: string; icon: React.ElementType; label: string }> = {
-  ACCEPTED: { bg: 'bg-emerald-50 text-emerald-700', text: 'text-emerald-700', icon: Check,  label: 'Принял' },
-  DECLINED: { bg: 'bg-red-50 text-red-600',         text: 'text-red-600',     icon: X,      label: 'Отказал' },
-  PENDING:  { bg: 'bg-amber-50 text-amber-600',     text: 'text-amber-600',   icon: Clock,  label: 'Ожидает' },
-}
 
 function formatPhoneDisplay(raw: string): string {
   const digits = raw.replace(/\D/g, '').replace(/^7/, '').slice(0, 10)
@@ -62,7 +48,6 @@ export default function GuestsPage() {
 
   const [sheetOpen, setSheetOpen] = useState(false)
   const [deleteId, setDeleteId] = useState<number | null>(null)
-  const [filter, setFilter] = useState<RsvpStatus | 'ALL'>('ALL')
   const [search, setSearch] = useState('')
 
   // Phone field — separate from react-hook-form to handle formatting
@@ -94,10 +79,8 @@ export default function GuestsPage() {
   }
 
   const filtered = (guests ?? []).filter((g) => {
-    const matchStatus = filter === 'ALL' || g.status === filter
     const name = `${g.firstName} ${g.lastName}`.toLowerCase()
-    const matchSearch = name.includes(search.toLowerCase()) || g.phoneNumber.includes(search)
-    return matchStatus && matchSearch
+    return name.includes(search.toLowerCase()) || g.phoneNumber.includes(search)
   })
 
   const handleAdd = form.handleSubmit(async (rawData) => {
@@ -117,11 +100,7 @@ export default function GuestsPage() {
     setDeleteId(null)
   }
 
-  // Stats
-  const total    = guests?.length ?? 0
-  const accepted = guests?.filter(g => g.status === 'ACCEPTED').length ?? 0
-  const declined = guests?.filter(g => g.status === 'DECLINED').length ?? 0
-  const pending  = guests?.filter(g => g.status === 'PENDING').length ?? 0
+  const total = guests?.length ?? 0
 
   return (
     <div>
@@ -146,37 +125,17 @@ export default function GuestsPage() {
       </div>
 
       {/* Stats row */}
-      <div className="grid grid-cols-4 gap-2.5 mb-5">
-        {[
-          { label: 'Всего',    value: total,    icon: Users,    color: 'text-violet-600', bg: 'bg-violet-50 border-violet-100' },
-          { label: 'Приняли',  value: accepted, icon: Check,    color: 'text-emerald-600', bg: 'bg-emerald-50 border-emerald-100' },
-          { label: 'Отказали', value: declined, icon: X,        color: 'text-red-500',    bg: 'bg-red-50 border-red-100' },
-          { label: 'Ждут',     value: pending,  icon: Clock,    color: 'text-amber-500',  bg: 'bg-amber-50 border-amber-100' },
-        ].map(({ label, value, icon: Icon, color, bg }) => (
-          <div key={label} className={`rounded-2xl border p-3 flex flex-col items-center gap-0.5 ${bg}`}>
-            <Icon size={14} className={color} />
-            <span className={`text-lg font-bold leading-none ${color}`}>{value}</span>
-            <span className="text-[10px] text-gray-500">{label}</span>
-          </div>
-        ))}
+      <div className="mb-5">
+        <div className="rounded-2xl border p-3 flex flex-col items-center gap-0.5 bg-violet-50 border-violet-100 inline-flex min-w-[80px]">
+          <Users size={14} className="text-violet-600" />
+          <span className="text-lg font-bold leading-none text-violet-600">{total}</span>
+          <span className="text-[10px] text-gray-500">Всего</span>
+        </div>
       </div>
 
-      {/* Filter + search */}
-      <div className="flex gap-2 mb-4 overflow-x-auto pb-1">
-        {FILTER_TABS.map((tab) => (
-          <button
-            key={tab.value}
-            onClick={() => setFilter(tab.value)}
-            className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
-              filter === tab.value
-                ? 'bg-[#8B5CF6] text-white shadow-sm'
-                : 'bg-white border border-gray-200 text-gray-600 hover:border-gray-300'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-        <div className="relative ml-auto flex-shrink-0">
+      {/* Search */}
+      <div className="flex mb-4">
+        <div className="relative">
           <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" />
           <Input
             placeholder="Поиск..."
@@ -214,51 +173,43 @@ export default function GuestsPage() {
         )
       ) : (
         <div className="space-y-2">
-          {filtered.map((guest) => {
-            const s = STATUS_STYLES[guest.status]
-            const StatusIcon = s.icon
-            return (
-              <div
-                key={guest.id}
-                className="bg-white rounded-2xl border border-gray-100 px-4 py-3.5 flex items-center gap-3 hover:border-gray-200 hover:shadow-sm transition-all"
-              >
-                {/* Avatar */}
-                <div className="w-10 h-10 rounded-full bg-[#EDE9FE] flex items-center justify-center flex-shrink-0">
-                  <span className="text-sm font-semibold text-[#8B5CF6]">
-                    {getInitials(guest.firstName, guest.lastName)}
-                  </span>
-                </div>
-
-                {/* Info */}
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 truncate">
-                    {guest.firstName} {guest.lastName}
-                  </p>
-                  <p className="text-xs text-gray-400">{formatPhone(guest.phoneNumber)}</p>
-                </div>
-
-                {/* Right */}
-                <div className="flex items-center gap-2 flex-shrink-0">
-                  {guest.partySize > 1 && (
-                    <span className="text-[11px] font-medium bg-gray-100 text-gray-500 rounded-full px-2 py-0.5 flex items-center gap-1">
-                      <Users size={10} />
-                      +{guest.partySize - 1}
-                    </span>
-                  )}
-                  <span className={`inline-flex items-center gap-1 text-[11px] font-medium rounded-full px-2.5 py-1 ${s.bg}`}>
-                    <StatusIcon size={10} />
-                    {s.label}
-                  </span>
-                  <button
-                    onClick={() => setDeleteId(guest.id)}
-                    className="w-7 h-7 rounded-lg flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 transition-colors ml-1"
-                  >
-                    <Trash2 size={13} />
-                  </button>
-                </div>
+          {filtered.map((guest) => (
+            <div
+              key={guest.id}
+              className="bg-white rounded-2xl border border-gray-100 px-4 py-3.5 flex items-center gap-3 hover:border-gray-200 hover:shadow-sm transition-all"
+            >
+              {/* Avatar */}
+              <div className="w-10 h-10 rounded-full bg-[#EDE9FE] flex items-center justify-center flex-shrink-0">
+                <span className="text-sm font-semibold text-[#8B5CF6]">
+                  {getInitials(guest.firstName, guest.lastName)}
+                </span>
               </div>
-            )
-          })}
+
+              {/* Info */}
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-900 truncate">
+                  {guest.firstName} {guest.lastName}
+                </p>
+                <p className="text-xs text-gray-400">{formatPhone(guest.phoneNumber)}</p>
+              </div>
+
+              {/* Right */}
+              <div className="flex items-center gap-2 flex-shrink-0">
+                {guest.partySize > 1 && (
+                  <span className="text-[11px] font-medium bg-gray-100 text-gray-500 rounded-full px-2 py-0.5 flex items-center gap-1">
+                    <Users size={10} />
+                    +{guest.partySize - 1}
+                  </span>
+                )}
+                <button
+                  onClick={() => setDeleteId(guest.id)}
+                  className="w-7 h-7 rounded-lg flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 transition-colors ml-1"
+                >
+                  <Trash2 size={13} />
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
       )}
 
