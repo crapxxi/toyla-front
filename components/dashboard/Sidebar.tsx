@@ -31,6 +31,12 @@ export function Sidebar() {
   const { data: profile } = useProfile()
   const isAdmin = profile?.role === 'ADMIN'
 
+  // Show the real name; fall back to a fully-formatted phone, never raw digits.
+  const fullName = [profile?.name, profile?.lastName].filter(Boolean).join(' ').trim()
+  const phone = profile?.phoneNumber ?? phoneNumber
+  const displayName = fullName || formatPhoneDisplay(phone)
+  const avatarChar = fullName ? fullName[0].toUpperCase() : 'U'
+
   const { data: adminUsers } = useAdminUsers()
   const pendingCount = isAdmin ? (adminUsers?.filter((u) => !u.enabled).length ?? 0) : 0
 
@@ -121,10 +127,10 @@ export function Sidebar() {
         <div className="flex items-center gap-3 px-3 py-2 mb-2">
           <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold flex-shrink-0"
             style={{ background: 'var(--clay-light)', color: 'var(--clay)' }}>
-            {phoneNumber?.[0]?.toUpperCase() ?? 'U'}
+            {avatarChar}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate" style={{ color: 'var(--ink)' }}>{formatPhoneDisplay(phoneNumber)}</p>
+            <p className="text-sm font-medium truncate" style={{ color: 'var(--ink)' }}>{displayName}</p>
             <p className="text-xs truncate" style={{ color: 'var(--ink-soft)' }}>
               {isAdmin ? t.adminRole : t.organizerRole}
             </p>
