@@ -9,11 +9,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Separator } from '@/components/ui/separator'
 import { useGetToy } from '@/hooks/useToys'
 import { useTemplateSettings } from '@/hooks/useTemplateSettings'
-import { ElegantTemplate } from '@/components/templates/ElegantTemplate'
-import { FestiveTemplate } from '@/components/templates/FestiveTemplate'
-import { MinimalistTemplate } from '@/components/templates/MinimalistTemplate'
-import { RomanticTemplate } from '@/components/templates/RomanticTemplate'
-import { ModernTemplate } from '@/components/templates/ModernTemplate'
+import { KazakhTemplate } from '@/components/templates/KazakhTemplate'
 import { PublicToyResponse } from '@/types'
 
 
@@ -48,13 +44,6 @@ function SectionCard({ icon: Icon, title, children }: { icon: React.ElementType;
   )
 }
 
-const TEMPLATE_MAP = {
-  ELEGANT: ElegantTemplate,
-  FESTIVE: FestiveTemplate,
-  MINIMALIST: MinimalistTemplate,
-  ROMANTIC: RomanticTemplate,
-  MODERN: ModernTemplate,
-}
 
 export default function TemplatePage() {
   const { toyId } = useParams<{ toyId: string }>()
@@ -90,12 +79,7 @@ export default function TemplatePage() {
     organizerDisplayName: 'Организатор',
   }
 
-  const TemplateComponent = TEMPLATE_MAP[toy.templateId] ?? ElegantTemplate
-
-  const TEMPLATE_LABELS: Record<string, string> = {
-    ELEGANT: 'Элегантный', FESTIVE: 'Праздничный', MINIMALIST: 'Минималистичный',
-    ROMANTIC: 'Романтичный', MODERN: 'Современный',
-  }
+  const TemplateComponent = KazakhTemplate
 
   return (
     <div>
@@ -109,7 +93,7 @@ export default function TemplatePage() {
         </Link>
         <div className="flex-1 min-w-0">
           <h1 className="text-xl font-semibold text-gray-900">Дизайн шаблона</h1>
-          <p className="text-xs text-gray-400 mt-0.5 truncate">{toy.title} · {TEMPLATE_LABELS[toy.templateId]}</p>
+          <p className="text-xs text-gray-400 mt-0.5 truncate">{toy.title}</p>
         </div>
         <div className="flex gap-2">
           <Button

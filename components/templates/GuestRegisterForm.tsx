@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Phone, User, Users } from 'lucide-react'
+import { User, Users } from 'lucide-react'
 import axios from 'axios'
 import { api } from '@/lib/api'
 import { bi } from './strings'
@@ -10,21 +10,39 @@ interface Props {
   toyId: string
   primaryColor: string
   accentColor: string
-  // visual variant controls background/border/text styling
   variant: 'light' | 'dark' | 'glass'
   textColor?: string
+}
+
+function formatPhoneDisplay(raw: string): string {
+  const digits = raw.replace(/\D/g, '').replace(/^7/, '').slice(0, 10)
+  let result = '+7'
+  if (digits.length > 0) result += ' (' + digits.slice(0, 3)
+  if (digits.length >= 3) result += ') ' + digits.slice(3, 6)
+  if (digits.length >= 6) result += '-' + digits.slice(6, 8)
+  if (digits.length >= 8) result += '-' + digits.slice(8, 10)
+  return result
 }
 
 export function GuestRegisterForm({ toyId, primaryColor, accentColor, variant, textColor }: Props) {
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
-  const [phone, setPhone] = useState('')
+  const [phoneDisplay, setPhoneDisplay] = useState('+7')
+  const [phoneRaw, setPhoneRaw] = useState('')
   const [partySize, setPartySize] = useState(1)
   const [loading, setLoading] = useState(false)
   const [done, setDone] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const canSubmit = firstName.trim().length >= 1 && phone.length >= 10
+  const canSubmit = firstName.trim().length >= 1 && phoneRaw.length >= 11
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value.replace(/\D/g, '')
+    const normalized = raw.startsWith('7') ? raw : raw.startsWith('8') ? '7' + raw.slice(1) : '7' + raw
+    const clamped = normalized.slice(0, 11)
+    setPhoneRaw(clamped)
+    setPhoneDisplay(formatPhoneDisplay(clamped))
+  }
 
   const handleSubmit = async () => {
     if (!canSubmit || loading) return
@@ -34,7 +52,7 @@ export function GuestRegisterForm({ toyId, primaryColor, accentColor, variant, t
       await api.post(`/api/v1/public/events/${toyId}/register`, {
         firstName: firstName.trim(),
         lastName: lastName.trim() || undefined,
-        phoneNumber: phone,
+        phoneNumber: phoneRaw,
         partySize,
       })
       setDone(true)
@@ -69,7 +87,7 @@ export function GuestRegisterForm({ toyId, primaryColor, accentColor, variant, t
       : { backgroundColor: `${accentColor}06`, border: `1px solid ${accentColor}40` }
 
   const iconColor = variant === 'light' ? accentColor : variant === 'dark' ? primaryColor : 'rgba(255,255,255,0.5)'
-  const labelColor = variant === 'light' ? accentColor : variant === 'glass' ? accentColor : accentColor
+  const labelColor = accentColor
 
   if (done) {
     return (
@@ -88,8 +106,8 @@ export function GuestRegisterForm({ toyId, primaryColor, accentColor, variant, t
   }
 
   return (
-    <div className="rounded-2xl p-6 space-y-3" style={wrapStyle}>
-      <p className="text-xs uppercase tracking-widest mb-1" style={{ color: labelColor }}>
+    <div className="rounded-2xl p-5 space-y-3" style={wrapStyle}>
+      <p className="text-[11px] uppercase tracking-[0.4em]" style={{ color: labelColor }}>
         {bi.registerTitle}
       </p>
 
@@ -133,7 +151,7 @@ export function GuestRegisterForm({ toyId, primaryColor, accentColor, variant, t
             onClick={() => setPartySize(s => Math.max(1, s - 1))}
             disabled={partySize <= 1}
             className="w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold transition-all disabled:opacity-30"
-            style={{ background: `${primaryColor}30`, color: primaryColor }}
+            style={{ background: `${primaryColor}25`, color: primaryColor }}
           >−</button>
           <span className="text-sm font-semibold w-4 text-center" style={{ color: primaryColor }}>{partySize}</span>
           <button
@@ -141,24 +159,27 @@ export function GuestRegisterForm({ toyId, primaryColor, accentColor, variant, t
             onClick={() => setPartySize(s => Math.min(10, s + 1))}
             disabled={partySize >= 10}
             className="w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold transition-all disabled:opacity-30"
-            style={{ background: `${primaryColor}30`, color: primaryColor }}
+            style={{ background: `${primaryColor}25`, color: primaryColor }}
           >+</button>
         </div>
       </div>
 
-      {/* Phone */}
+      {/* Phone + submit */}
       <div className="flex gap-2">
-        <div className="relative flex-1">
-          <Phone size={13} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: iconColor }} />
-          <input
-            type="tel"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            placeholder={bi.phonePlaceholder}
-            className="w-full pl-9 pr-3 py-2.5 text-sm rounded-xl outline-none transition-all"
-            style={inputStyle}
-          />
-        </div>
+        <input
+          type="tel"
+          value={phoneDisplay}
+          onChange={handlePhoneChange}
+          onFocus={(e) => {
+            if (!phoneRaw) {
+              setPhoneDisplay('+7')
+              setTimeout(() => e.target.setSelectionRange(e.target.value.length, e.target.value.length), 0)
+            }
+          }}
+          placeholder="+7 (___) ___-__-__"
+          className="flex-1 px-3 py-2.5 text-sm rounded-xl outline-none transition-all"
+          style={inputStyle}
+        />
         <button
           onClick={handleSubmit}
           disabled={!canSubmit || loading}
