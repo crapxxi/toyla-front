@@ -113,22 +113,21 @@ function DateCircles({ dateInfo, accent, primary }: { dateInfo: ReturnType<typeo
         <span style={{ fontFamily: 'var(--font-label)', fontSize: 9, color: accent, letterSpacing: '0.28em', textTransform: 'uppercase' }}>уақыт</span>
       </div>
 
-      {/* Day — centre, prominent */}
+      {/* Day + Month — centre, prominent */}
       <div className="flex flex-col items-center gap-2">
-        <div style={{ ...circleBase, width: 110, height: 110, border: `2px solid ${accent}`, background: `radial-gradient(circle, ${accent}18 0%, ${accent}05 100%)`, boxShadow: `0 0 0 6px ${accent}0C, 0 6px 22px ${accent}14` }}>
+        <div style={{ ...circleBase, width: 110, height: 110, border: `2px solid ${accent}`, background: `radial-gradient(circle, ${accent}18 0%, ${accent}05 100%)`, boxShadow: `0 0 0 6px ${accent}0C, 0 6px 22px ${accent}14`, flexDirection: 'column' }}>
           <div style={inner(7)} />
-          <span style={{ fontFamily: 'var(--font-display)', fontSize: '2.8rem', fontWeight: 300, color: primary, lineHeight: 1 }}>{dateInfo.date}</span>
+          <span style={{ fontFamily: 'var(--font-display)', fontSize: '2.5rem', fontWeight: 300, color: primary, lineHeight: 1 }}>{dateInfo.date}</span>
+          <span style={{ fontFamily: 'var(--font-label)', fontSize: '0.6rem', color: accent, letterSpacing: '0.12em', marginTop: 2 }}>{dateInfo.month}</span>
         </div>
         <span style={{ fontFamily: 'var(--font-label)', fontSize: 9, color: accent, letterSpacing: '0.28em', textTransform: 'uppercase' }}>күні</span>
       </div>
 
-      {/* Month + Year */}
+      {/* Year only */}
       <div className="flex flex-col items-center gap-2">
-        <div style={{ ...circleBase, width: 84, height: 84, border: `1.5px solid ${accent}45`, backgroundColor: `${accent}06`, flexDirection: 'column' }}>
+        <div style={{ ...circleBase, width: 84, height: 84, border: `1.5px solid ${accent}45`, backgroundColor: `${accent}06` }}>
           <div style={inner()} />
-          <span style={{ fontFamily: 'var(--font-display)', fontSize: '0.7rem', fontWeight: 500, color: primary, textAlign: 'center', lineHeight: 1.55 }}>
-            {dateInfo.year}<br />{dateInfo.month}
-          </span>
+          <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.05rem', fontWeight: 500, color: primary }}>{dateInfo.year}</span>
         </div>
         <span style={{ fontFamily: 'var(--font-label)', fontSize: 9, color: accent, letterSpacing: '0.28em', textTransform: 'uppercase' }}>жыл</span>
       </div>
