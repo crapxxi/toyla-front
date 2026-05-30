@@ -30,8 +30,8 @@ const FILTER_STATUSES: { value: DeliveryStatus | 'ALL'; label: string }[] = [
 function LogItem({ log }: { log: NotificationLog }) {
   return (
     <div className="flex items-start gap-4 py-4 border-b border-gray-50 last:border-0">
-      <div className="w-9 h-9 rounded-xl bg-violet-50 flex items-center justify-center flex-shrink-0 mt-0.5">
-        <Bell size={15} className="text-violet-600" />
+      <div className="w-9 h-9 rounded-xl bg-[#FBF5F1] flex items-center justify-center flex-shrink-0 mt-0.5">
+        <Bell size={15} className="text-[#A8492A]" />
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between gap-2 flex-wrap">
@@ -90,7 +90,7 @@ export default function NotificationsPage() {
         </div>
         <Button
           onClick={() => setShowSendConfirm(true)}
-          className="bg-[#8B5CF6] hover:bg-[#7C3AED] rounded-xl gap-2 text-sm"
+          className="bg-[#A8492A] hover:bg-[#8A3A20] rounded-xl gap-2 text-sm"
         >
           <Send size={15} />
           <span className="hidden sm:block">Отправить приглашения</span>
@@ -108,7 +108,7 @@ export default function NotificationsPage() {
               { key: 'ERROR' as DeliveryStatus, label: 'Ошибка', color: 'text-orange-500' },
             ] as { key: DeliveryStatus; label: string; color: string }[]
           ).map((s) => (
-            <div key={s.key} className="bg-white rounded-2xl border border-gray-100 p-4 text-center">
+            <div key={s.key} className="bg-[#FBF6EE] rounded-2xl border border-[#E4D8C4] p-4 text-center">
               <div className={`text-2xl font-bold ${s.color}`}>{stats[s.key] ?? 0}</div>
               <div className="text-xs text-gray-400 mt-1">{s.label}</div>
             </div>
@@ -125,7 +125,7 @@ export default function NotificationsPage() {
               onClick={() => setTypeFilter(f.value)}
               className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
                 typeFilter === f.value
-                  ? 'bg-[#8B5CF6] text-white'
+                  ? 'bg-[#A8492A] text-white'
                   : 'bg-white border border-gray-200 text-gray-600 hover:border-gray-300'
               }`}
             >
@@ -151,7 +151,7 @@ export default function NotificationsPage() {
       </div>
 
       {isLoading ? (
-        <div className="bg-white rounded-2xl border border-gray-100 p-4 space-y-4">
+        <div className="bg-[#FBF6EE] rounded-2xl border border-[#E4D8C4] p-4 space-y-4">
           {Array.from({ length: 5 }).map((_, i) => (
             <div key={i} className="flex items-center gap-4">
               <Skeleton className="w-9 h-9 rounded-xl flex-shrink-0" />
@@ -175,7 +175,7 @@ export default function NotificationsPage() {
           <div className="text-center py-8 text-gray-500 text-sm">Нет записей по фильтру</div>
         )
       ) : (
-        <div className="bg-white rounded-2xl border border-gray-100 px-4">
+        <div className="bg-[#FBF6EE] rounded-2xl border border-[#E4D8C4] px-4">
           {filtered.map((log) => (
             <LogItem key={log.id} log={log} />
           ))}

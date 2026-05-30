@@ -116,7 +116,7 @@ export default function GuestsPage() {
         </div>
         <Button
           onClick={() => setSheetOpen(true)}
-          className="bg-[#8B5CF6] hover:bg-[#7C3AED] rounded-xl gap-2"
+          className="bg-[#A8492A] hover:bg-[#8A3A20] rounded-xl gap-2"
         >
           <Plus size={16} />
           <span className="hidden sm:block">Добавить</span>
@@ -125,9 +125,9 @@ export default function GuestsPage() {
 
       {/* Stats row */}
       <div className="mb-5">
-        <div className="rounded-2xl border p-3 flex flex-col items-center gap-0.5 bg-violet-50 border-violet-100 inline-flex min-w-[80px]">
-          <Users size={14} className="text-violet-600" />
-          <span className="text-lg font-bold leading-none text-violet-600">{total}</span>
+        <div className="rounded-2xl border p-3 flex flex-col items-center gap-0.5 bg-[#FBF5F1] border-violet-100 inline-flex min-w-[80px]">
+          <Users size={14} className="text-[#A8492A]" />
+          <span className="text-lg font-bold leading-none text-[#A8492A]">{total}</span>
           <span className="text-[10px] text-gray-500">Всего</span>
         </div>
       </div>
@@ -175,10 +175,10 @@ export default function GuestsPage() {
           {filtered.map((guest) => (
             <div
               key={guest.id}
-              className="bg-white rounded-2xl border border-gray-100 px-4 py-3.5 flex items-center gap-3 hover:border-gray-200 hover:shadow-sm transition-all"
+              className="bg-[#FBF6EE] rounded-2xl border border-[#E4D8C4] px-4 py-3.5 flex items-center gap-3 hover:border-gray-200 hover:shadow-sm transition-all"
             >
-              <div className="w-10 h-10 rounded-full bg-[#EDE9FE] flex items-center justify-center flex-shrink-0">
-                <span className="text-sm font-semibold text-[#8B5CF6]">
+              <div className="w-10 h-10 rounded-full bg-[#F5EDE6] flex items-center justify-center flex-shrink-0">
+                <span className="text-sm font-semibold text-[#A8492A]">
                   {getInitials(guest.firstName, guest.lastName)}
                 </span>
               </div>
@@ -214,8 +214,8 @@ export default function GuestsPage() {
         <SheetContent className="sm:max-w-sm px-6">
           <SheetHeader>
             <SheetTitle className="flex items-center gap-2 text-sm">
-              <div className="w-7 h-7 rounded-xl bg-[#EDE9FE] flex items-center justify-center flex-shrink-0">
-                <UserPlus size={13} className="text-[#8B5CF6]" />
+              <div className="w-7 h-7 rounded-xl bg-[#F5EDE6] flex items-center justify-center flex-shrink-0">
+                <UserPlus size={13} className="text-[#A8492A]" />
               </div>
               Добавить гостя
             </SheetTitle>
@@ -310,7 +310,7 @@ export default function GuestsPage() {
               <Button
                 onClick={handleAdd}
                 disabled={addGuest.isPending}
-                className="flex-1 bg-[#8B5CF6] hover:bg-[#7C3AED] rounded-xl h-10 text-xs"
+                className="flex-1 bg-[#A8492A] hover:bg-[#8A3A20] rounded-xl h-10 text-xs"
               >
                 {addGuest.isPending ? 'Добавление...' : 'Добавить'}
               </Button>

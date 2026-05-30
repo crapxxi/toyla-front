@@ -21,7 +21,7 @@ function Toggle({ label, sublabel, checked, onChange }: { label: string; sublabe
       </div>
       <button
         onClick={() => onChange(!checked)}
-        className={`relative w-11 h-6 rounded-full transition-colors flex-shrink-0 ${checked ? 'bg-[#8B5CF6]' : 'bg-gray-200'}`}
+        className={`relative w-11 h-6 rounded-full transition-colors flex-shrink-0 ${checked ? 'bg-[#A8492A]' : 'bg-gray-200'}`}
       >
         <div className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow-sm transition-transform ${checked ? 'translate-x-5' : 'translate-x-0.5'}`} />
       </button>
@@ -31,10 +31,10 @@ function Toggle({ label, sublabel, checked, onChange }: { label: string; sublabe
 
 function SectionCard({ icon: Icon, title, children }: { icon: React.ElementType; title: string; children: React.ReactNode }) {
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+    <div className="bg-[#FBF6EE] rounded-2xl border border-[#E4D8C4] overflow-hidden">
       <div className="flex items-center gap-2.5 px-5 py-3.5 border-b border-gray-50">
-        <div className="w-7 h-7 rounded-lg bg-[#EDE9FE] flex items-center justify-center">
-          <Icon size={14} className="text-[#8B5CF6]" />
+        <div className="w-7 h-7 rounded-lg bg-[#F5EDE6] flex items-center justify-center">
+          <Icon size={14} className="text-[#A8492A]" />
         </div>
         <p className="text-sm font-semibold text-gray-900">{title}</p>
       </div>
@@ -128,7 +128,7 @@ export default function TemplatePage() {
           <Button
             variant="outline"
             onClick={() => setShowPreview(!showPreview)}
-            className={`rounded-xl gap-2 text-sm transition-colors ${showPreview ? 'bg-[#EDE9FE] border-[#8B5CF6] text-[#8B5CF6]' : ''}`}
+            className={`rounded-xl gap-2 text-sm transition-colors ${showPreview ? 'bg-[#F5EDE6] border-[#A8492A] text-[#A8492A]' : ''}`}
           >
             <Eye size={15} />
             <span className="hidden sm:block">Превью</span>
@@ -136,7 +136,7 @@ export default function TemplatePage() {
           <Button
             onClick={saveSettings}
             disabled={isSaving}
-            className="bg-[#8B5CF6] hover:bg-[#7C3AED] rounded-xl gap-2 text-sm"
+            className="bg-[#A8492A] hover:bg-[#8A3A20] rounded-xl gap-2 text-sm"
           >
             <Save size={15} />
             <span className="hidden sm:block">{isSaving ? 'Сохранение...' : 'Сохранить'}</span>
@@ -183,7 +183,7 @@ export default function TemplatePage() {
                 <button
                   onClick={() => imageInputRef.current?.click()}
                   disabled={uploadImage.isPending}
-                  className="w-full border-2 border-dashed border-gray-200 rounded-xl py-4 flex flex-col items-center gap-1.5 text-gray-400 hover:border-[#8B5CF6] hover:text-[#8B5CF6] transition-colors disabled:opacity-50"
+                  className="w-full border-2 border-dashed border-gray-200 rounded-xl py-4 flex flex-col items-center gap-1.5 text-gray-400 hover:border-[#A8492A] hover:text-[#A8492A] transition-colors disabled:opacity-50"
                 >
                   <Upload size={18} />
                   <span className="text-xs font-medium">
@@ -198,8 +198,8 @@ export default function TemplatePage() {
           {/* Music */}
           <SectionCard icon={Music2} title="Музыка">
             {currentMusicUrl ? (
-              <div className="flex items-center gap-3 bg-violet-50 rounded-xl px-4 py-3">
-                <div className="w-8 h-8 rounded-lg bg-[#8B5CF6] flex items-center justify-center flex-shrink-0">
+              <div className="flex items-center gap-3 bg-[#FBF5F1] rounded-xl px-4 py-3">
+                <div className="w-8 h-8 rounded-lg bg-[#A8492A] flex items-center justify-center flex-shrink-0">
                   <Music2 size={14} className="text-white" />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -228,7 +228,7 @@ export default function TemplatePage() {
                 <button
                   onClick={() => musicInputRef.current?.click()}
                   disabled={uploadMusic.isPending}
-                  className="w-full border-2 border-dashed border-gray-200 rounded-xl py-4 flex flex-col items-center gap-1.5 text-gray-400 hover:border-[#8B5CF6] hover:text-[#8B5CF6] transition-colors disabled:opacity-50"
+                  className="w-full border-2 border-dashed border-gray-200 rounded-xl py-4 flex flex-col items-center gap-1.5 text-gray-400 hover:border-[#A8492A] hover:text-[#A8492A] transition-colors disabled:opacity-50"
                 >
                   <Upload size={18} />
                   <span className="text-xs font-medium">
@@ -256,7 +256,7 @@ export default function TemplatePage() {
             <div>
               <div className="flex items-center justify-between mb-2">
                 <label className="text-sm text-gray-700">Громкость</label>
-                <span className="text-sm font-medium text-[#8B5CF6]">{Math.round((settings.musicVolume ?? 0.5) * 100)}%</span>
+                <span className="text-sm font-medium text-[#A8492A]">{Math.round((settings.musicVolume ?? 0.5) * 100)}%</span>
               </div>
               <input
                 type="range"
@@ -265,7 +265,7 @@ export default function TemplatePage() {
                 step={0.05}
                 value={settings.musicVolume ?? 0.5}
                 onChange={(e) => updateSettings({ musicVolume: Number(e.target.value) })}
-                className="w-full accent-[#8B5CF6]"
+                className="w-full accent-[#A8492A]"
               />
             </div>
           </SectionCard>
@@ -291,7 +291,7 @@ export default function TemplatePage() {
                     type="datetime-local"
                     value={settings.countdownTargetDate?.slice(0, 16) ?? toy.eventDate.slice(0, 16)}
                     onChange={(e) => updateSettings({ countdownTargetDate: e.target.value + ':00' })}
-                    className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#8B5CF6]/30"
+                    className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#A8492A]/30"
                   />
                 </div>
               </>

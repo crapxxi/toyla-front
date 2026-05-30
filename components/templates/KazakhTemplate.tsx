@@ -342,7 +342,7 @@ export function KazakhTemplate({ event, rsvpToken, onAccept, onDecline, rsvpLoad
           </motion.div>
 
           <div className="flex justify-center pt-2 pb-4">
-            <Image src="/made-with-toyla.png" alt="Made with Toyla" width={120} height={36}
+            <Image src="/made-with-toyla-light.png" alt="Made with Toyla" width={120} height={36}
               className="opacity-35 hover:opacity-70 transition-opacity duration-300" />
           </div>
         </div>

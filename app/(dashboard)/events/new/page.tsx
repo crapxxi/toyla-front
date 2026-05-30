@@ -35,7 +35,7 @@ const TEMPLATES: TemplateConfig[] = [
     id: 'MODERN',
     label: 'Современный',
     desc: 'Тёмный стиль с неоновыми акцентами',
-    colors: ['#09090F', '#8B5CF6', '#C4B5FD'],
+    colors: ['#09090F', '#A8492A', '#C4B5FD'],
     available: false,
   },
   {
@@ -183,7 +183,7 @@ function TemplateCard({
         'relative w-full text-left rounded-2xl overflow-hidden transition-all duration-200',
         'border-2',
         selected
-          ? 'border-[#8B5CF6] shadow-lg shadow-violet-100'
+          ? 'border-[#A8492A] shadow-lg shadow-[#F5EDE6]'
           : tmpl.available
           ? 'border-gray-100 hover:border-gray-200 hover:shadow-md'
           : 'border-gray-100 opacity-60 cursor-not-allowed',
@@ -210,7 +210,7 @@ function TemplateCard({
 
         {/* State indicator */}
         {selected ? (
-          <div className="w-6 h-6 rounded-full bg-[#8B5CF6] flex items-center justify-center flex-shrink-0">
+          <div className="w-6 h-6 rounded-full bg-[#A8492A] flex items-center justify-center flex-shrink-0">
             <Check size={12} className="text-white" />
           </div>
         ) : tmpl.available ? (
@@ -222,7 +222,7 @@ function TemplateCard({
 
       {/* Selected glow ring */}
       {selected && (
-        <div className="absolute inset-0 rounded-2xl pointer-events-none ring-4 ring-violet-100" />
+        <div className="absolute inset-0 rounded-2xl pointer-events-none ring-4 ring-[#F5EDE6]" />
       )}
     </motion.button>
   )
@@ -240,8 +240,8 @@ function StepBar({ current }: { current: number }) {
           <div
             className={[
               'w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold transition-all',
-              i < current  ? 'bg-[#8B5CF6] text-white'
-              : i === current ? 'bg-[#8B5CF6] text-white ring-4 ring-violet-100'
+              i < current  ? 'bg-[#A8492A] text-white'
+              : i === current ? 'bg-[#A8492A] text-white ring-4 ring-[#F5EDE6]'
               : 'bg-gray-100 text-gray-400',
             ].join(' ')}
           >
@@ -251,7 +251,7 @@ function StepBar({ current }: { current: number }) {
             {label}
           </span>
           {i < STEPS.length - 1 && (
-            <div className={`h-px w-6 sm:w-10 ${i < current ? 'bg-[#8B5CF6]' : 'bg-gray-200'}`} />
+            <div className={`h-px w-6 sm:w-10 ${i < current ? 'bg-[#A8492A]' : 'bg-gray-200'}`} />
           )}
         </div>
       ))}
@@ -336,7 +336,7 @@ export default function NewEventPage() {
           {/* ── Step 0: Details ── */}
           {step === 0 && (
             <motion.div key="details" variants={slide} initial="enter" animate="center" exit="exit" transition={{ duration: 0.22 }}
-              className="bg-white rounded-2xl border border-gray-100 p-6 space-y-5"
+              className="bg-[#FBF6EE] rounded-2xl border border-[#E4D8C4] p-6 space-y-5"
             >
               <div>
                 <h2 className="text-base font-semibold text-gray-900">Детали мероприятия</h2>
@@ -383,7 +383,7 @@ export default function NewEventPage() {
                 {form.formState.errors.gisLink && <p className="text-xs text-red-500 mt-1">{form.formState.errors.gisLink.message}</p>}
               </div>
 
-              <Button onClick={handleDetailsNext} className="w-full bg-[#8B5CF6] hover:bg-[#7C3AED] rounded-xl">
+              <Button onClick={handleDetailsNext} className="w-full bg-[#A8492A] hover:bg-[#8A3A20] rounded-xl">
                 Далее — Выбрать шаблон
               </Button>
             </motion.div>
@@ -413,7 +413,7 @@ export default function NewEventPage() {
               <Button
                 onClick={handleCreate}
                 disabled={createToy.isPending}
-                className="w-full bg-[#8B5CF6] hover:bg-[#7C3AED] rounded-xl h-12 text-base"
+                className="w-full bg-[#A8492A] hover:bg-[#8A3A20] rounded-xl h-12 text-base"
               >
                 {createToy.isPending ? 'Создание...' : 'Создать мероприятие →'}
               </Button>
@@ -423,20 +423,20 @@ export default function NewEventPage() {
           {/* ── Step 2: Done ── */}
           {step === 2 && createdId && (
             <motion.div key="done" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.35, type: 'spring', damping: 20 }}
-              className="bg-white rounded-2xl border border-gray-100 p-8 text-center"
+              className="bg-[#FBF6EE] rounded-2xl border border-[#E4D8C4] p-8 text-center"
             >
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: 0.1, type: 'spring', damping: 12 }}
-                className="w-20 h-20 rounded-full bg-[#EDE9FE] flex items-center justify-center mx-auto mb-6"
+                className="w-20 h-20 rounded-full bg-[#F5EDE6] flex items-center justify-center mx-auto mb-6"
               >
-                <Sparkles size={36} className="text-[#8B5CF6]" />
+                <Sparkles size={36} className="text-[#A8492A]" />
               </motion.div>
               <h2 className="text-xl font-semibold text-gray-900 mb-2">Мероприятие создано!</h2>
               <p className="text-sm text-gray-500 mb-8">Добавьте гостей и настройте приглашение</p>
               <div className="flex flex-col gap-3">
-                <Button onClick={() => router.push(`/events/${createdId}/guests`)} className="bg-[#8B5CF6] hover:bg-[#7C3AED] rounded-xl">
+                <Button onClick={() => router.push(`/events/${createdId}/guests`)} className="bg-[#A8492A] hover:bg-[#8A3A20] rounded-xl">
                   Добавить гостей
                 </Button>
                 <Button variant="outline" onClick={() => router.push(`/events/${createdId}`)} className="rounded-xl">

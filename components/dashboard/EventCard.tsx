@@ -41,7 +41,7 @@ export function EventCard({ toy, guestStats }: EventCardProps) {
   const acceptedPct = total > 0 ? Math.round((accepted / total) * 100) : 0
 
   const progressColor =
-    accepted >= 475 ? 'bg-red-400' : accepted >= 400 ? 'bg-amber-400' : 'bg-[#8B5CF6]'
+    accepted >= 475 ? 'bg-red-400' : accepted >= 400 ? 'bg-amber-400' : 'bg-[#A8492A]'
 
   return (
     <motion.div
@@ -49,7 +49,7 @@ export function EventCard({ toy, guestStats }: EventCardProps) {
       transition={{ duration: 0.15 }}
     >
       <Link href={`/events/${toy.id}`} className="block">
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
+        <div className="bg-[#FBF6EE] rounded-2xl border border-[#E4D8C4] shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
           {past && daysLeft !== null && daysLeft <= 7 && (
             <div className={`px-4 py-2 flex items-center gap-2 text-xs font-medium ${daysLeft <= 2 ? 'bg-red-50 text-red-600' : 'bg-amber-50 text-amber-600'}`}>
               <AlertTriangle size={13} />
@@ -96,7 +96,7 @@ export function EventCard({ toy, guestStats }: EventCardProps) {
                     <Users size={12} />
                     <span>{total} гостей</span>
                   </div>
-                  <span className="text-[#8B5CF6] font-medium">{acceptedPct}% приняли</span>
+                  <span className="text-[#A8492A] font-medium">{acceptedPct}% приняли</span>
                 </div>
                 <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
                   <div

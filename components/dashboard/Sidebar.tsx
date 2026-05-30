@@ -2,16 +2,10 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import {
-  LayoutDashboard,
-  Settings,
-  LogOut,
-  Menu,
-  X,
-  Sparkles,
-} from 'lucide-react'
+import { LayoutDashboard, Settings, LogOut, Menu, X } from 'lucide-react'
 import { useAuthStore } from '@/store/auth.store'
 import { useUIStore } from '@/store/ui.store'
+import { Logo } from '@/components/shared/Logo'
 import { cn } from '@/lib/utils'
 
 const navItems = [
@@ -41,24 +35,19 @@ export function Sidebar() {
   }
 
   const SidebarContent = () => (
-    <div className="flex flex-col h-full">
-      <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
-        <Link href="/dashboard" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-[#8B5CF6] flex items-center justify-center">
-            <Sparkles size={16} className="text-white" />
-          </div>
-          <span className="text-lg font-semibold text-gray-900 tracking-tight">toyla</span>
-          <span className="text-lg font-light text-[#8B5CF6]">.app</span>
-        </Link>
+    <div className="flex flex-col h-full" style={{ background: 'var(--paper)' }}>
+      <div className="flex items-center justify-between px-5 py-5" style={{ borderBottom: '1px solid var(--line)' }}>
+        <Logo size="sm" href="/dashboard" />
         <button
-          className="lg:hidden text-gray-500 hover:text-gray-700"
+          className="lg:hidden"
+          style={{ color: 'var(--ink-soft)' }}
           onClick={() => setSidebarOpen(false)}
         >
           <X size={20} />
         </button>
       </div>
 
-      <nav className="flex-1 px-3 py-4 space-y-1">
+      <nav className="flex-1 px-3 py-4 space-y-0.5">
         {navItems.map((item) => {
           const Icon = item.icon
           const isActive =
@@ -71,34 +60,53 @@ export function Sidebar() {
               href={item.href}
               onClick={() => setSidebarOpen(false)}
               className={cn(
-                'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150',
-                isActive
-                  ? 'bg-[#EDE9FE] text-[#8B5CF6]'
-                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150',
               )}
+              style={isActive
+                ? { background: 'var(--clay-light)', color: 'var(--clay)' }
+                : { color: 'var(--ink-soft)' }
+              }
+              onMouseEnter={(e) => {
+                if (!isActive) (e.currentTarget as HTMLElement).style.background = 'var(--bone-2)'
+              }}
+              onMouseLeave={(e) => {
+                if (!isActive) (e.currentTarget as HTMLElement).style.background = 'transparent'
+              }}
             >
-              <Icon size={18} />
+              <Icon size={17} />
               {item.label}
             </Link>
           )
         })}
       </nav>
 
-      <div className="px-3 py-4 border-t border-gray-100">
+      <div className="px-3 py-4" style={{ borderTop: '1px solid var(--line)' }}>
         <div className="flex items-center gap-3 px-3 py-2 mb-2">
-          <div className="w-8 h-8 rounded-full bg-[#EDE9FE] flex items-center justify-center text-[#8B5CF6] font-semibold text-sm">
+          <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold flex-shrink-0"
+            style={{ background: 'var(--clay-light)', color: 'var(--clay)' }}>
             {phoneNumber?.[0]?.toUpperCase() ?? 'U'}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-gray-900 truncate">{formatPhoneDisplay(phoneNumber)}</p>
-            <p className="text-xs text-gray-500 truncate">Организатор</p>
+            <p className="text-sm font-medium truncate" style={{ color: 'var(--ink)' }}>{formatPhoneDisplay(phoneNumber)}</p>
+            <p className="text-xs truncate" style={{ color: 'var(--ink-soft)' }}>Организатор</p>
           </div>
         </div>
         <button
           onClick={handleLogout}
-          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-red-50 hover:text-red-600 transition-all duration-150"
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150"
+          style={{ color: 'var(--ink-soft)' }}
+          onMouseEnter={(e) => {
+            const el = e.currentTarget as HTMLElement
+            el.style.background = '#FEF2F2'
+            el.style.color = '#DC2626'
+          }}
+          onMouseLeave={(e) => {
+            const el = e.currentTarget as HTMLElement
+            el.style.background = 'transparent'
+            el.style.color = 'var(--ink-soft)'
+          }}
         >
-          <LogOut size={18} />
+          <LogOut size={17} />
           Выйти
         </button>
       </div>
@@ -108,13 +116,15 @@ export function Sidebar() {
   return (
     <>
       {/* Desktop sidebar */}
-      <aside className="hidden lg:flex flex-col w-64 h-screen bg-white border-r border-gray-100 fixed left-0 top-0 z-30">
+      <aside className="hidden lg:flex flex-col w-64 h-screen fixed left-0 top-0 z-30"
+        style={{ background: 'var(--paper)', borderRight: '1px solid var(--line)' }}>
         <SidebarContent />
       </aside>
 
-      {/* Mobile toggle button */}
+      {/* Mobile toggle */}
       <button
-        className="lg:hidden fixed top-4 left-4 z-50 w-10 h-10 rounded-lg bg-white shadow-md border border-gray-100 flex items-center justify-center text-gray-600 hover:text-gray-900"
+        className="lg:hidden fixed top-4 left-4 z-50 w-10 h-10 rounded-xl flex items-center justify-center shadow-md"
+        style={{ background: 'var(--paper)', border: '1px solid var(--line)', color: 'var(--ink)' }}
         onClick={() => setSidebarOpen(!sidebarOpen)}
       >
         <Menu size={20} />
@@ -125,18 +135,15 @@ export function Sidebar() {
         {sidebarOpen && (
           <>
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="lg:hidden fixed inset-0 bg-black/50 z-40"
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="lg:hidden fixed inset-0 bg-black/40 z-40"
               onClick={() => setSidebarOpen(false)}
             />
             <motion.aside
-              initial={{ x: -280 }}
-              animate={{ x: 0 }}
-              exit={{ x: -280 }}
+              initial={{ x: -280 }} animate={{ x: 0 }} exit={{ x: -280 }}
               transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-              className="lg:hidden fixed left-0 top-0 h-full w-64 bg-white z-50 shadow-xl"
+              className="lg:hidden fixed left-0 top-0 h-full w-64 z-50 shadow-xl"
+              style={{ background: 'var(--paper)' }}
             >
               <SidebarContent />
             </motion.aside>

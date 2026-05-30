@@ -115,7 +115,7 @@ export default function EventPage() {
   }
 
   const navCards = [
-    { href: `/events/${toyId}/guests`, icon: Users, label: 'Гости', value: `${total}`, color: 'text-violet-600 bg-violet-50' },
+    { href: `/events/${toyId}/guests`, icon: Users, label: 'Гости', value: `${total}`, color: 'text-[#A8492A] bg-[#FBF5F1]' },
     { href: `/events/${toyId}/seating`, icon: LayoutGrid, label: 'Рассадка', value: '', color: 'text-blue-600 bg-blue-50' },
     { href: `/events/${toyId}/template`, icon: Settings, label: 'Шаблон', value: TEMPLATE_LABELS[toy.templateId], color: 'text-amber-600 bg-amber-50' },
   ]
@@ -175,11 +175,11 @@ export default function EventPage() {
       </div>
 
       {/* Info card */}
-      <div className="bg-white rounded-2xl border border-gray-100 p-5 mb-6">
+      <div className="bg-[#FBF6EE] rounded-2xl border border-[#E4D8C4] p-5 mb-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-violet-50 flex items-center justify-center">
-              <Calendar size={16} className="text-violet-600" />
+            <div className="w-9 h-9 rounded-xl bg-[#FBF5F1] flex items-center justify-center">
+              <Calendar size={16} className="text-[#A8492A]" />
             </div>
             <div>
               <p className="text-xs text-gray-400">Дата</p>
@@ -222,24 +222,24 @@ export default function EventPage() {
 
       {/* Stats */}
       <div className="mb-6">
-        <div className="bg-white rounded-2xl border border-gray-100 p-4 text-center inline-block min-w-[120px]">
+        <div className="bg-[#FBF6EE] rounded-2xl border border-[#E4D8C4] p-4 text-center inline-block min-w-[120px]">
           <div className="text-2xl font-bold text-gray-900">{total}</div>
           <div className="text-xs text-gray-400 mt-1">Всего гостей</div>
         </div>
       </div>
 
       {/* Notifications */}
-      <div className="bg-white rounded-2xl border border-gray-100 p-5 mb-6">
+      <div className="bg-[#FBF6EE] rounded-2xl border border-[#E4D8C4] p-5 mb-6">
         <h2 className="text-sm font-semibold text-gray-900 mb-1">Уведомления</h2>
         <p className="text-xs text-gray-400 mb-4">Отправить вручную прямо сейчас</p>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <button
             onClick={() => sendInvites.mutate()}
             disabled={sendInvites.isPending}
-            className="flex items-center gap-3 p-3.5 rounded-xl border border-gray-100 hover:border-violet-200 hover:bg-violet-50/40 transition-all text-left disabled:opacity-50"
+            className="flex items-center gap-3 p-3.5 rounded-xl border border-gray-100 hover:border-[#E8C5B5] hover:bg-[#FBF5F1]/40 transition-all text-left disabled:opacity-50"
           >
-            <div className="w-8 h-8 rounded-lg bg-violet-50 flex items-center justify-center flex-shrink-0">
-              <Send size={14} className="text-violet-600" />
+            <div className="w-8 h-8 rounded-lg bg-[#FBF5F1] flex items-center justify-center flex-shrink-0">
+              <Send size={14} className="text-[#A8492A]" />
             </div>
             <div>
               <p className="text-sm font-medium text-gray-800">
@@ -291,7 +291,7 @@ export default function EventPage() {
             <Link
               key={card.href}
               href={card.href}
-              className="flex items-center gap-4 bg-white rounded-2xl border border-gray-100 p-4 hover:shadow-md transition-shadow group"
+              className="flex items-center gap-4 bg-[#FBF6EE] rounded-2xl border border-[#E4D8C4] p-4 hover:shadow-md transition-shadow group"
             >
               <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${card.color}`}>
                 <Icon size={18} />
@@ -311,8 +311,8 @@ export default function EventPage() {
         <SheetContent className="sm:max-w-sm px-6 overflow-y-auto">
           <SheetHeader>
             <SheetTitle className="flex items-center gap-2 text-sm">
-              <div className="w-7 h-7 rounded-xl bg-[#EDE9FE] flex items-center justify-center flex-shrink-0">
-                <Pencil size={13} className="text-[#8B5CF6]" />
+              <div className="w-7 h-7 rounded-xl bg-[#F5EDE6] flex items-center justify-center flex-shrink-0">
+                <Pencil size={13} className="text-[#A8492A]" />
               </div>
               Изменить мероприятие
             </SheetTitle>
@@ -369,7 +369,7 @@ export default function EventPage() {
               <Button
                 onClick={handleEdit}
                 disabled={updateToy.isPending}
-                className="flex-1 bg-[#8B5CF6] hover:bg-[#7C3AED] rounded-xl h-10 text-xs"
+                className="flex-1 bg-[#A8492A] hover:bg-[#8A3A20] rounded-xl h-10 text-xs"
               >
                 {updateToy.isPending ? 'Сохранение...' : 'Сохранить'}
               </Button>

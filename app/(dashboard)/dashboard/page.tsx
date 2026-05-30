@@ -47,7 +47,7 @@ export default function DashboardPage() {
         </div>
         <Link
           href="/events/new"
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#8B5CF6] hover:bg-[#7C3AED] text-white text-sm font-semibold rounded-xl transition-colors shadow-sm shadow-violet-200"
+          className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#A8492A] hover:bg-[#8A3A20] text-white text-sm font-semibold rounded-xl transition-colors shadow-sm shadow-[#E8C5B5]"
         >
           <Plus size={16} />
           Создать мероприятие
@@ -71,7 +71,7 @@ export default function DashboardPage() {
       {isLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="bg-white rounded-2xl border border-gray-100 p-5 space-y-3">
+            <div key={i} className="bg-[#FBF6EE] rounded-2xl border border-[#E4D8C4] p-5 space-y-3">
               <Skeleton className="h-4 w-24 rounded-full" />
               <Skeleton className="h-5 w-48" />
               <Skeleton className="h-3.5 w-36" />

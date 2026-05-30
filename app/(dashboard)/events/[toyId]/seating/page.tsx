@@ -75,7 +75,7 @@ function DesktopTableCard({
   const pct = table.capacity > 0 ? Math.round((occupancy / table.capacity) * 100) : 0
 
   return (
-    <div ref={setNodeRef} className={`bg-white rounded-2xl border-2 transition-all ${isOver ? 'border-[#8B5CF6] bg-violet-50/30' : 'border-gray-100'}`}>
+    <div ref={setNodeRef} className={`bg-[#FBF6EE] rounded-2xl border-2 transition-all ${isOver ? 'border-[#A8492A] bg-[#FBF5F1]/30' : 'border-gray-100'}`}>
       <div className="p-4 border-b border-gray-50 flex items-center justify-between">
         <div>
           <h3 className="font-semibold text-gray-900 text-sm">{table.name}</h3>
@@ -83,7 +83,7 @@ function DesktopTableCard({
         </div>
         <div className="flex items-center gap-2">
           <div className="w-16 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-            <div className={`h-full rounded-full transition-all ${pct >= 100 ? 'bg-red-400' : pct >= 80 ? 'bg-amber-400' : 'bg-[#8B5CF6]'}`} style={{ width: `${Math.min(pct, 100)}%` }} />
+            <div className={`h-full rounded-full transition-all ${pct >= 100 ? 'bg-red-400' : pct >= 80 ? 'bg-amber-400' : 'bg-[#A8492A]'}`} style={{ width: `${Math.min(pct, 100)}%` }} />
           </div>
           <button onClick={onDelete} className="w-7 h-7 rounded-lg flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 transition-colors">
             <Trash2 size={13} />
@@ -197,7 +197,7 @@ export default function SeatingPage() {
           <h1 className="text-xl font-semibold text-gray-900">Рассадка</h1>
           <p className="text-xs text-gray-500">{totalAssigned}/{totalGuests} гостей рассажено</p>
         </div>
-        <Button onClick={() => setShowForm(!showForm)} className="bg-[#8B5CF6] hover:bg-[#7C3AED] rounded-xl gap-2">
+        <Button onClick={() => setShowForm(!showForm)} className="bg-[#A8492A] hover:bg-[#8A3A20] rounded-xl gap-2">
           <Plus size={16} />
           <span className="hidden sm:block">Стол</span>
         </Button>
@@ -205,7 +205,7 @@ export default function SeatingPage() {
 
       {/* Create table form */}
       {showForm && (
-        <div className="bg-white rounded-2xl border border-gray-100 p-4 mb-5">
+        <div className="bg-[#FBF6EE] rounded-2xl border border-[#E4D8C4] p-4 mb-5">
           <h3 className="text-sm font-semibold text-gray-900 mb-3">Новый стол</h3>
           <div className="grid grid-cols-2 gap-3">
             <div>
@@ -220,7 +220,7 @@ export default function SeatingPage() {
           </div>
           <div className="flex gap-2 mt-3">
             <Button variant="outline" onClick={() => setShowForm(false)} className="flex-1 rounded-xl h-9 text-xs">Отмена</Button>
-            <Button onClick={handleCreateTable} disabled={createTable.isPending} className="flex-1 bg-[#8B5CF6] hover:bg-[#7C3AED] rounded-xl h-9 text-xs">Создать</Button>
+            <Button onClick={handleCreateTable} disabled={createTable.isPending} className="flex-1 bg-[#A8492A] hover:bg-[#8A3A20] rounded-xl h-9 text-xs">Создать</Button>
           </div>
         </div>
       )}
@@ -252,10 +252,10 @@ export default function SeatingPage() {
                     <button
                       key={g.id}
                       onClick={() => setAssigningGuest(g)}
-                      className="w-full flex items-center gap-3 bg-white rounded-2xl border border-gray-100 px-4 py-3 text-left active:bg-gray-50 transition-colors"
+                      className="w-full flex items-center gap-3 bg-[#FBF6EE] rounded-2xl border border-[#E4D8C4] px-4 py-3 text-left active:bg-gray-50 transition-colors"
                     >
-                      <div className="w-9 h-9 rounded-full bg-[#EDE9FE] flex items-center justify-center flex-shrink-0">
-                        <span className="text-xs font-semibold text-[#8B5CF6]">{getInitials(g.firstName, g.lastName)}</span>
+                      <div className="w-9 h-9 rounded-full bg-[#F5EDE6] flex items-center justify-center flex-shrink-0">
+                        <span className="text-xs font-semibold text-[#A8492A]">{getInitials(g.firstName, g.lastName)}</span>
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-gray-900 truncate">
@@ -263,7 +263,7 @@ export default function SeatingPage() {
                           {g.partySize > 1 && <span className="ml-1 text-xs text-gray-400">+{g.partySize - 1}</span>}
                         </p>
                       </div>
-                      <div className="flex items-center gap-1 text-[#8B5CF6] flex-shrink-0">
+                      <div className="flex items-center gap-1 text-[#A8492A] flex-shrink-0">
                         <span className="text-xs font-medium">Назначить</span>
                         <ChevronRight size={14} />
                       </div>
@@ -280,14 +280,14 @@ export default function SeatingPage() {
                 const free = table.capacity - occupancy
                 const pct = table.capacity > 0 ? Math.round((occupancy / table.capacity) * 100) : 0
                 return (
-                  <div key={table.id} className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+                  <div key={table.id} className="bg-[#FBF6EE] rounded-2xl border border-[#E4D8C4] overflow-hidden">
                     {/* Table header */}
                     <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-50">
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-semibold text-gray-900">{table.name}</p>
                         <div className="flex items-center gap-2 mt-1">
                           <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                            <div className={`h-full rounded-full ${pct >= 100 ? 'bg-red-400' : pct >= 80 ? 'bg-amber-400' : 'bg-[#8B5CF6]'}`} style={{ width: `${Math.min(pct, 100)}%` }} />
+                            <div className={`h-full rounded-full ${pct >= 100 ? 'bg-red-400' : pct >= 80 ? 'bg-amber-400' : 'bg-[#A8492A]'}`} style={{ width: `${Math.min(pct, 100)}%` }} />
                           </div>
                           <span className="text-[11px] text-gray-400 flex-shrink-0">{occupancy}/{table.capacity}</span>
                         </div>
@@ -372,7 +372,7 @@ export default function SeatingPage() {
 
               <DragOverlay>
                 {activeGuest && (
-                  <div className="bg-white shadow-lg rounded-lg px-3 py-2 text-xs font-medium text-gray-700 border border-[#8B5CF6]/30">
+                  <div className="bg-white shadow-lg rounded-lg px-3 py-2 text-xs font-medium text-gray-700 border border-[#A8492A]/30">
                     {activeGuest.firstName} {activeGuest.lastName}
                   </div>
                 )}
@@ -388,7 +388,7 @@ export default function SeatingPage() {
           <SheetHeader className="pb-2">
             <SheetTitle className="text-sm text-left">
               Выберите стол для{' '}
-              <span className="text-[#8B5CF6]">
+              <span className="text-[#A8492A]">
                 {assigningGuest?.firstName}{assigningGuest?.lastName ? ` ${assigningGuest.lastName}` : ''}
               </span>
             </SheetTitle>
@@ -407,7 +407,7 @@ export default function SeatingPage() {
                   className={`w-full flex items-center gap-4 rounded-2xl border px-4 py-3.5 text-left transition-all ${
                     full
                       ? 'border-gray-100 opacity-40 cursor-not-allowed'
-                      : 'border-gray-100 hover:border-[#8B5CF6] hover:bg-violet-50/40 active:bg-violet-50'
+                      : 'border-gray-100 hover:border-[#A8492A] hover:bg-[#FBF5F1]/40 active:bg-[#FBF5F1]'
                   }`}
                 >
                   <div className="flex-1 min-w-0">

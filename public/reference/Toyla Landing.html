@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Toyla — той-көмекші</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bone:#F4ECDF; --bone-2:#EFE5D5; --paper:#FBF6EE; --ink:#261B11; --ink-soft:#6E6151;
+    --clay:#A8492A; --clay-deep:#8A3A20; --gold:#B0843A; --gold-soft:#C8A24B; --line:#E4D8C4;
+    --fd:"Spectral",Georgia,serif; --fb:"Manrope",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--fb);color:var(--ink);background:var(--bone);-webkit-font-smoothing:antialiased;line-height:1.5;}
+  a{color:inherit;text-decoration:none;}
+  img{max-width:100%;display:block;}
+  .wrap{max-width:1200px;margin:0 auto;padding:0 40px;}
+
+  /* ---------- header ---------- */
+  header{position:sticky;top:0;z-index:50;background:rgba(244,236,223,.82);backdrop-filter:saturate(150%) blur(12px);border-bottom:1px solid rgba(228,216,196,.7);}
+  .hrow{display:flex;align-items:center;justify-content:space-between;height:78px;}
+  .logo{display:flex;align-items:center;gap:12px;}
+  .logo .mk{width:38px;height:38px;flex:none;}
+  .logo .wm{font-family:var(--fd);font-weight:500;font-size:27px;letter-spacing:.005em;color:var(--ink);line-height:1;}
+  .logo .wm .d{color:var(--clay);}
+  nav{display:flex;align-items:center;gap:34px;}
+  .nav-link{font-size:14.5px;font-weight:500;color:var(--ink-soft);transition:color .18s;}
+  .nav-link:hover{color:var(--clay);}
+  .hactions{display:flex;align-items:center;gap:22px;}
+  .lang{font-size:13px;font-weight:600;color:var(--ink-soft);display:inline-flex;align-items:center;gap:5px;letter-spacing:.04em;}
+  .login{font-size:14.5px;font-weight:600;color:var(--ink);}
+  .btn{display:inline-flex;align-items:center;gap:9px;white-space:nowrap;font-family:var(--fb);font-weight:600;font-size:14.5px;border-radius:999px;padding:12px 24px;transition:transform .18s,box-shadow .18s,background .18s,color .18s;cursor:pointer;border:none;}
+  .btn-primary{background:var(--clay);color:#FBF6EE;box-shadow:0 8px 20px rgba(168,73,42,.22);}
+  .btn-primary:hover{background:var(--clay-deep);transform:translateY(-1px);box-shadow:0 12px 26px rgba(168,73,42,.3);}
+  .btn-ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line);}
+  .btn-ghost:hover{border-color:var(--clay);color:var(--clay);}
+
+  /* ---------- hero ---------- */
+  .hero{position:relative;text-align:center;padding:96px 0 54px;overflow:hidden;}
+  .hero .watermark{position:absolute;top:-90px;left:50%;transform:translateX(-50%);width:680px;height:680px;opacity:.05;pointer-events:none;}
+  .eyebrow{font-size:12px;font-weight:700;letter-spacing:.34em;text-transform:uppercase;color:var(--gold);margin-bottom:26px;}
+  h1{font-family:var(--fd);font-weight:400;font-size:clamp(44px,6.4vw,78px);line-height:1.06;letter-spacing:-.012em;color:var(--ink);}
+  h1 .it{font-style:italic;color:var(--clay);}
+  .hero-sub{max-width:560px;margin:26px auto 0;font-size:17px;line-height:1.6;color:var(--ink-soft);}
+  .hero-cta{display:flex;align-items:center;justify-content:center;gap:18px;margin-top:36px;flex-wrap:wrap;}
+  .text-link{font-size:15px;font-weight:600;color:var(--ink);white-space:nowrap;display:inline-flex;align-items:center;gap:8px;border-bottom:1.5px solid var(--line);padding-bottom:3px;transition:border-color .18s,color .18s;}
+  .text-link:hover{color:var(--clay);border-color:var(--clay);}
+  .hero-meta{margin-top:30px;font-size:13px;color:var(--ink-soft);letter-spacing:.02em;display:inline-flex;align-items:center;gap:10px;}
+  .hero-meta .dot{width:4px;height:4px;border-radius:50%;background:var(--gold);}
+
+  /* ---------- hero image ---------- */
+  .stage{padding:18px 0 4px;}
+  .frame{position:relative;border-radius:24px;overflow:hidden;border:1px solid var(--line);box-shadow:0 30px 70px rgba(38,27,17,.14);}
+  image-slot{width:100%;height:520px;}
+  .frame .corner{position:absolute;top:22px;left:22px;display:inline-flex;align-items:center;gap:9px;background:rgba(251,246,238,.92);backdrop-filter:blur(6px);padding:9px 15px 9px 11px;border-radius:999px;font-size:13px;font-weight:600;color:var(--ink);box-shadow:0 6px 18px rgba(38,27,17,.12);}
+  .frame .corner .mk{width:20px;height:20px;}
+  .frame .corner{white-space:nowrap;}
+
+  /* ---------- steps ---------- */
+  .section{padding:104px 0;}
+  .sec-head{max-width:680px;margin-bottom:64px;}
+  .sec-eyebrow{font-size:12px;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:18px;}
+  .sec-title{font-family:var(--fd);font-weight:400;font-size:clamp(32px,4vw,50px);line-height:1.1;letter-spacing:-.01em;color:var(--ink);}
+  .sec-title .it{font-style:italic;color:var(--clay);}
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--line);}
+  .step{padding:38px 34px 38px 0;border-right:1px solid var(--line);position:relative;}
+  .step:last-child{border-right:none;padding-right:0;}
+  .step:not(:first-child){padding-left:34px;}
+  .step-num{font-family:var(--fd);font-weight:300;font-size:46px;color:var(--clay);line-height:1;margin-bottom:22px;}
+  .step-kz{font-family:var(--fd);font-weight:500;font-size:23px;color:var(--ink);margin-bottom:4px;}
+  .step-ru{font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;}
+  .step-txt{font-size:15px;line-height:1.6;color:var(--ink-soft);}
+
+  /* ---------- closing ---------- */
+  .closing{background:var(--ink);color:var(--bone);border-radius:32px;padding:80px 64px;text-align:center;position:relative;overflow:hidden;}
+  .closing .wm-bg{position:absolute;right:-120px;top:50%;transform:translateY(-50%);width:480px;height:480px;opacity:.08;}
+  .closing .eyebrow{color:var(--gold-soft);}
+  .closing h2{font-family:var(--fd);font-weight:400;font-size:clamp(34px,4.4vw,56px);line-height:1.08;color:var(--paper);position:relative;}
+  .closing h2 .it{font-style:italic;color:var(--gold-soft);}
+  .closing p{max-width:480px;margin:22px auto 0;color:rgba(244,236,223,.72);font-size:16px;line-height:1.6;position:relative;}
+  .closing .hero-cta{margin-top:34px;}
+  .btn-light{background:var(--paper);color:var(--ink);}
+  .btn-light:hover{transform:translateY(-1px);box-shadow:0 12px 26px rgba(0,0,0,.25);}
+  .closing .text-link{color:var(--bone);border-color:rgba(244,236,223,.3);}
+  .closing .text-link:hover{color:#fff;border-color:var(--gold-soft);}
+
+  /* ---------- footer ---------- */
+  footer{padding:64px 0 40px;}
+  .frow{display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:34px;}
+  .fcols{display:flex;gap:40px;}
+  .fcols a{font-size:14px;color:var(--ink-soft);transition:color .18s;}
+  .fcols a:hover{color:var(--clay);}
+  .fcopy{font-size:13px;color:var(--ink-soft);}
+
+  @media(max-width:860px){
+    nav,.hactions .lang,.hactions .login{display:none;}
+    .steps{grid-template-columns:1fr;}
+    .step,.step:not(:first-child){border-right:none;border-bottom:1px solid var(--line);padding:30px 0;}
+    .step:last-child{border-bottom:none;}
+    .closing{padding:56px 28px;}
+    image-slot{height:340px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap hrow">
+    <a class="logo" href="#">
+      <span class="mk" data-shanyrak data-hoop="#261B11" data-lattice="#A8492A" data-spoke="#B0843A" data-sw="2.3"></span>
+      <span class="wm">Toyla<span class="d">.</span></span>
+    </a>
+    <nav>
+      <a class="nav-link" href="#how">Мүмкіндіктер</a>
+      <a class="nav-link" href="#">Үлгілер</a>
+      <a class="nav-link" href="#">Баға</a>
+    </nav>
+    <div class="hactions">
+      <span class="lang">RU ⌄</span>
+      <a class="login" href="#">Кіру</a>
+      <button class="btn btn-primary">Той құру</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <span class="watermark" data-shanyrak data-hoop="#A8492A" data-lattice="#A8492A" data-spoke="#A8492A" data-sw="1.4"></span>
+    <div class="wrap">
+      <div class="eyebrow">Той-көмекші</div>
+      <h1>Әдемі той<br/><span class="it">осыдан</span> басталады</h1>
+      <p class="hero-sub">Toyla берёт на себя весь той: красивые пригласительные, список гостей и напоминания — собрано в одном месте.</p>
+      <div class="hero-cta">
+        <button class="btn btn-primary">Той құру →</button>
+        <a class="text-link" href="#how">Қалай жұмыс істейді</a>
+      </div>
+      <div class="hero-meta"><span>Тойхана мен жеке тойларға</span><span class="dot"></span><span>Қазақша · Русский</span></div>
+    </div>
+  </section>
+
+  <section class="stage">
+    <div class="wrap">
+      <div class="frame">
+        <image-slot id="hero-photo" shape="rect" placeholder="Перетащите фото вашего праздника" fit="cover"></image-slot>
+        <span class="corner"><span class="mk" data-shanyrak data-hoop="#261B11" data-lattice="#A8492A" data-spoke="#B0843A" data-sw="2.4"></span>Айгерім &amp; Нұрлан · 14 маусым</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="how">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="sec-eyebrow">Қалай жұмыс істейді</div>
+        <div class="sec-title">Үш қадам — <span class="it">той дайын</span></div>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">01</div>
+          <div class="step-kz">Шақыру жасаңыз</div>
+          <div class="step-ru">Приглашение</div>
+          <div class="step-txt">Выберите шаблон, добавьте дату, место и пару тёплых слов. Готовое пригласительное — за минуту.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">02</div>
+          <div class="step-kz">Қонақтарды жинаңыз</div>
+          <div class="step-ru">Гости</div>
+          <div class="step-txt">Гость отвечает одним касанием. Список «кто придёт» собирается сам — без чатов и таблиц.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">03</div>
+          <div class="step-kz">Еске салдырыңыз</div>
+          <div class="step-ru">Напоминания</div>
+          <div class="step-txt">Toyla сам напомнит каждому гостю в нужный момент — накануне и в день торжества.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap" style="padding-bottom:40px;">
+    <div class="closing">
+      <span class="wm-bg" data-shanyrak data-hoop="#E9D9BE" data-lattice="#C8A24B" data-spoke="#C8A24B" data-sw="1.5"></span>
+      <div class="eyebrow">Тойыңызды бастаймыз ба?</div>
+      <h2>Әр шаңыраққа —<br/><span class="it">лайықты той</span></h2>
+      <p>Создайте первое пригласительное бесплатно. Без приложения — всё работает по одной ссылке.</p>
+      <div class="hero-cta">
+        <button class="btn btn-light">Той құру →</button>
+        <a class="text-link" href="#">Үлгілерді көру</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="frow">
+      <a class="logo" href="#">
+        <span class="mk" data-shanyrak data-hoop="#261B11" data-lattice="#A8492A" data-spoke="#B0843A" data-sw="2.3"></span>
+        <span class="wm" style="font-size:22px;">Toyla<span class="d">.</span></span>
+      </a>
+      <div class="fcols">
+        <a href="#">Мүмкіндіктер</a>
+        <a href="#">Үлгілер</a>
+        <a href="#">Баға</a>
+        <a href="#">Қолдау</a>
+      </div>
+      <div class="fcopy">© 2026 Toyla · toyla.app</div>
+    </div>
+  </div>
+</footer>
+
+<script src="image-slot.js"></script>
+<script src="shanyrak.js"></script>
+</body>
+</html>

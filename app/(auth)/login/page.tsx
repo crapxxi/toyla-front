@@ -1,10 +1,11 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Sparkles, Globe } from 'lucide-react'
+import { Globe } from 'lucide-react'
 import toast from 'react-hot-toast'
 import axios from 'axios'
 import { OtpInput } from '@/components/auth/OtpInput'
+import { Logo } from '@/components/shared/Logo'
 import { useAuthStore } from '@/store/auth.store'
 import { AuthResponse } from '@/types'
 import { api } from '@/lib/api'
@@ -14,17 +15,17 @@ type Lang = 'ru' | 'kk'
 
 const t = {
   ru: {
-    title: 'Toyla.app',
-    subtitle: 'Платформа для управления мероприятиями',
+    title: 'Добро пожаловать',
+    subtitle: 'Войдите, чтобы управлять своими тоями',
     phoneLabel: 'Номер телефона',
-    sendCode: 'Получить код',
-    otpLabel: 'Введите код из WhatsApp',
+    sendCode: 'Получить код →',
+    otpLabel: 'Код из WhatsApp',
     nameLabel: 'Имя',
     lastNameLabel: 'Фамилия',
     namePlaceholder: 'Айгерим',
     lastNamePlaceholder: 'Алибекова',
     nameHint: 'Будет отображаться в приглашениях',
-    verify: 'Войти',
+    verify: 'Войти →',
     resendIn: (s: number) => `Повторно через ${s}с`,
     resendCode: 'Отправить повторно',
     back: 'Изменить номер',
@@ -33,17 +34,17 @@ const t = {
     sentTo: (p: string) => `Код отправлен на +${p}`,
   },
   kk: {
-    title: 'Toyla.app',
-    subtitle: 'Іс-шараларды басқару платформасы',
+    title: 'Қош келдіңіз',
+    subtitle: 'Тойларыңызды басқару үшін кіріңіз',
     phoneLabel: 'Телефон нөмірі',
-    sendCode: 'Кодты алу',
-    otpLabel: 'WhatsApp кодын енгізіңіз',
+    sendCode: 'Кодты алу →',
+    otpLabel: 'WhatsApp коды',
     nameLabel: 'Аты',
     lastNameLabel: 'Тегі',
     namePlaceholder: 'Айгерім',
     lastNamePlaceholder: 'Әлібекова',
     nameHint: 'Шақырулармен көрсетіледі',
-    verify: 'Кіру',
+    verify: 'Кіру →',
     resendIn: (s: number) => `${s}с кейін қайталаңыз`,
     resendCode: 'Қайта жіберу',
     back: 'Нөмірді өзгерту',
@@ -61,6 +62,19 @@ function formatPhoneDisplay(raw: string): string {
   if (digits.length >= 6) result += '-' + digits.slice(6, 8)
   if (digits.length >= 8) result += '-' + digits.slice(8, 10)
   return result
+}
+
+const inputStyle = {
+  width: '100%',
+  padding: '11px 14px',
+  borderRadius: 12,
+  border: '1px solid var(--line)',
+  background: 'var(--paper)',
+  color: 'var(--ink)',
+  fontFamily: 'var(--font-manrope), sans-serif',
+  fontSize: 14,
+  outline: 'none',
+  transition: 'border-color .2s',
 }
 
 export default function LoginPage() {
@@ -126,23 +140,18 @@ export default function LoginPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token: data.token }),
       })
-      if (!res.ok) {
-        toast.error('Ошибка сохранения сессии. Попробуйте ещё раз.')
-        return
-      }
+      if (!res.ok) { toast.error('Ошибка сохранения сессии.'); return }
       setAuth(data)
       toast.success(tr.loginSuccess)
       window.location.href = '/dashboard'
     } catch (err) {
       if (axios.isAxiosError(err)) {
         const status = err.response?.status
-        if (status === 400) toast.error('Неверный код. Попробуйте ещё раз.')
-        else if (status === 429) {
-          const retryAfter = err.response?.headers?.['retry-after'] ?? 60
-          toast.error(`Лимит запросов. Повторите через ${retryAfter}с`)
-        } else toast.error(err.response?.data?.error ?? 'Ошибка верификации')
+        if (status === 400) toast.error('Неверный код.')
+        else if (status === 429) toast.error(`Лимит. Повторите через ${err.response?.headers?.['retry-after'] ?? 60}с`)
+        else toast.error(err.response?.data?.error ?? 'Ошибка')
       } else {
-        toast.error('Ошибка соединения. Попробуйте ещё раз.')
+        toast.error('Ошибка соединения.')
       }
     } finally {
       setLoading(false)
@@ -150,143 +159,152 @@ export default function LoginPage() {
   }, [otp, phoneRaw, setAuth, tr.loginSuccess])
 
   const slideVariants = {
-    enter: (dir: number) => ({ x: dir * 40, opacity: 0 }),
+    enter: (dir: number) => ({ x: dir * 32, opacity: 0 }),
     center: { x: 0, opacity: 1 },
-    exit: (dir: number) => ({ x: -dir * 40, opacity: 0 }),
+    exit: (dir: number) => ({ x: -dir * 32, opacity: 0 }),
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[#F5F3FF] via-white to-[#FEF3C7] px-4">
-      <div className="absolute top-4 right-4 flex items-center gap-1 bg-white/80 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-sm border border-gray-100">
-        <Globe size={14} className="text-gray-400" />
-        {(['ru', 'kk'] as Lang[]).map((l) => (
-          <button
-            key={l}
-            onClick={() => setLang(l)}
-            className={`text-xs font-medium px-2 py-0.5 rounded-full transition-colors ${lang === l ? 'bg-[#8B5CF6] text-white' : 'text-gray-600 hover:text-gray-900'}`}
-          >
-            {l.toUpperCase()}
-          </button>
-        ))}
+    <div className="min-h-screen flex flex-col" style={{ background: 'var(--bone)' }}>
+      {/* Top bar */}
+      <div className="flex items-center justify-between px-6 py-5">
+        <Logo size="sm" href="/" />
+        <div className="flex items-center gap-1 rounded-full px-3 py-1.5" style={{ background: 'var(--paper)', border: '1px solid var(--line)' }}>
+          <Globe size={13} style={{ color: 'var(--ink-soft)' }} />
+          {(['ru', 'kk'] as Lang[]).map((l) => (
+            <button
+              key={l}
+              onClick={() => setLang(l)}
+              className="text-xs font-semibold px-2 py-0.5 rounded-full transition-all"
+              style={lang === l
+                ? { background: 'var(--clay)', color: 'var(--paper)' }
+                : { color: 'var(--ink-soft)' }
+              }
+            >
+              {l.toUpperCase()}
+            </button>
+          ))}
+        </div>
       </div>
 
-      <div className="w-full max-w-sm">
-        <div className="flex items-center justify-center gap-2.5 mb-8">
-          <div className="w-10 h-10 rounded-xl bg-[#8B5CF6] flex items-center justify-center shadow-lg shadow-violet-200">
-            <Sparkles size={20} className="text-white" />
+      {/* Card */}
+      <div className="flex-1 flex items-center justify-center px-4 pb-16">
+        <div className="w-full max-w-sm">
+          {/* Shanyrak watermark behind card */}
+          <div style={{ width: 64, height: 64, margin: '0 auto 20px', opacity: 0.18 }}>
+            <Logo size="md" href="/" />
           </div>
-          <div className="flex items-baseline">
-            <span className="text-2xl font-semibold text-gray-900">toyla</span>
-            <span className="text-2xl font-light text-[#8B5CF6]">.app</span>
-          </div>
-        </div>
 
-        <div className="bg-white rounded-2xl shadow-xl shadow-gray-100/80 border border-gray-100 overflow-hidden">
-          <AnimatePresence mode="wait" custom={step === 'otp' ? 1 : -1}>
-            {step === 'phone' ? (
-              <motion.div
-                key="phone"
-                custom={-1}
-                variants={slideVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                transition={{ duration: 0.25, ease: 'easeOut' }}
-                className="p-8"
-              >
-                <h1 className="text-xl font-semibold text-gray-900 mb-1">{tr.title}</h1>
-                <p className="text-sm text-gray-500 mb-6">{tr.subtitle}</p>
-                <label className="block text-sm font-medium text-gray-700 mb-2">{tr.phoneLabel}</label>
-                <input
-                  type="tel"
-                  value={phone || '+7'}
-                  onChange={handlePhoneChange}
-                  onFocus={(e) => {
-                    if (!phone) setPhone('+7')
-                    setTimeout(() => e.target.setSelectionRange(e.target.value.length, e.target.value.length), 0)
-                  }}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSendCode()}
-                  placeholder="+7 (___) ___-__-__"
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#8B5CF6] focus:ring-2 focus:ring-[#8B5CF6]/20 outline-none text-sm transition-all"
-                  disabled={loading}
-                />
-                <button
-                  onClick={handleSendCode}
-                  disabled={loading || phoneRaw.length < 11}
-                  className="w-full mt-4 py-3 rounded-xl bg-[#8B5CF6] text-white text-sm font-semibold hover:bg-[#7C3AED] transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+          <div className="rounded-2xl overflow-hidden"
+            style={{ background: 'var(--paper)', border: '1px solid var(--line)', boxShadow: '0 20px 60px rgba(38,27,17,.1)' }}>
+            <AnimatePresence mode="wait" custom={step === 'otp' ? 1 : -1}>
+              {step === 'phone' ? (
+                <motion.div
+                  key="phone" custom={-1} variants={slideVariants}
+                  initial="enter" animate="center" exit="exit"
+                  transition={{ duration: 0.22, ease: 'easeOut' }}
+                  className="p-8"
                 >
-                  {loading ? 'Отправка...' : tr.sendCode}
-                </button>
-              </motion.div>
-            ) : (
-              <motion.div
-                key="otp"
-                custom={1}
-                variants={slideVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                transition={{ duration: 0.25, ease: 'easeOut' }}
-                className="p-8"
-              >
-                <button
-                  onClick={() => { setStep('phone'); setOtp('') }}
-                  className="text-xs text-[#8B5CF6] hover:underline mb-4 flex items-center gap-1"
+                  <h1 className="font-semibold mb-1" style={{ fontFamily: 'var(--font-spectral), serif', fontSize: 22, color: 'var(--ink)', fontWeight: 500 }}>
+                    {tr.title}
+                  </h1>
+                  <p className="text-sm mb-6" style={{ color: 'var(--ink-soft)' }}>{tr.subtitle}</p>
+
+                  <label className="block text-xs font-semibold mb-1.5" style={{ color: 'var(--ink-soft)' }}>{tr.phoneLabel}</label>
+                  <input
+                    type="tel"
+                    value={phone || '+7'}
+                    onChange={handlePhoneChange}
+                    onFocus={(e) => {
+                      if (!phone) setPhone('+7')
+                      e.target.style.borderColor = 'var(--clay)'
+                      setTimeout(() => e.target.setSelectionRange(e.target.value.length, e.target.value.length), 0)
+                    }}
+                    onBlur={(e) => { e.target.style.borderColor = 'var(--line)' }}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSendCode()}
+                    placeholder="+7 (___) ___-__-__"
+                    style={inputStyle}
+                    disabled={loading}
+                  />
+                  <button
+                    onClick={handleSendCode}
+                    disabled={loading || phoneRaw.length < 11}
+                    className="w-full mt-4 py-3 rounded-full font-semibold text-sm transition-all disabled:opacity-40"
+                    style={{ background: 'var(--clay)', color: 'var(--paper)', fontFamily: 'var(--font-manrope), sans-serif', boxShadow: '0 6px 18px rgba(168,73,42,.22)' }}
+                  >
+                    {loading ? 'Отправка...' : tr.sendCode}
+                  </button>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="otp" custom={1} variants={slideVariants}
+                  initial="enter" animate="center" exit="exit"
+                  transition={{ duration: 0.22, ease: 'easeOut' }}
+                  className="p-8"
                 >
-                  ← {tr.back}
-                </button>
-                <h2 className="text-lg font-semibold text-gray-900 mb-1">{tr.otpLabel}</h2>
-                <p className="text-xs text-gray-500 mb-6">{tr.sentTo(phoneRaw)}</p>
-                <OtpInput value={otp} onChange={setOtp} disabled={loading} />
-                <div className="mt-5 grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1.5">{tr.nameLabel}</label>
-                    <input
-                      type="text"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      placeholder={tr.namePlaceholder}
-                      maxLength={64}
-                      disabled={loading}
-                      className="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:border-[#8B5CF6] focus:ring-2 focus:ring-[#8B5CF6]/20 outline-none text-sm transition-all"
-                    />
+                  <button
+                    onClick={() => { setStep('phone'); setOtp('') }}
+                    className="text-xs font-semibold mb-4 flex items-center gap-1 transition-colors"
+                    style={{ color: 'var(--clay)' }}
+                  >
+                    ← {tr.back}
+                  </button>
+                  <h2 className="font-semibold mb-1" style={{ fontFamily: 'var(--font-spectral), serif', fontSize: 20, color: 'var(--ink)', fontWeight: 500 }}>
+                    {tr.otpLabel}
+                  </h2>
+                  <p className="text-xs mb-5" style={{ color: 'var(--ink-soft)' }}>{tr.sentTo(phoneRaw)}</p>
+
+                  <OtpInput value={otp} onChange={setOtp} disabled={loading} />
+
+                  <div className="mt-5 grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-semibold mb-1" style={{ color: 'var(--ink-soft)' }}>{tr.nameLabel}</label>
+                      <input
+                        type="text" value={name} onChange={(e) => setName(e.target.value)}
+                        placeholder={tr.namePlaceholder} maxLength={64} disabled={loading}
+                        style={inputStyle}
+                        onFocus={(e) => { e.target.style.borderColor = 'var(--clay)' }}
+                        onBlur={(e) => { e.target.style.borderColor = 'var(--line)' }}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold mb-1" style={{ color: 'var(--ink-soft)' }}>{tr.lastNameLabel}</label>
+                      <input
+                        type="text" value={lastName} onChange={(e) => setLastName(e.target.value)}
+                        placeholder={tr.lastNamePlaceholder} maxLength={64} disabled={loading}
+                        style={inputStyle}
+                        onFocus={(e) => { e.target.style.borderColor = 'var(--clay)' }}
+                        onBlur={(e) => { e.target.style.borderColor = 'var(--line)' }}
+                      />
+                    </div>
                   </div>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1.5">{tr.lastNameLabel}</label>
-                    <input
-                      type="text"
-                      value={lastName}
-                      onChange={(e) => setLastName(e.target.value)}
-                      placeholder={tr.lastNamePlaceholder}
-                      maxLength={64}
-                      disabled={loading}
-                      className="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:border-[#8B5CF6] focus:ring-2 focus:ring-[#8B5CF6]/20 outline-none text-sm transition-all"
-                    />
+                  <p className="text-xs mt-1.5" style={{ color: 'var(--ink-soft)', opacity: 0.7 }}>{tr.nameHint}</p>
+
+                  <button
+                    onClick={handleVerify}
+                    disabled={loading || otp.length < 6}
+                    className="w-full mt-5 py-3 rounded-full font-semibold text-sm transition-all disabled:opacity-40"
+                    style={{ background: 'var(--clay)', color: 'var(--paper)', fontFamily: 'var(--font-manrope), sans-serif', boxShadow: '0 6px 18px rgba(168,73,42,.22)' }}
+                  >
+                    {loading ? 'Проверка...' : tr.verify}
+                  </button>
+                  <div className="mt-4 text-center">
+                    {countdown > 0 ? (
+                      <p className="text-xs" style={{ color: 'var(--ink-soft)' }}>{tr.resendIn(countdown)}</p>
+                    ) : (
+                      <button
+                        onClick={async () => { await handleSendCode(); setOtp('') }}
+                        className="text-xs font-semibold transition-colors"
+                        style={{ color: 'var(--clay)' }}
+                      >
+                        {tr.resendCode}
+                      </button>
+                    )}
                   </div>
-                </div>
-                <p className="text-xs text-gray-400 mt-1.5">{tr.nameHint}</p>
-                <button
-                  onClick={handleVerify}
-                  disabled={loading || otp.length < 6}
-                  className="w-full mt-6 py-3 rounded-xl bg-[#8B5CF6] text-white text-sm font-semibold hover:bg-[#7C3AED] transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
-                >
-                  {loading ? 'Проверка...' : tr.verify}
-                </button>
-                <div className="mt-4 text-center">
-                  {countdown > 0 ? (
-                    <p className="text-xs text-gray-400">{tr.resendIn(countdown)}</p>
-                  ) : (
-                    <button
-                      onClick={async () => { await handleSendCode(); setOtp('') }}
-                      className="text-xs text-[#8B5CF6] hover:underline font-medium"
-                    >
-                      {tr.resendCode}
-                    </button>
-                  )}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
       </div>
     </div>

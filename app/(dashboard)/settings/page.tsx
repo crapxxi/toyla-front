@@ -33,10 +33,10 @@ export default function SettingsPage() {
       </div>
 
       <div className="max-w-lg">
-        <div className="bg-white rounded-2xl border border-gray-100 p-6">
+        <div className="bg-[#FBF6EE] rounded-2xl border border-[#E4D8C4] p-6">
           <div className="flex items-center gap-4 mb-6">
-            <div className="w-16 h-16 rounded-2xl bg-[#EDE9FE] flex items-center justify-center">
-              <span className="text-lg font-bold text-[#8B5CF6]">{initials}</span>
+            <div className="w-16 h-16 rounded-2xl bg-[#F5EDE6] flex items-center justify-center">
+              <span className="text-lg font-bold text-[#A8492A]">{initials}</span>
             </div>
             <div>
               {isLoading ? (
