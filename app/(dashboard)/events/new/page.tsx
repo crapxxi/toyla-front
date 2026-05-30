@@ -71,6 +71,7 @@ const detailsSchema = z.object({
   eventDate: z.string().min(1, 'Укажите дату'),
   locationName: z.string().optional(),
   gisLink: z.string().url('Введите корректную ссылку').optional().or(z.literal('')),
+  organizerName: z.string().max(128).optional(),
 })
 
 type DetailsForm = z.infer<typeof detailsSchema>
@@ -245,7 +246,7 @@ export default function NewEventPage() {
 
   const form = useForm<DetailsForm>({
     resolver: zodResolver(detailsSchema),
-    defaultValues: { title: '', description: '', eventDate: '', locationName: '', gisLink: '' },
+    defaultValues: { title: '', description: '', eventDate: '', locationName: '', gisLink: '', organizerName: '' },
   })
 
   const handleDetailsNext = form.handleSubmit(() => setStep(1))
@@ -258,6 +259,7 @@ export default function NewEventPage() {
       eventDate: new Date(values.eventDate).toISOString().replace('Z', '').slice(0, 19),
       locationName: values.locationName || undefined,
       gisLink: values.gisLink || undefined,
+      organizerName: values.organizerName || undefined,
       templateId: selectedTemplate,
       language: selectedLang,
     })
@@ -322,6 +324,11 @@ export default function NewEventPage() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">Место проведения</label>
                 <Input {...form.register('locationName')} placeholder="Ресторан Alatau, Алматы" className="rounded-xl" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Имя организатора</label>
+                <Input {...form.register('organizerName')} placeholder="Семья Абылай" className="rounded-xl" />
+                <p className="text-xs text-gray-400 mt-1">Отображается на странице приглашения. Если не заполнено — берётся из профиля</p>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">Ссылка на 2GIS</label>

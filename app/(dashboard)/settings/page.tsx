@@ -1,5 +1,5 @@
 'use client'
-import { Phone, User } from 'lucide-react'
+import { User } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useAuthStore } from '@/store/auth.store'
@@ -50,10 +50,7 @@ export default function SettingsPage() {
 
           <Separator className="mb-6" />
 
-          <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            <Phone size={15} />
-            Профиль
-          </h3>
+          <h3 className="text-sm font-semibold text-gray-900 mb-4">Профиль</h3>
 
           <div className="space-y-4">
             <div>

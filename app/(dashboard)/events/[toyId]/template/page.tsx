@@ -202,44 +202,6 @@ export default function TemplatePage() {
                     className="rounded-xl text-sm"
                   />
                 </div>
-                <Separator />
-                <div>
-                  <label className="block text-sm text-gray-700 mb-2">Стиль таймера</label>
-                  <div className="grid grid-cols-3 gap-2">
-                    {(['minimal', 'elegant', 'festive'] as const).map((s) => (
-                      <button
-                        key={s}
-                        onClick={() => updateSettings({ countdownStyle: s })}
-                        className={`py-2 px-3 text-xs rounded-xl border transition-all ${
-                          settings.countdownStyle === s
-                            ? 'border-[#8B5CF6] bg-[#EDE9FE] text-[#8B5CF6] font-medium'
-                            : 'border-gray-200 text-gray-600 hover:border-gray-300'
-                        }`}
-                      >
-                        {s === 'minimal' ? 'Простой' : s === 'elegant' ? 'Элегант.' : 'Праздн.'}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <Separator />
-                <div>
-                  <label className="block text-sm text-gray-700 mb-2">Позиция</label>
-                  <div className="grid grid-cols-3 gap-2">
-                    {(['top', 'bottom', 'floating'] as const).map((p) => (
-                      <button
-                        key={p}
-                        onClick={() => updateSettings({ countdownPosition: p })}
-                        className={`py-2 px-3 text-xs rounded-xl border transition-all ${
-                          settings.countdownPosition === p
-                            ? 'border-[#8B5CF6] bg-[#EDE9FE] text-[#8B5CF6] font-medium'
-                            : 'border-gray-200 text-gray-600 hover:border-gray-300'
-                        }`}
-                      >
-                        {p === 'top' ? '↑ Сверху' : p === 'bottom' ? '↓ Снизу' : '⊙ Плав.'}
-                      </button>
-                    ))}
-                  </div>
-                </div>
               </>
             )}
           </SectionCard>

@@ -93,6 +93,7 @@ export interface ToyRequest {
   eventDate: string
   locationName?: string
   gisLink?: string
+  organizerName?: string
   templateId: EventTemplate
   language?: MessageLanguage
   templateSettings?: Record<string, unknown>
