@@ -72,12 +72,18 @@ export function GuestRegisterForm({ toyId, primaryColor, accentColor, variant, t
     }
   }
 
+  const inputType: React.CSSProperties = {
+    fontFamily: 'var(--font-display), Georgia, serif',
+    fontSize: '1.12rem',
+    fontWeight: 500,
+  }
+
   const inputStyle: React.CSSProperties =
     variant === 'glass'
-      ? { background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: '#fff' }
+      ? { ...inputType, background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: '#fff' }
       : variant === 'dark'
-      ? { background: 'rgba(255,255,255,0.05)', border: `1px solid ${primaryColor}40`, color: '#F1F0FF' }
-      : { borderColor: `${accentColor}60`, backgroundColor: 'white', color: textColor ?? '#2C1810' }
+      ? { ...inputType, background: 'rgba(255,255,255,0.05)', border: `1px solid ${primaryColor}40`, color: '#F1F0FF' }
+      : { ...inputType, borderColor: `${accentColor}55`, backgroundColor: 'white', color: textColor ?? '#2C1810' }
 
   const wrapStyle: React.CSSProperties =
     variant === 'glass'
@@ -94,104 +100,104 @@ export function GuestRegisterForm({ toyId, primaryColor, accentColor, variant, t
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="rounded-2xl p-6 text-center"
+        className="rounded-3xl p-7 text-center"
         style={wrapStyle}
       >
-        <div className="text-3xl mb-3">📱</div>
-        <p className="font-medium mb-1" style={{ color: primaryColor }}>{bi.registerSuccess}</p>
-        <p className="text-sm opacity-70" style={{ color: textColor }}>{bi.checkWhatsApp}</p>
-        <p className="text-xs mt-1 opacity-50" style={{ color: textColor }}>{bi.linkSentAlt}</p>
+        <div className="text-4xl mb-3">📱</div>
+        <p className="mb-1.5" style={{ fontFamily: 'var(--font-display), Georgia, serif', fontSize: '1.5rem', fontStyle: 'italic', fontWeight: 600, color: primaryColor }}>{bi.registerSuccess}</p>
+        <p style={{ fontFamily: 'var(--font-display), Georgia, serif', fontSize: '1.05rem', fontWeight: 500, opacity: 0.78, color: textColor }}>{bi.checkWhatsApp}</p>
+        <p className="mt-1" style={{ fontFamily: 'var(--font-sc), Georgia, serif', fontSize: '0.85rem', opacity: 0.55, color: textColor }}>{bi.linkSentAlt}</p>
       </motion.div>
     )
   }
 
   return (
-    <div className="rounded-2xl p-5 space-y-3" style={wrapStyle}>
-      <p className="text-[11px] uppercase tracking-[0.4em]" style={{ color: labelColor }}>
+    <div className="rounded-3xl p-6 space-y-3.5" style={wrapStyle}>
+      <p className="text-center" style={{ fontFamily: 'var(--font-sc), Georgia, serif', fontSize: '0.95rem', fontWeight: 600, letterSpacing: '0.26em', textTransform: 'uppercase', color: labelColor }}>
         {bi.registerTitle}
       </p>
 
       {/* First name */}
       <div className="relative">
-        <User size={13} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: iconColor }} />
+        <User size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2" style={{ color: iconColor }} />
         <input
           type="text"
           value={firstName}
           onChange={(e) => setFirstName(e.target.value)}
           placeholder={bi.firstNamePlaceholder}
-          className="w-full pl-9 pr-3 py-2.5 text-sm rounded-xl outline-none transition-all"
+          className="w-full pl-11 pr-3.5 py-3 rounded-xl outline-none transition-all"
           style={inputStyle}
         />
       </div>
 
       {/* Last name */}
       <div className="relative">
-        <User size={13} className="absolute left-3 top-1/2 -translate-y-1/2 opacity-40" style={{ color: iconColor }} />
+        <User size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 opacity-40" style={{ color: iconColor }} />
         <input
           type="text"
           value={lastName}
           onChange={(e) => setLastName(e.target.value)}
           placeholder={bi.lastNamePlaceholder}
-          className="w-full pl-9 pr-3 py-2.5 text-sm rounded-xl outline-none transition-all"
+          className="w-full pl-11 pr-3.5 py-3 rounded-xl outline-none transition-all"
           style={inputStyle}
         />
       </div>
 
       {/* Party size */}
-      <div className="rounded-xl px-3 py-2.5 flex items-center justify-between gap-3" style={inputStyle}>
-        <div className="flex items-center gap-2">
-          <Users size={13} style={{ color: iconColor }} />
-          <span className="text-xs" style={{ color: iconColor }}>
+      <div className="rounded-xl px-4 py-3 flex items-center justify-between gap-3" style={inputStyle}>
+        <div className="flex items-center gap-2.5 min-w-0">
+          <Users size={17} className="flex-shrink-0" style={{ color: iconColor }} />
+          <span className="truncate" style={{ fontFamily: 'var(--font-display), Georgia, serif', fontSize: '1.05rem', fontWeight: 500, color: textColor ?? iconColor }}>
             {partySize === 1 ? bi.partySizeAlone : bi.partySizeWith(partySize - 1)}
           </span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3 flex-shrink-0">
           <button
             type="button"
             onClick={() => setPartySize(s => Math.max(1, s - 1))}
             disabled={partySize <= 1}
-            className="w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold transition-all disabled:opacity-30"
-            style={{ background: `${primaryColor}25`, color: primaryColor }}
+            className="w-8 h-8 rounded-full flex items-center justify-center text-lg font-bold transition-all disabled:opacity-30"
+            style={{ background: `${primaryColor}22`, color: primaryColor }}
           >−</button>
-          <span className="text-sm font-semibold w-4 text-center" style={{ color: primaryColor }}>{partySize}</span>
+          <span style={{ fontFamily: 'var(--font-display), Georgia, serif', fontSize: '1.25rem', fontWeight: 600, color: primaryColor, width: 20, textAlign: 'center' }}>{partySize}</span>
           <button
             type="button"
             onClick={() => setPartySize(s => Math.min(10, s + 1))}
             disabled={partySize >= 10}
-            className="w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold transition-all disabled:opacity-30"
-            style={{ background: `${primaryColor}25`, color: primaryColor }}
+            className="w-8 h-8 rounded-full flex items-center justify-center text-lg font-bold transition-all disabled:opacity-30"
+            style={{ background: `${primaryColor}22`, color: primaryColor }}
           >+</button>
         </div>
       </div>
 
-      {/* Phone + submit */}
-      <div className="flex gap-2">
-        <input
-          type="tel"
-          value={phoneDisplay}
-          onChange={handlePhoneChange}
-          onFocus={(e) => {
-            if (!phoneRaw) {
-              setPhoneDisplay('+7')
-              setTimeout(() => e.target.setSelectionRange(e.target.value.length, e.target.value.length), 0)
-            }
-          }}
-          placeholder="+7 (___) ___-__-__"
-          className="flex-1 px-3 py-2.5 text-sm rounded-xl outline-none transition-all"
-          style={inputStyle}
-        />
-        <button
-          onClick={handleSubmit}
-          disabled={!canSubmit || loading}
-          className="px-4 py-2.5 text-white text-sm font-bold rounded-xl transition-all hover:opacity-90 disabled:opacity-40 whitespace-nowrap"
-          style={{ background: `linear-gradient(135deg, ${primaryColor}, ${accentColor})` }}
-        >
-          {loading ? '...' : '→'}
-        </button>
-      </div>
+      {/* Phone */}
+      <input
+        type="tel"
+        value={phoneDisplay}
+        onChange={handlePhoneChange}
+        onFocus={(e) => {
+          if (!phoneRaw) {
+            setPhoneDisplay('+7')
+            setTimeout(() => e.target.setSelectionRange(e.target.value.length, e.target.value.length), 0)
+          }
+        }}
+        placeholder="+7 (___) ___-__-__"
+        className="w-full px-4 py-3 rounded-xl outline-none transition-all text-center"
+        style={inputStyle}
+      />
+
+      {/* Submit */}
+      <button
+        onClick={handleSubmit}
+        disabled={!canSubmit || loading}
+        className="w-full py-3.5 text-white rounded-xl transition-all hover:opacity-90 active:scale-[0.99] disabled:opacity-40"
+        style={{ background: `linear-gradient(135deg, ${primaryColor}, ${accentColor})`, fontFamily: 'var(--font-sc), Georgia, serif', fontSize: '0.95rem', fontWeight: 600, letterSpacing: '0.12em' }}
+      >
+        {loading ? bi.registering : bi.registerBtn}
+      </button>
 
       {error && (
-        <p className="text-xs text-red-400 mt-1">{error}</p>
+        <p className="text-center" style={{ fontFamily: 'var(--font-display), Georgia, serif', fontSize: '0.95rem', color: '#DC2626' }}>{error}</p>
       )}
     </div>
   )
