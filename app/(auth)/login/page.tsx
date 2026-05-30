@@ -197,11 +197,6 @@ export default function LoginPage() {
       {/* Card */}
       <div className="flex-1 flex items-center justify-center px-4 pb-16">
         <div className="w-full max-w-sm">
-          {/* Shanyrak watermark behind card */}
-          <div style={{ width: 64, height: 64, margin: '0 auto 20px', opacity: 0.18 }}>
-            <Logo size="md" href="/" />
-          </div>
-
           <div className="rounded-2xl overflow-hidden"
             style={{ background: 'var(--paper)', border: '1px solid var(--line)', boxShadow: '0 20px 60px rgba(38,27,17,.1)' }}>
             <AnimatePresence mode="wait" custom={step === 'otp' ? 1 : -1}>

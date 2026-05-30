@@ -221,7 +221,7 @@ export default function NewEventPage() {
 
       <div className="mb-7"><StepBar current={step} steps={steps} /></div>
 
-      <div className="max-w-xl">
+      <div className="max-w-xl pb-10">
         <AnimatePresence mode="wait">
 
           {step === 0 && (
