@@ -1,8 +1,8 @@
-export type RsvpStatus       = 'PENDING' | 'ACCEPTED' | 'DECLINED'
 export type NotificationType = 'INITIAL_INVITE' | 'REMINDER_24H' | 'MORNING_SEATING'
 export type DeliveryStatus   = 'PENDING' | 'DELIVERED' | 'FAILED' | 'ERROR'
 export type EventTemplate    = 'ELEGANT' | 'FESTIVE' | 'MINIMALIST' | 'ROMANTIC' | 'MODERN'
 export type MessageLanguage  = 'RUSSIAN' | 'KAZAKH'
+export type Role             = 'ORGANIZER' | 'ADMIN'
 
 export interface AuthResponse {
   id: number
@@ -15,6 +15,18 @@ export interface UserResponse {
   phoneNumber: string
   name: string | null
   lastName: string | null
+  role: Role
+  enabled: boolean
+}
+
+export interface AdminUserResponse {
+  id: number
+  phoneNumber: string
+  name: string | null
+  lastName: string | null
+  role: Role
+  enabled: boolean
+  toysCount: number
 }
 
 export interface TemplateSettings {
@@ -61,9 +73,7 @@ export interface GuestResponse {
   firstName: string
   lastName: string
   phoneNumber: string
-  status: RsvpStatus
   partySize: number
-  rsvpToken: string
   seatingTableId: number | null
 }
 
@@ -110,19 +120,19 @@ export interface ToyRequest {
 
 export interface GuestRequest {
   firstName: string
-  lastName: string
+  lastName?: string
   phoneNumber: string
   partySize?: number
 }
 
 export const queryKeys = {
-  toys:           (userId: number)                       => ['toys', userId],
-  toy:            (id: string)                           => ['toy', id],
-  guests:         (toyId: string)                        => ['guests', toyId],
-  guestsByStatus: (toyId: string, s: RsvpStatus)         => ['guests', toyId, s],
-  tables:         (toyId: string)                        => ['tables', toyId],
-  logs:           (toyId: string)                        => ['logs', toyId],
-  publicEvent:    (userId: number, toyId: string)         => ['public', userId, toyId],
+  toys:        (userId: number)           => ['toys', userId],
+  toy:         (id: string)              => ['toy', id],
+  guests:      (toyId: string)           => ['guests', toyId],
+  tables:      (toyId: string)           => ['tables', toyId],
+  logs:        (toyId: string)           => ['logs', toyId],
+  publicEvent: (userId: number, toyId: string) => ['public', userId, toyId],
+  adminUsers:  ()                        => ['admin', 'users'],
 }
 
 export const statusColors: Record<DeliveryStatus, string> = {
@@ -130,10 +140,4 @@ export const statusColors: Record<DeliveryStatus, string> = {
   FAILED:    'bg-red-100 text-red-700',
   PENDING:   'bg-amber-100 text-amber-700',
   ERROR:     'bg-orange-100 text-orange-700',
-}
-
-export const rsvpColors: Record<RsvpStatus, string> = {
-  ACCEPTED: 'bg-green-100 text-green-700',
-  DECLINED: 'bg-red-100 text-red-700',
-  PENDING:  'bg-amber-100 text-amber-700',
 }

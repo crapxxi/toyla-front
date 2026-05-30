@@ -1,9 +1,8 @@
 'use client'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { MapPin, Calendar, Users, Clock, AlertTriangle } from 'lucide-react'
+import { MapPin, Calendar, Users, AlertTriangle } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
 import { ToyResponse } from '@/types'
 import { formatEventDate, daysUntilDelete, isPastEvent } from '@/lib/formatters'
 
@@ -27,9 +26,7 @@ interface EventCardProps {
   toy: ToyResponse
   guestStats?: {
     total: number
-    accepted: number
-    declined: number
-    pending: number
+    partyTotal: number
   }
 }
 
@@ -37,11 +34,7 @@ export function EventCard({ toy, guestStats }: EventCardProps) {
   const past = isPastEvent(toy.eventDate)
   const daysLeft = past ? daysUntilDelete(toy.eventDate) : null
   const total = guestStats?.total ?? 0
-  const accepted = guestStats?.accepted ?? 0
-  const acceptedPct = total > 0 ? Math.round((accepted / total) * 100) : 0
-
-  const progressColor =
-    accepted >= 475 ? 'bg-red-400' : accepted >= 400 ? 'bg-amber-400' : 'bg-[#A8492A]'
+  const partyTotal = guestStats?.partyTotal ?? 0
 
   return (
     <motion.div
@@ -90,25 +83,16 @@ export function EventCard({ toy, guestStats }: EventCardProps) {
             </div>
 
             {guestStats && (
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-xs text-gray-500">
-                  <div className="flex items-center gap-1.5">
-                    <Users size={12} />
-                    <span>{total} гостей</span>
-                  </div>
-                  <span className="text-[#A8492A] font-medium">{acceptedPct}% приняли</span>
+              <div className="flex items-center gap-3 text-xs text-gray-500">
+                <div className="flex items-center gap-1.5">
+                  <Users size={12} />
+                  <span>{total} гостей</span>
                 </div>
-                <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                  <div
-                    className={`h-full rounded-full transition-all duration-500 ${progressColor}`}
-                    style={{ width: `${acceptedPct}%` }}
-                  />
-                </div>
-                <div className="flex gap-3 text-[11px]">
-                  <span className="text-green-600">✓ {accepted}</span>
-                  <span className="text-red-500">✗ {guestStats.declined}</span>
-                  <span className="text-amber-500">⏳ {guestStats.pending}</span>
-                </div>
+                {partyTotal > total && (
+                  <span style={{ color: 'var(--ink-soft)' }}>
+                    · {partyTotal} мест
+                  </span>
+                )}
               </div>
             )}
           </div>

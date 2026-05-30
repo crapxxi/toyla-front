@@ -1,6 +1,8 @@
 import { format, differenceInDays } from 'date-fns'
 import { ru } from 'date-fns/locale'
-import { RsvpStatus, NotificationType, DeliveryStatus } from '@/types'
+import { NotificationType, DeliveryStatus } from '@/types'
+
+type RsvpStatus = 'ACCEPTED' | 'DECLINED' | 'PENDING'
 
 export function formatEventDate(dateStr: string): string {
   return format(new Date(dateStr), 'd MMMM yyyy, HH:mm', { locale: ru })

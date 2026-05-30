@@ -2,16 +2,13 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { LayoutDashboard, Settings, LogOut, Menu, X } from 'lucide-react'
+import { LayoutDashboard, Settings, LogOut, Menu, X, ShieldCheck } from 'lucide-react'
 import { useAuthStore } from '@/store/auth.store'
 import { useUIStore } from '@/store/ui.store'
+import { useProfile } from '@/hooks/useProfile'
+import { useAdminUsers } from '@/hooks/useAdmin'
 import { Logo } from '@/components/shared/Logo'
 import { cn } from '@/lib/utils'
-
-const navItems = [
-  { href: '/dashboard', label: 'Главная', icon: LayoutDashboard },
-  { href: '/settings', label: 'Настройки', icon: Settings },
-]
 
 function formatPhoneDisplay(phone: string | null): string {
   if (!phone) return 'Профиль'
@@ -27,12 +24,25 @@ export function Sidebar() {
   const router = useRouter()
   const { phoneNumber, clearAuth } = useAuthStore()
   const { sidebarOpen, setSidebarOpen } = useUIStore()
+  const { data: profile } = useProfile()
+  const isAdmin = profile?.role === 'ADMIN'
+
+  const { data: adminUsers } = useAdminUsers()
+  const pendingCount = isAdmin ? (adminUsers?.filter((u) => !u.enabled).length ?? 0) : 0
 
   const handleLogout = async () => {
     await fetch('/internal/logout', { method: 'POST' })
     clearAuth()
     router.push('/login')
   }
+
+  const navItems = [
+    { href: '/dashboard', label: 'Главная', icon: LayoutDashboard },
+    { href: '/settings', label: 'Настройки', icon: Settings },
+    ...(isAdmin
+      ? [{ href: '/admin/users', label: 'Пользователи', icon: ShieldCheck, badge: pendingCount }]
+      : []),
+  ]
 
   const SidebarContent = () => (
     <div className="flex flex-col h-full" style={{ background: 'var(--paper)' }}>
@@ -74,7 +84,13 @@ export function Sidebar() {
               }}
             >
               <Icon size={17} />
-              {item.label}
+              <span className="flex-1">{item.label}</span>
+              {'badge' in item && (item.badge ?? 0) > 0 && (
+                <span className="min-w-[18px] h-[18px] rounded-full text-[10px] font-semibold flex items-center justify-center px-1"
+                  style={{ background: 'var(--clay)', color: 'var(--paper)' }}>
+                  {(item as { badge: number }).badge}
+                </span>
+              )}
             </Link>
           )
         })}
@@ -88,7 +104,9 @@ export function Sidebar() {
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium truncate" style={{ color: 'var(--ink)' }}>{formatPhoneDisplay(phoneNumber)}</p>
-            <p className="text-xs truncate" style={{ color: 'var(--ink-soft)' }}>Организатор</p>
+            <p className="text-xs truncate" style={{ color: 'var(--ink-soft)' }}>
+              {isAdmin ? 'Администратор' : 'Организатор'}
+            </p>
           </div>
         </div>
         <button
@@ -127,7 +145,17 @@ export function Sidebar() {
         style={{ background: 'var(--paper)', border: '1px solid var(--line)', color: 'var(--ink)' }}
         onClick={() => setSidebarOpen(!sidebarOpen)}
       >
-        <Menu size={20} />
+        {pendingCount > 0 ? (
+          <div className="relative">
+            <Menu size={20} />
+            <span className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 rounded-full text-[8px] font-bold flex items-center justify-center"
+              style={{ background: 'var(--clay)', color: 'var(--paper)' }}>
+              {pendingCount}
+            </span>
+          </div>
+        ) : (
+          <Menu size={20} />
+        )}
       </button>
 
       {/* Mobile drawer */}

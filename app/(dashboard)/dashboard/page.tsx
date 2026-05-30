@@ -16,9 +16,7 @@ function EventCardWithStats({ toy }: { toy: ToyResponse }) {
   const stats = guests
     ? {
         total: guests.length,
-        accepted: guests.filter((g) => g.status === 'ACCEPTED').length,
-        declined: guests.filter((g) => g.status === 'DECLINED').length,
-        pending: guests.filter((g) => g.status === 'PENDING').length,
+        partyTotal: guests.reduce((s, g) => s + g.partySize, 0),
       }
     : undefined
   return <EventCard toy={toy} guestStats={stats} />

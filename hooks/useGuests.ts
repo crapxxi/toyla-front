@@ -2,14 +2,13 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 import { api } from '@/lib/api'
 import { handleApiError } from '@/lib/handleApiError'
-import { GuestResponse, GuestRequest, RsvpStatus, queryKeys } from '@/types'
+import { GuestResponse, GuestRequest, queryKeys } from '@/types'
 
-export function useGetGuests(toyId: string, status?: RsvpStatus) {
+export function useGetGuests(toyId: string) {
   return useQuery({
-    queryKey: status ? queryKeys.guestsByStatus(toyId, status) : queryKeys.guests(toyId),
+    queryKey: queryKeys.guests(toyId),
     queryFn: async () => {
-      const params = status ? { status } : {}
-      const { data } = await api.get<GuestResponse[]>(`/api/v1/toys/${toyId}/guests`, { params })
+      const { data } = await api.get<GuestResponse[]>(`/api/v1/toys/${toyId}/guests`)
       return data
     },
     enabled: !!toyId,
