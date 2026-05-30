@@ -341,9 +341,26 @@ export function KazakhTemplate({ event, rsvpToken, onAccept, onDecline, rsvpLoad
             )}
           </motion.div>
 
-          <div className="flex justify-center pt-2 pb-4">
-            <Image src="/made-with-toyla-light.png" alt="Made with Toyla" width={120} height={36}
-              className="opacity-35 hover:opacity-70 transition-opacity duration-300" />
+          <div className="flex justify-center pt-2 pb-6">
+            <a href="https://toyla.app" target="_blank" rel="noopener noreferrer"
+              className="flex items-center gap-1.5 opacity-30 hover:opacity-60 transition-opacity duration-300 select-none"
+              style={{ textDecoration: 'none' }}>
+              <svg width="14" height="14" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <g opacity="0.9">
+                  {Array.from({ length: 14 }).map((_, i) => {
+                    const a = (i * Math.PI * 2) / 14
+                    const r1 = 12, r2 = 19
+                    return <line key={i} x1={20 + r1 * Math.cos(a)} y1={20 + r1 * Math.sin(a)} x2={20 + r2 * Math.cos(a)} y2={20 + r2 * Math.sin(a)} stroke="#261B11" strokeWidth="1.4" strokeLinecap="round" />
+                  })}
+                  <circle cx="20" cy="20" r="11.5" stroke="#261B11" strokeWidth="1.4" fill="none" />
+                  <circle cx="20" cy="20" r="9" stroke="#261B11" strokeWidth="1" fill="none" />
+                  <circle cx="20" cy="20" r="2.5" fill="#261B11" />
+                </g>
+              </svg>
+              <span style={{ fontSize: 11, fontFamily: 'var(--font-spectral, Georgia, serif)', fontWeight: 500, color: '#261B11', letterSpacing: '0.02em' }}>
+                Toyla
+              </span>
+            </a>
           </div>
         </div>
       </div>

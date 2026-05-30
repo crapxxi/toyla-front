@@ -3,7 +3,9 @@ import { User } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useAuthStore } from '@/store/auth.store'
+import { useLangStore } from '@/store/lang.store'
 import { useProfile } from '@/hooks/useProfile'
+import i18n from '@/lib/i18n'
 
 function formatPhoneDisplay(phone: string | null): string {
   if (!phone) return '—'
@@ -16,6 +18,8 @@ function formatPhoneDisplay(phone: string | null): string {
 
 export default function SettingsPage() {
   const { userId, phoneNumber } = useAuthStore()
+  const { lang } = useLangStore()
+  const t = i18n[lang]
   const { data: profile, isLoading } = useProfile()
 
   const fullName = [profile?.name, profile?.lastName].filter(Boolean).join(' ') || null
@@ -28,8 +32,8 @@ export default function SettingsPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-semibold text-gray-900">Настройки</h1>
-        <p className="text-sm text-gray-500 mt-1">Профиль аккаунта</p>
+        <h1 className="text-2xl font-semibold" style={{ color: 'var(--ink)', fontFamily: 'var(--font-spectral)' }}>{t.settingsTitle}</h1>
+        <p className="text-sm mt-1" style={{ color: 'var(--ink-soft)' }}>{t.accountProfile}</p>
       </div>
 
       <div className="max-w-lg">
@@ -44,21 +48,23 @@ export default function SettingsPage() {
               ) : (
                 <p className="font-semibold text-gray-900">{fullName ?? formatPhoneDisplay(phoneNumber)}</p>
               )}
-              <p className="text-xs text-gray-400 mt-0.5">Организатор</p>
+              <p className="text-xs text-gray-400 mt-0.5">
+                {profile?.role === 'ADMIN' ? t.adminRole : t.organizerRole}
+              </p>
             </div>
           </div>
 
           <Separator className="mb-6" />
 
-          <h3 className="text-sm font-semibold text-gray-900 mb-4">Профиль</h3>
+          <h3 className="text-sm font-semibold text-gray-900 mb-4">{t.profileSection}</h3>
 
           <div className="space-y-4">
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">ID пользователя</label>
+              <label className="block text-xs font-medium text-gray-500 mb-1">{t.userIdLbl}</label>
               <p className="text-sm text-gray-700">{userId ?? '—'}</p>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Телефон</label>
+              <label className="block text-xs font-medium text-gray-500 mb-1">{t.phoneSetting}</label>
               <p className="text-sm text-gray-700">{formatPhoneDisplay(phoneNumber)}</p>
             </div>
             {isLoading ? (
@@ -70,13 +76,13 @@ export default function SettingsPage() {
               <>
                 <div>
                   <label className="block text-xs font-medium text-gray-500 mb-1 flex items-center gap-1">
-                    <User size={11} /> Имя
+                    <User size={11} /> {t.nameSetting}
                   </label>
                   <p className="text-sm text-gray-700">{profile?.name ?? '—'}</p>
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-gray-500 mb-1 flex items-center gap-1">
-                    <User size={11} /> Фамилия
+                    <User size={11} /> {t.lastNameSetting}
                   </label>
                   <p className="text-sm text-gray-700">{profile?.lastName ?? '—'}</p>
                 </div>

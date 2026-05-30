@@ -1,13 +1,11 @@
 'use client'
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+  Dialog, DialogContent, DialogDescription,
+  DialogFooter, DialogHeader, DialogTitle,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
+import { useLangStore } from '@/store/lang.store'
+import i18n from '@/lib/i18n'
 
 interface ConfirmDialogProps {
   open: boolean
@@ -26,12 +24,14 @@ export function ConfirmDialog({
   onOpenChange,
   title,
   description,
-  confirmLabel = 'Подтвердить',
-  cancelLabel = 'Отмена',
+  confirmLabel,
+  cancelLabel,
   variant = 'destructive',
   onConfirm,
   loading = false,
 }: ConfirmDialogProps) {
+  const { lang } = useLangStore()
+  const t = i18n[lang]
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
@@ -41,14 +41,10 @@ export function ConfirmDialog({
         </DialogHeader>
         <DialogFooter className="gap-2">
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={loading}>
-            {cancelLabel}
+            {cancelLabel ?? t.cancel}
           </Button>
-          <Button
-            variant={variant}
-            onClick={onConfirm}
-            disabled={loading}
-          >
-            {loading ? 'Загрузка...' : confirmLabel}
+          <Button variant={variant} onClick={onConfirm} disabled={loading}>
+            {loading ? t.loading : (confirmLabel ?? t.confirm)}
           </Button>
         </DialogFooter>
       </DialogContent>

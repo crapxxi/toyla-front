@@ -6,24 +6,23 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod/v4'
 import { Plus, Search, Trash2, Users, ChevronLeft, UserPlus } from 'lucide-react'
 import Link from 'next/link'
-import {
-  Sheet, SheetContent, SheetHeader, SheetTitle,
-} from '@/components/ui/sheet'
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { EmptyState } from '@/components/shared/EmptyState'
 import { useGetGuests, useAddGuest, useDeleteGuest } from '@/hooks/useGuests'
+import { useLangStore } from '@/store/lang.store'
 import { formatPhone } from '@/lib/formatters'
+import i18n from '@/lib/i18n'
 
 const guestSchema = z.object({
-  firstName: z.string().min(1, 'Введите имя'),
+  firstName: z.string().min(1, 'Атын енгізіңіз'),
   lastName: z.string().optional(),
-  phoneNumber: z.string().min(11, 'Введите номер полностью'),
+  phoneNumber: z.string().min(11, 'Нөмірді толық енгізіңіз'),
   partySize: z.coerce.number().min(1).max(20),
 })
-
 type GuestForm = z.infer<typeof guestSchema>
 
 function formatPhoneDisplay(raw: string): string {
@@ -42,6 +41,8 @@ function getInitials(first: string, last: string) {
 
 export default function GuestsPage() {
   const { toyId } = useParams<{ toyId: string }>()
+  const { lang } = useLangStore()
+  const t = i18n[lang]
   const { data: guests, isLoading } = useGetGuests(toyId)
   const addGuest = useAddGuest(toyId)
   const deleteGuest = useDeleteGuest(toyId)
@@ -49,7 +50,6 @@ export default function GuestsPage() {
   const [sheetOpen, setSheetOpen] = useState(false)
   const [deleteId, setDeleteId] = useState<number | null>(null)
   const [search, setSearch] = useState('')
-
   const [phoneDisplay, setPhoneDisplay] = useState('+7')
   const [phoneRaw, setPhoneRaw] = useState('')
   const [partySize, setPartySize] = useState(1)
@@ -103,41 +103,32 @@ export default function GuestsPage() {
 
   return (
     <div>
-      {/* Header */}
       <div className="flex items-center gap-3 mb-5">
-        <Link
-          href={`/events/${toyId}`}
-          className="w-9 h-9 rounded-xl border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-50 transition-colors"
-        >
+        <Link href={`/events/${toyId}`} className="w-9 h-9 rounded-xl border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-50 transition-colors">
           <ChevronLeft size={18} />
         </Link>
         <div className="flex-1">
-          <h1 className="text-xl font-semibold text-gray-900">Гости</h1>
+          <h1 className="text-xl font-semibold text-gray-900">{t.guestsTitle}</h1>
         </div>
-        <Button
-          onClick={() => setSheetOpen(true)}
-          className="bg-[#A8492A] hover:bg-[#8A3A20] rounded-xl gap-2"
-        >
+        <Button onClick={() => setSheetOpen(true)} className="bg-[#A8492A] hover:bg-[#8A3A20] rounded-xl gap-2">
           <Plus size={16} />
-          <span className="hidden sm:block">Добавить</span>
+          <span className="hidden sm:block">{t.addGuestBtn}</span>
         </Button>
       </div>
 
-      {/* Stats row */}
       <div className="mb-5">
         <div className="rounded-2xl border p-3 flex flex-col items-center gap-0.5 bg-[#FBF5F1] border-violet-100 inline-flex min-w-[80px]">
           <Users size={14} className="text-[#A8492A]" />
           <span className="text-lg font-bold leading-none text-[#A8492A]">{total}</span>
-          <span className="text-[10px] text-gray-500">Всего</span>
+          <span className="text-[10px] text-gray-500">{t.totalLabel}</span>
         </div>
       </div>
 
-      {/* Search */}
       <div className="flex mb-4">
         <div className="relative">
           <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" />
           <Input
-            placeholder="Поиск..."
+            placeholder={t.search}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-8 h-8 text-xs w-36 rounded-full border-gray-200"
@@ -145,7 +136,6 @@ export default function GuestsPage() {
         </div>
       </div>
 
-      {/* Guest list */}
       {isLoading ? (
         <div className="space-y-2.5">
           {Array.from({ length: 5 }).map((_, i) => (
@@ -155,41 +145,35 @@ export default function GuestsPage() {
                 <Skeleton className="h-3.5 w-36" />
                 <Skeleton className="h-3 w-24" />
               </div>
-              <Skeleton className="h-5 w-16 rounded-full" />
             </div>
           ))}
         </div>
       ) : filtered.length === 0 ? (
         guests?.length === 0 ? (
           <EmptyState
-            title="Нет гостей"
-            description="Добавьте первого гостя вручную или поделитесь ссылкой на мероприятие"
+            title={t.noGuests}
+            description={t.noGuestsDesc}
             icon={<UserPlus size={44} className="text-gray-300" />}
-            action={{ label: 'Добавить гостя', onClick: () => setSheetOpen(true) }}
+            action={{ label: t.addGuestTitle, onClick: () => setSheetOpen(true) }}
           />
         ) : (
-          <div className="text-center py-10 text-gray-400 text-sm">Нет гостей по фильтру</div>
+          <div className="text-center py-10 text-gray-400 text-sm">{t.noGuestsFilter}</div>
         )
       ) : (
         <div className="space-y-2">
           {filtered.map((guest) => (
-            <div
-              key={guest.id}
-              className="bg-[#FBF6EE] rounded-2xl border border-[#E4D8C4] px-4 py-3.5 flex items-center gap-3 hover:border-gray-200 hover:shadow-sm transition-all"
-            >
+            <div key={guest.id} className="bg-[#FBF6EE] rounded-2xl border border-[#E4D8C4] px-4 py-3.5 flex items-center gap-3 hover:shadow-sm transition-all">
               <div className="w-10 h-10 rounded-full bg-[#F5EDE6] flex items-center justify-center flex-shrink-0">
                 <span className="text-sm font-semibold text-[#A8492A]">
                   {getInitials(guest.firstName, guest.lastName)}
                 </span>
               </div>
-
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-900 truncate">
                   {guest.firstName}{guest.lastName ? ` ${guest.lastName}` : ''}
                 </p>
                 <p className="text-xs text-gray-400">{formatPhone(guest.phoneNumber)}</p>
               </div>
-
               <div className="flex items-center gap-2 flex-shrink-0">
                 {guest.partySize > 1 && (
                   <span className="text-[11px] font-medium bg-gray-100 text-gray-500 rounded-full px-2 py-0.5 flex items-center gap-1">
@@ -209,7 +193,6 @@ export default function GuestsPage() {
         </div>
       )}
 
-      {/* Add guest sheet */}
       <Sheet open={sheetOpen} onOpenChange={(open) => { if (!open) resetSheet(); else setSheetOpen(true) }}>
         <SheetContent className="sm:max-w-sm px-6">
           <SheetHeader>
@@ -217,102 +200,68 @@ export default function GuestsPage() {
               <div className="w-7 h-7 rounded-xl bg-[#F5EDE6] flex items-center justify-center flex-shrink-0">
                 <UserPlus size={13} className="text-[#A8492A]" />
               </div>
-              Добавить гостя
+              {t.addGuestTitle}
             </SheetTitle>
           </SheetHeader>
 
           <div className="mt-5 space-y-3.5">
-            {/* Name row */}
             <div className="grid grid-cols-2 gap-2.5">
               <div>
                 <label className="block text-[11px] font-medium text-gray-500 mb-1">
-                  Имя <span className="text-red-400">*</span>
+                  {t.firstNameLbl} <span className="text-red-400">*</span>
                 </label>
-                <Input
-                  {...form.register('firstName')}
-                  placeholder="Айгерим"
-                  className="rounded-xl h-10 text-sm"
-                  autoComplete="off"
-                />
+                <Input {...form.register('firstName')} placeholder="Айгерім" className="rounded-xl h-10 text-sm" autoComplete="off" />
                 {form.formState.errors.firstName && (
                   <p className="text-[11px] text-red-500 mt-1">{form.formState.errors.firstName.message}</p>
                 )}
               </div>
               <div>
-                <label className="block text-[11px] font-medium text-gray-500 mb-1">
-                  Фамилия
-                </label>
-                <Input
-                  {...form.register('lastName')}
-                  placeholder="Сейткали"
-                  className="rounded-xl h-10 text-sm"
-                  autoComplete="off"
-                />
+                <label className="block text-[11px] font-medium text-gray-500 mb-1">{t.lastNameLbl}</label>
+                <Input {...form.register('lastName')} placeholder="Сейткали" className="rounded-xl h-10 text-sm" autoComplete="off" />
               </div>
             </div>
 
-            {/* Phone */}
             <div>
               <label className="block text-[11px] font-medium text-gray-500 mb-1">
-                Телефон <span className="text-red-400">*</span>
+                {t.phoneLbl} <span className="text-red-400">*</span>
               </label>
               <Input
-                type="tel"
-                value={phoneDisplay}
-                onChange={handlePhoneChange}
+                type="tel" value={phoneDisplay} onChange={handlePhoneChange}
                 onFocus={(e) => {
-                  if (!phoneRaw) {
-                    setPhoneDisplay('+7')
-                    setTimeout(() => e.target.setSelectionRange(e.target.value.length, e.target.value.length), 0)
-                  }
+                  if (!phoneRaw) { setPhoneDisplay('+7'); setTimeout(() => e.target.setSelectionRange(e.target.value.length, e.target.value.length), 0) }
                 }}
                 placeholder="+7 (___) ___-__-__"
-                className="rounded-xl h-10 text-sm"
-                inputMode="tel"
+                className="rounded-xl h-10 text-sm" inputMode="tel"
               />
               {form.formState.errors.phoneNumber && (
                 <p className="text-[11px] text-red-500 mt-1">{form.formState.errors.phoneNumber.message}</p>
               )}
             </div>
 
-            {/* Party size */}
             <div>
-              <label className="block text-[11px] font-medium text-gray-500 mb-1">С кем придёт</label>
+              <label className="block text-[11px] font-medium text-gray-500 mb-1">{t.withWhom}</label>
               <div className="flex items-center justify-between rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 h-10">
                 <span className="text-xs text-gray-600">
-                  {partySize === 1
-                    ? 'Только сам(а)'
-                    : `+${partySize - 1} ${partySize - 1 === 1 ? 'человек' : partySize - 1 < 5 ? 'человека' : 'человек'}`}
+                  {partySize === 1 ? t.alone : t.withN(partySize - 1)}
                 </span>
                 <div className="flex items-center gap-2.5">
-                  <button
-                    type="button"
+                  <button type="button"
                     onClick={() => { const next = Math.max(1, partySize - 1); setPartySize(next); form.setValue('partySize', next) }}
                     disabled={partySize <= 1}
-                    className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-600 hover:bg-gray-200 disabled:opacity-30 transition-all"
-                  >−</button>
+                    className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-600 hover:bg-gray-200 disabled:opacity-30">−</button>
                   <span className="text-xs font-semibold text-gray-900 w-4 text-center">{partySize}</span>
-                  <button
-                    type="button"
+                  <button type="button"
                     onClick={() => { const next = Math.min(20, partySize + 1); setPartySize(next); form.setValue('partySize', next) }}
                     disabled={partySize >= 20}
-                    className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-600 hover:bg-gray-200 disabled:opacity-30 transition-all"
-                  >+</button>
+                    className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-600 hover:bg-gray-200 disabled:opacity-30">+</button>
                 </div>
               </div>
             </div>
 
-            {/* Buttons */}
             <div className="flex gap-2.5 pt-1">
-              <Button variant="outline" onClick={resetSheet} className="flex-1 rounded-xl h-10 text-xs">
-                Отмена
-              </Button>
-              <Button
-                onClick={handleAdd}
-                disabled={addGuest.isPending}
-                className="flex-1 bg-[#A8492A] hover:bg-[#8A3A20] rounded-xl h-10 text-xs"
-              >
-                {addGuest.isPending ? 'Добавление...' : 'Добавить'}
+              <Button variant="outline" onClick={resetSheet} className="flex-1 rounded-xl h-10 text-xs">{t.cancel}</Button>
+              <Button onClick={handleAdd} disabled={addGuest.isPending} className="flex-1 bg-[#A8492A] hover:bg-[#8A3A20] rounded-xl h-10 text-xs">
+                {addGuest.isPending ? t.adding : t.add}
               </Button>
             </div>
           </div>
@@ -322,9 +271,9 @@ export default function GuestsPage() {
       <ConfirmDialog
         open={!!deleteId}
         onOpenChange={(open) => !open && setDeleteId(null)}
-        title="Удалить гостя?"
-        description="Гость будет удалён безвозвратно."
-        confirmLabel="Удалить"
+        title={t.deleteGuestQ}
+        description={t.deleteGuestD}
+        confirmLabel={t.delete}
         onConfirm={handleDelete}
         loading={deleteGuest.isPending}
       />

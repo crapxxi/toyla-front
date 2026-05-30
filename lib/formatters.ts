@@ -1,19 +1,19 @@
 import { format, differenceInDays } from 'date-fns'
-import { ru } from 'date-fns/locale'
+import { ru, kk as kkLocale } from 'date-fns/locale'
 import { NotificationType, DeliveryStatus } from '@/types'
+import type { Lang } from '@/store/lang.store'
+import i18n from '@/lib/i18n'
 
-type RsvpStatus = 'ACCEPTED' | 'DECLINED' | 'PENDING'
-
-export function formatEventDate(dateStr: string): string {
-  return format(new Date(dateStr), 'd MMMM yyyy, HH:mm', { locale: ru })
+export function formatEventDate(dateStr: string, lang: Lang = 'kk'): string {
+  return format(new Date(dateStr), 'd MMMM yyyy, HH:mm', { locale: lang === 'kk' ? kkLocale : ru })
 }
 
 export function formatDateShort(dateStr: string): string {
   return format(new Date(dateStr), 'dd.MM.yyyy / HH:mm')
 }
 
-export function formatDateFull(dateStr: string): string {
-  return format(new Date(dateStr), 'EEEE, d MMMM yyyy в HH:mm', { locale: ru })
+export function formatDateFull(dateStr: string, lang: Lang = 'kk'): string {
+  return format(new Date(dateStr), 'EEEE, d MMMM yyyy HH:mm', { locale: lang === 'kk' ? kkLocale : ru })
 }
 
 export function formatPhone(phone: string): string {
@@ -31,30 +31,23 @@ export function isPastEvent(eventDate: string): boolean {
   return new Date(eventDate) < new Date()
 }
 
-export function rsvpStatusLabel(status: RsvpStatus): string {
-  const map: Record<RsvpStatus, string> = {
-    ACCEPTED: 'Принял',
-    DECLINED: 'Отказал',
-    PENDING: 'Ожидает',
-  }
-  return map[status]
-}
-
-export function notificationTypeLabel(type: NotificationType): string {
+export function notificationTypeLabel(type: NotificationType, lang: Lang = 'kk'): string {
+  const t = i18n[lang]
   const map: Record<NotificationType, string> = {
-    INITIAL_INVITE: 'Приглашение',
-    REMINDER_24H: 'Напоминание (24ч)',
-    MORNING_SEATING: 'Место за столом',
+    INITIAL_INVITE:  t.notifInvite,
+    REMINDER_24H:    t.notifReminder,
+    MORNING_SEATING: t.notifSeating,
   }
   return map[type]
 }
 
-export function deliveryStatusLabel(status: DeliveryStatus): string {
+export function deliveryStatusLabel(status: DeliveryStatus, lang: Lang = 'kk'): string {
+  const t = i18n[lang]
   const map: Record<DeliveryStatus, string> = {
-    DELIVERED: 'Доставлено',
-    FAILED: 'Не доставлено',
-    PENDING: 'Ожидает',
-    ERROR: 'Ошибка',
+    DELIVERED: t.deliveredL,
+    FAILED:    t.failedL,
+    PENDING:   t.pendingL,
+    ERROR:     t.errorL,
   }
   return map[status]
 }

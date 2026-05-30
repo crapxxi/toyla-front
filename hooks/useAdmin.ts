@@ -3,6 +3,8 @@ import toast from 'react-hot-toast'
 import { api } from '@/lib/api'
 import { handleApiError } from '@/lib/handleApiError'
 import { AdminUserResponse, Role, queryKeys } from '@/types'
+import { useLangStore } from '@/store/lang.store'
+import i18n from '@/lib/i18n'
 
 export function useAdminUsers() {
   return useQuery({
@@ -16,6 +18,7 @@ export function useAdminUsers() {
 
 export function useEnableUser() {
   const queryClient = useQueryClient()
+  const { lang } = useLangStore()
   return useMutation({
     mutationFn: async (userId: number) => {
       const { data } = await api.patch<AdminUserResponse>(`/api/v1/admin/users/${userId}/enable`)
@@ -23,7 +26,7 @@ export function useEnableUser() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.adminUsers() })
-      toast.success('Пользователь одобрен')
+      toast.success(i18n[lang].userApproved)
     },
     onError: (err) => handleApiError(err),
   })
@@ -31,6 +34,7 @@ export function useEnableUser() {
 
 export function useDisableUser() {
   const queryClient = useQueryClient()
+  const { lang } = useLangStore()
   return useMutation({
     mutationFn: async (userId: number) => {
       const { data } = await api.patch<AdminUserResponse>(`/api/v1/admin/users/${userId}/disable`)
@@ -38,7 +42,7 @@ export function useDisableUser() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.adminUsers() })
-      toast.success('Доступ закрыт')
+      toast.success(i18n[lang].accessBlocked)
     },
     onError: (err) => handleApiError(err),
   })
@@ -46,6 +50,7 @@ export function useDisableUser() {
 
 export function useSetRole() {
   const queryClient = useQueryClient()
+  const { lang } = useLangStore()
   return useMutation({
     mutationFn: async ({ userId, role }: { userId: number; role: Role }) => {
       const { data } = await api.patch<AdminUserResponse>(`/api/v1/admin/users/${userId}/role`, null, {
@@ -55,7 +60,7 @@ export function useSetRole() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.adminUsers() })
-      toast.success('Роль обновлена')
+      toast.success(i18n[lang].roleUpdated)
     },
     onError: (err) => handleApiError(err),
   })
@@ -63,6 +68,7 @@ export function useSetRole() {
 
 export function useDeleteAdminUser() {
   const queryClient = useQueryClient()
+  const { lang } = useLangStore()
   return useMutation({
     mutationFn: async (userId: number) => {
       await api.delete(`/api/v1/admin/users/${userId}`)
@@ -70,7 +76,7 @@ export function useDeleteAdminUser() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.adminUsers() })
-      toast.success('Пользователь удалён')
+      toast.success(i18n[lang].userDeleted)
     },
     onError: (err) => handleApiError(err),
   })

@@ -3,6 +3,8 @@ import toast from 'react-hot-toast'
 import { api } from '@/lib/api'
 import { handleApiError } from '@/lib/handleApiError'
 import { GuestResponse, GuestRequest, queryKeys } from '@/types'
+import { useLangStore } from '@/store/lang.store'
+import i18n from '@/lib/i18n'
 
 export function useGetGuests(toyId: string) {
   return useQuery({
@@ -17,6 +19,7 @@ export function useGetGuests(toyId: string) {
 
 export function useAddGuest(toyId: string) {
   const queryClient = useQueryClient()
+  const { lang } = useLangStore()
   return useMutation({
     mutationFn: async (payload: GuestRequest) => {
       const { data } = await api.post<GuestResponse>(`/api/v1/toys/${toyId}/guests`, payload)
@@ -24,7 +27,7 @@ export function useAddGuest(toyId: string) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.guests(toyId) })
-      toast.success('Гость добавлен')
+      toast.success(i18n[lang].guestAdded)
     },
     onError: (err) => handleApiError(err),
   })
@@ -32,6 +35,7 @@ export function useAddGuest(toyId: string) {
 
 export function useUpdateGuest(toyId: string) {
   const queryClient = useQueryClient()
+  const { lang } = useLangStore()
   return useMutation({
     mutationFn: async ({ guestId, payload }: { guestId: number; payload: Partial<GuestRequest> }) => {
       const { data } = await api.put<GuestResponse>(`/api/v1/guests/${guestId}`, payload)
@@ -39,7 +43,7 @@ export function useUpdateGuest(toyId: string) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.guests(toyId) })
-      toast.success('Гость обновлён')
+      toast.success(i18n[lang].guestUpdated)
     },
     onError: (err) => handleApiError(err),
   })
@@ -47,6 +51,7 @@ export function useUpdateGuest(toyId: string) {
 
 export function useDeleteGuest(toyId: string) {
   const queryClient = useQueryClient()
+  const { lang } = useLangStore()
   return useMutation({
     mutationFn: async (guestId: number) => {
       await api.delete(`/api/v1/guests/${guestId}`)
@@ -55,7 +60,7 @@ export function useDeleteGuest(toyId: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.guests(toyId) })
       queryClient.invalidateQueries({ queryKey: queryKeys.tables(toyId) })
-      toast.success('Гость удалён')
+      toast.success(i18n[lang].guestDeleted)
     },
     onError: (err) => handleApiError(err),
   })

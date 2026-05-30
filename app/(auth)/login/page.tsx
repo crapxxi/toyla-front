@@ -7,6 +7,7 @@ import axios from 'axios'
 import { OtpInput } from '@/components/auth/OtpInput'
 import { Logo } from '@/components/shared/Logo'
 import { useAuthStore } from '@/store/auth.store'
+import { useLangStore } from '@/store/lang.store'
 import { AuthResponse } from '@/types'
 import { api } from '@/lib/api'
 
@@ -79,7 +80,13 @@ const inputStyle = {
 
 export default function LoginPage() {
   const { setAuth } = useAuthStore()
-  const [lang, setLang] = useState<Lang>('ru')
+  const { lang: globalLang, setLang: setGlobalLang } = useLangStore()
+  const [lang, setLang] = useState<Lang>(globalLang as Lang)
+
+  const handleLangChange = (l: Lang) => {
+    setLang(l)
+    setGlobalLang(l)
+  }
   const [step, setStep] = useState<Step>('phone')
   const [phone, setPhone] = useState('')
   const [phoneRaw, setPhoneRaw] = useState('')
@@ -174,7 +181,7 @@ export default function LoginPage() {
           {(['ru', 'kk'] as Lang[]).map((l) => (
             <button
               key={l}
-              onClick={() => setLang(l)}
+              onClick={() => handleLangChange(l)}
               className="text-xs font-semibold px-2 py-0.5 rounded-full transition-all"
               style={lang === l
                 ? { background: 'var(--clay)', color: 'var(--paper)' }

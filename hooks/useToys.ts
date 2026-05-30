@@ -3,6 +3,8 @@ import toast from 'react-hot-toast'
 import { api } from '@/lib/api'
 import { handleApiError } from '@/lib/handleApiError'
 import { ToyResponse, ToyRequest, TemplateSettings, ToyImageResponse, queryKeys } from '@/types'
+import { useLangStore } from '@/store/lang.store'
+import i18n from '@/lib/i18n'
 
 export function useGetToys(organizerId: number) {
   return useQuery({
@@ -28,6 +30,7 @@ export function useGetToy(toyId: string) {
 
 export function useCreateToy(organizerId: number) {
   const queryClient = useQueryClient()
+  const { lang } = useLangStore()
   return useMutation({
     mutationFn: async (payload: ToyRequest) => {
       const { data } = await api.post<ToyResponse>('/api/v1/toys', payload, { params: { organizerId } })
@@ -35,7 +38,7 @@ export function useCreateToy(organizerId: number) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.toys(organizerId) })
-      toast.success('Мероприятие создано')
+      toast.success(i18n[lang].eventCreated)
     },
     onError: (err) => handleApiError(err),
   })
@@ -43,6 +46,7 @@ export function useCreateToy(organizerId: number) {
 
 export function useUpdateToy(toyId: string, organizerId: number) {
   const queryClient = useQueryClient()
+  const { lang } = useLangStore()
   return useMutation({
     mutationFn: async (payload: Partial<ToyRequest>) => {
       const { data } = await api.put<ToyResponse>(`/api/v1/toys/${toyId}`, payload)
@@ -51,7 +55,7 @@ export function useUpdateToy(toyId: string, organizerId: number) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.toy(toyId) })
       queryClient.invalidateQueries({ queryKey: queryKeys.toys(organizerId) })
-      toast.success('Мероприятие обновлено')
+      toast.success(i18n[lang].eventUpdated)
     },
     onError: (err) => handleApiError(err),
   })
@@ -59,6 +63,7 @@ export function useUpdateToy(toyId: string, organizerId: number) {
 
 export function useDeleteToy(organizerId: number) {
   const queryClient = useQueryClient()
+  const { lang } = useLangStore()
   return useMutation({
     mutationFn: async (toyId: string) => {
       await api.delete(`/api/v1/toys/${toyId}`)
@@ -66,7 +71,7 @@ export function useDeleteToy(organizerId: number) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.toys(organizerId) })
-      toast.success('Мероприятие удалено')
+      toast.success(i18n[lang].eventDeleted)
     },
     onError: (err) => handleApiError(err),
   })
@@ -74,6 +79,7 @@ export function useDeleteToy(organizerId: number) {
 
 export function usePatchTemplate(toyId: string) {
   const queryClient = useQueryClient()
+  const { lang } = useLangStore()
   return useMutation({
     mutationFn: async (settings: Partial<TemplateSettings>) => {
       const { data } = await api.patch<ToyResponse>(`/api/v1/toys/${toyId}/template`, settings)
@@ -81,7 +87,7 @@ export function usePatchTemplate(toyId: string) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.toy(toyId) })
-      toast.success('Шаблон сохранён')
+      toast.success(i18n[lang].templateSaved)
     },
     onError: (err) => handleApiError(err),
   })
@@ -89,6 +95,7 @@ export function usePatchTemplate(toyId: string) {
 
 export function useUploadMusic(toyId: string) {
   const queryClient = useQueryClient()
+  const { lang } = useLangStore()
   return useMutation({
     mutationFn: async (file: File) => {
       const formData = new FormData()
@@ -100,7 +107,7 @@ export function useUploadMusic(toyId: string) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.toy(toyId) })
-      toast.success('Музыка загружена')
+      toast.success(i18n[lang].musicUploaded)
     },
     onError: (err) => handleApiError(err),
   })
@@ -108,13 +115,14 @@ export function useUploadMusic(toyId: string) {
 
 export function useDeleteMusic(toyId: string) {
   const queryClient = useQueryClient()
+  const { lang } = useLangStore()
   return useMutation({
     mutationFn: async () => {
       await api.delete(`/api/v1/toys/${toyId}/music`)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.toy(toyId) })
-      toast.success('Музыка удалена')
+      toast.success(i18n[lang].musicDeleted)
     },
     onError: (err) => handleApiError(err),
   })
@@ -122,6 +130,7 @@ export function useDeleteMusic(toyId: string) {
 
 export function useUploadImage(toyId: string) {
   const queryClient = useQueryClient()
+  const { lang } = useLangStore()
   return useMutation({
     mutationFn: async (file: File) => {
       const formData = new FormData()
@@ -133,7 +142,7 @@ export function useUploadImage(toyId: string) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.toy(toyId) })
-      toast.success('Изображение загружено')
+      toast.success(i18n[lang].imageUploaded)
     },
     onError: (err) => handleApiError(err),
   })
@@ -141,13 +150,14 @@ export function useUploadImage(toyId: string) {
 
 export function useDeleteImage(toyId: string) {
   const queryClient = useQueryClient()
+  const { lang } = useLangStore()
   return useMutation({
     mutationFn: async (imageId: number) => {
       await api.delete(`/api/v1/toys/${toyId}/images/${imageId}`)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.toy(toyId) })
-      toast.success('Изображение удалено')
+      toast.success(i18n[lang].imageDeleted)
     },
     onError: (err) => handleApiError(err),
   })

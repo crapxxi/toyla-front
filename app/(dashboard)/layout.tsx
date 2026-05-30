@@ -4,22 +4,22 @@ import { useRouter } from 'next/navigation'
 import { Clock } from 'lucide-react'
 import { Sidebar } from '@/components/dashboard/Sidebar'
 import { useAuthStore } from '@/store/auth.store'
+import { useLangStore } from '@/store/lang.store'
 import { useProfile } from '@/hooks/useProfile'
 import { Logo } from '@/components/shared/Logo'
+import i18n from '@/lib/i18n'
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const { token, clearAuth } = useAuthStore()
+  const { lang } = useLangStore()
+  const t = i18n[lang]
   const [mounted, setMounted] = useState(false)
 
-  useEffect(() => {
-    setMounted(true)
-  }, [])
+  useEffect(() => { setMounted(true) }, [])
 
   useEffect(() => {
-    if (mounted && !token) {
-      router.replace('/login')
-    }
+    if (mounted && !token) router.replace('/login')
   }, [mounted, token, router])
 
   const { data: profile, isLoading: profileLoading } = useProfile()
@@ -37,20 +37,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <Clock size={22} style={{ color: 'var(--clay)' }} />
           </div>
           <h2 className="text-xl font-semibold mb-2" style={{ color: 'var(--ink)', fontFamily: 'var(--font-spectral)' }}>
-            Аккаунт ожидает подтверждения
+            {t.pendingTitle}
           </h2>
           <p className="text-sm leading-relaxed mb-6" style={{ color: 'var(--ink-soft)' }}>
-            Администратор скоро рассмотрит вашу заявку. Как только вас подтвердят — вы сможете начать работу.
+            {t.pendingDesc}
           </p>
           <button
-            onClick={() => {
-              clearAuth()
-              router.push('/login')
-            }}
+            onClick={() => { clearAuth(); router.push('/login') }}
             className="text-sm font-medium underline underline-offset-2"
             style={{ color: 'var(--clay)' }}
           >
-            Выйти из аккаунта
+            {t.logoutLink}
           </button>
         </div>
       </div>

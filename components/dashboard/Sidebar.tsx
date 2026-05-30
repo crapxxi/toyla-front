@@ -5,9 +5,11 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { LayoutDashboard, Settings, LogOut, Menu, X, ShieldCheck } from 'lucide-react'
 import { useAuthStore } from '@/store/auth.store'
 import { useUIStore } from '@/store/ui.store'
+import { useLangStore } from '@/store/lang.store'
 import { useProfile } from '@/hooks/useProfile'
 import { useAdminUsers } from '@/hooks/useAdmin'
 import { Logo } from '@/components/shared/Logo'
+import i18n from '@/lib/i18n'
 import { cn } from '@/lib/utils'
 
 function formatPhoneDisplay(phone: string | null): string {
@@ -24,6 +26,8 @@ export function Sidebar() {
   const router = useRouter()
   const { phoneNumber, clearAuth } = useAuthStore()
   const { sidebarOpen, setSidebarOpen } = useUIStore()
+  const { lang, setLang } = useLangStore()
+  const t = i18n[lang]
   const { data: profile } = useProfile()
   const isAdmin = profile?.role === 'ADMIN'
 
@@ -37,10 +41,10 @@ export function Sidebar() {
   }
 
   const navItems = [
-    { href: '/dashboard', label: 'Главная', icon: LayoutDashboard },
-    { href: '/settings', label: 'Настройки', icon: Settings },
+    { href: '/dashboard', label: t.home, icon: LayoutDashboard },
+    { href: '/settings', label: t.settings, icon: Settings },
     ...(isAdmin
-      ? [{ href: '/admin/users', label: 'Пользователи', icon: ShieldCheck, badge: pendingCount }]
+      ? [{ href: '/admin/users', label: t.users, icon: ShieldCheck, badge: pendingCount }]
       : []),
   ]
 
@@ -48,13 +52,31 @@ export function Sidebar() {
     <div className="flex flex-col h-full" style={{ background: 'var(--paper)' }}>
       <div className="flex items-center justify-between px-5 py-5" style={{ borderBottom: '1px solid var(--line)' }}>
         <Logo size="sm" href="/dashboard" />
-        <button
-          className="lg:hidden"
-          style={{ color: 'var(--ink-soft)' }}
-          onClick={() => setSidebarOpen(false)}
-        >
-          <X size={20} />
-        </button>
+        <div className="flex items-center gap-2">
+          {/* Language switcher */}
+          <div className="flex items-center gap-0.5 rounded-full px-1.5 py-1" style={{ background: 'var(--bone-2)', border: '1px solid var(--line)' }}>
+            {(['kk', 'ru'] as const).map((l) => (
+              <button
+                key={l}
+                onClick={() => setLang(l)}
+                className="text-[10px] font-bold px-2 py-0.5 rounded-full transition-all"
+                style={lang === l
+                  ? { background: 'var(--clay)', color: 'var(--paper)' }
+                  : { color: 'var(--ink-soft)' }
+                }
+              >
+                {l.toUpperCase()}
+              </button>
+            ))}
+          </div>
+          <button
+            className="lg:hidden"
+            style={{ color: 'var(--ink-soft)' }}
+            onClick={() => setSidebarOpen(false)}
+          >
+            <X size={20} />
+          </button>
+        </div>
       </div>
 
       <nav className="flex-1 px-3 py-4 space-y-0.5">
@@ -69,9 +91,7 @@ export function Sidebar() {
               key={item.href}
               href={item.href}
               onClick={() => setSidebarOpen(false)}
-              className={cn(
-                'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150',
-              )}
+              className={cn('flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150')}
               style={isActive
                 ? { background: 'var(--clay-light)', color: 'var(--clay)' }
                 : { color: 'var(--ink-soft)' }
@@ -105,7 +125,7 @@ export function Sidebar() {
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium truncate" style={{ color: 'var(--ink)' }}>{formatPhoneDisplay(phoneNumber)}</p>
             <p className="text-xs truncate" style={{ color: 'var(--ink-soft)' }}>
-              {isAdmin ? 'Администратор' : 'Организатор'}
+              {isAdmin ? t.adminRole : t.organizerRole}
             </p>
           </div>
         </div>
@@ -125,7 +145,7 @@ export function Sidebar() {
           }}
         >
           <LogOut size={17} />
-          Выйти
+          {t.logout}
         </button>
       </div>
     </div>
@@ -133,13 +153,11 @@ export function Sidebar() {
 
   return (
     <>
-      {/* Desktop sidebar */}
       <aside className="hidden lg:flex flex-col w-64 h-screen fixed left-0 top-0 z-30"
         style={{ background: 'var(--paper)', borderRight: '1px solid var(--line)' }}>
         <SidebarContent />
       </aside>
 
-      {/* Mobile toggle */}
       <button
         className="lg:hidden fixed top-4 left-4 z-50 w-10 h-10 rounded-xl flex items-center justify-center shadow-md"
         style={{ background: 'var(--paper)', border: '1px solid var(--line)', color: 'var(--ink)' }}
@@ -158,7 +176,6 @@ export function Sidebar() {
         )}
       </button>
 
-      {/* Mobile drawer */}
       <AnimatePresence>
         {sidebarOpen && (
           <>

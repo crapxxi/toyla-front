@@ -20,10 +20,12 @@ import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { EmptyState } from '@/components/shared/EmptyState'
 import { useGetTables, useCreateTable, useAssignGuest, useRemoveGuest, useDeleteTable } from '@/hooks/useSeating'
 import { useGetGuests } from '@/hooks/useGuests'
+import { useLangStore } from '@/store/lang.store'
 import { GuestResponse, SeatingTableResponse } from '@/types'
+import i18n from '@/lib/i18n'
 
 const tableSchema = z.object({
-  name: z.string().min(1, 'Введите название'),
+  name: z.string().min(1, 'Атауды енгізіңіз'),
   capacity: z.coerce.number().min(1).max(50),
 })
 type TableForm = z.infer<typeof tableSchema>
@@ -79,7 +81,7 @@ function DesktopTableCard({
       <div className="p-4 border-b border-gray-50 flex items-center justify-between">
         <div>
           <h3 className="font-semibold text-gray-900 text-sm">{table.name}</h3>
-          <p className="text-xs text-gray-400 mt-0.5">{occupancy}/{table.capacity} мест</p>
+          <p className="text-xs text-gray-400 mt-0.5">{occupancy}/{table.capacity}</p>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-16 h-1.5 bg-gray-100 rounded-full overflow-hidden">
@@ -94,7 +96,8 @@ function DesktopTableCard({
         <SortableContext items={table.guests.map((g) => `guest-${g.id}`)} strategy={verticalListSortingStrategy}>
           {table.guests.length === 0 ? (
             <div className="flex items-center justify-center h-16 text-xs text-gray-300 border-2 border-dashed border-gray-100 rounded-xl">
-              Перетащите гостя
+              {/* drag hint set in page */}
+              ·
             </div>
           ) : (
             <div className="space-y-1">
@@ -112,6 +115,8 @@ function DesktopTableCard({
 // ── Main page ─────────────────────────────────────────────────────────────────
 export default function SeatingPage() {
   const { toyId } = useParams<{ toyId: string }>()
+  const { lang } = useLangStore()
+  const t = i18n[lang]
   const { data: tables, isLoading: tablesLoading } = useGetTables(toyId)
   const { data: guests } = useGetGuests(toyId)
   const createTable = useCreateTable(toyId)
@@ -194,33 +199,33 @@ export default function SeatingPage() {
           <ChevronLeft size={18} />
         </Link>
         <div className="flex-1">
-          <h1 className="text-xl font-semibold text-gray-900">Рассадка</h1>
-          <p className="text-xs text-gray-500">{totalAssigned}/{totalGuests} гостей рассажено</p>
+          <h1 className="text-xl font-semibold text-gray-900">{t.seatingTitle}</h1>
+          <p className="text-xs text-gray-500">{t.seatingProgress(totalAssigned, totalGuests)}</p>
         </div>
         <Button onClick={() => setShowForm(!showForm)} className="bg-[#A8492A] hover:bg-[#8A3A20] rounded-xl gap-2">
           <Plus size={16} />
-          <span className="hidden sm:block">Стол</span>
+          <span className="hidden sm:block">{t.addTableBtn}</span>
         </Button>
       </div>
 
       {/* Create table form */}
       {showForm && (
         <div className="bg-[#FBF6EE] rounded-2xl border border-[#E4D8C4] p-4 mb-5">
-          <h3 className="text-sm font-semibold text-gray-900 mb-3">Новый стол</h3>
+          <h3 className="text-sm font-semibold text-gray-900 mb-3">{t.newTableH}</h3>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-[11px] font-medium text-gray-500 mb-1">Название</label>
-              <Input {...form.register('name')} placeholder="Стол 1" className="rounded-xl h-10 text-sm" />
+              <label className="block text-[11px] font-medium text-gray-500 mb-1">{t.tableNameLbl}</label>
+              <Input {...form.register('name')} placeholder="1" className="rounded-xl h-10 text-sm" />
               {form.formState.errors.name && <p className="text-[11px] text-red-500 mt-1">{form.formState.errors.name.message}</p>}
             </div>
             <div>
-              <label className="block text-[11px] font-medium text-gray-500 mb-1">Мест</label>
+              <label className="block text-[11px] font-medium text-gray-500 mb-1">{t.tableCapLbl}</label>
               <Input {...form.register('capacity')} type="number" min={1} max={50} className="rounded-xl h-10 text-sm" />
             </div>
           </div>
           <div className="flex gap-2 mt-3">
-            <Button variant="outline" onClick={() => setShowForm(false)} className="flex-1 rounded-xl h-9 text-xs">Отмена</Button>
-            <Button onClick={handleCreateTable} disabled={createTable.isPending} className="flex-1 bg-[#A8492A] hover:bg-[#8A3A20] rounded-xl h-9 text-xs">Создать</Button>
+            <Button variant="outline" onClick={() => setShowForm(false)} className="flex-1 rounded-xl h-9 text-xs">{t.cancel}</Button>
+            <Button onClick={handleCreateTable} disabled={createTable.isPending} className="flex-1 bg-[#A8492A] hover:bg-[#8A3A20] rounded-xl h-9 text-xs">{t.create}</Button>
           </div>
         </div>
       )}
@@ -231,10 +236,10 @@ export default function SeatingPage() {
         </div>
       ) : (tables?.length ?? 0) === 0 ? (
         <EmptyState
-          title="Нет столов"
-          description="Создайте первый стол для рассадки гостей"
+          title={t.noTables}
+          description={t.noTablesDesc}
           icon={<Users size={48} className="text-gray-300" />}
-          action={{ label: 'Добавить стол', onClick: () => setShowForm(true) }}
+          action={{ label: t.addFirstTable, onClick: () => setShowForm(true) }}
         />
       ) : (
         <>
@@ -244,7 +249,7 @@ export default function SeatingPage() {
             {unassigned.length > 0 && (
               <div>
                 <div className="flex items-center gap-2 mb-2 px-1">
-                  <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Без стола</span>
+                  <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">{t.unassigned}</span>
                   <span className="text-xs bg-gray-100 text-gray-500 rounded-full px-2 py-0.5 font-medium">{unassigned.length}</span>
                 </div>
                 <div className="space-y-2">
@@ -264,7 +269,7 @@ export default function SeatingPage() {
                         </p>
                       </div>
                       <div className="flex items-center gap-1 text-[#A8492A] flex-shrink-0">
-                        <span className="text-xs font-medium">Назначить</span>
+                        <span className="text-xs font-medium">{t.assignLabel}</span>
                         <ChevronRight size={14} />
                       </div>
                     </button>
@@ -294,7 +299,7 @@ export default function SeatingPage() {
                       </div>
                       {free > 0 && (
                         <span className="text-[11px] font-medium text-emerald-600 bg-emerald-50 rounded-full px-2 py-0.5 flex-shrink-0">
-                          {free} своб.
+                          {t.freeN(free)}
                         </span>
                       )}
                       <button onClick={() => setDeleteTableId(table.id)} className="w-7 h-7 rounded-lg flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 transition-colors flex-shrink-0">
@@ -321,7 +326,7 @@ export default function SeatingPage() {
                         ))}
                       </div>
                     ) : (
-                      <div className="px-4 py-5 text-center text-xs text-gray-300">Нет гостей</div>
+                      <div className="px-4 py-5 text-center text-xs text-gray-300">{t.noTableGuests}</div>
                     )}
                   </div>
                 )
@@ -331,7 +336,7 @@ export default function SeatingPage() {
             {unassigned.length === 0 && (guests?.length ?? 0) > 0 && (
               <div className="flex items-center gap-2 justify-center py-4 text-sm text-emerald-600">
                 <CheckCircle2 size={16} />
-                Все гости рассажены
+                {t.allSeated}
               </div>
             )}
           </div>
@@ -343,12 +348,12 @@ export default function SeatingPage() {
                 {/* Unassigned column */}
                 <div className="bg-gray-50 rounded-2xl border border-dashed border-gray-200 p-4">
                   <div className="flex items-center gap-2 mb-3">
-                    <span className="text-sm font-semibold text-gray-700">Без стола</span>
+                    <span className="text-sm font-semibold text-gray-700">{t.unassigned}</span>
                     <span className="text-xs bg-gray-200 text-gray-600 rounded-full px-2 py-0.5">{unassigned.reduce((s, g) => s + g.partySize, 0)}</span>
                   </div>
                   <SortableContext items={unassigned.map((g) => `guest-${g.id}`)} strategy={verticalListSortingStrategy}>
                     {unassigned.length === 0 ? (
-                      <div className="text-xs text-gray-400 text-center py-4">Все гости рассажены</div>
+                      <div className="text-xs text-gray-400 text-center py-4">{t.allSeated}</div>
                     ) : (
                       <div className="space-y-1">
                         {unassigned.map((g) => (
@@ -387,7 +392,7 @@ export default function SeatingPage() {
         <SheetContent side="bottom" className="rounded-t-2xl max-h-[80dvh] overflow-y-auto">
           <SheetHeader className="pb-2">
             <SheetTitle className="text-sm text-left">
-              Выберите стол для{' '}
+              {t.chooseTableFor}{' '}
               <span className="text-[#A8492A]">
                 {assigningGuest?.firstName}{assigningGuest?.lastName ? ` ${assigningGuest.lastName}` : ''}
               </span>
@@ -412,13 +417,13 @@ export default function SeatingPage() {
                 >
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-gray-900">{table.name}</p>
-                    <p className="text-xs text-gray-400 mt-0.5">{occupancy}/{table.capacity} занято</p>
+                    <p className="text-xs text-gray-400 mt-0.5">{occupancy}/{table.capacity} {t.occupiedL}</p>
                   </div>
                   {full ? (
-                    <span className="text-[11px] font-medium text-red-400 bg-red-50 rounded-full px-2.5 py-1 flex-shrink-0">Полный</span>
+                    <span className="text-[11px] font-medium text-red-400 bg-red-50 rounded-full px-2.5 py-1 flex-shrink-0">{t.fullL}</span>
                   ) : (
                     <span className="text-[11px] font-medium text-emerald-600 bg-emerald-50 rounded-full px-2.5 py-1 flex-shrink-0">
-                      {free} своб.
+                      {t.freeN(free)}
                     </span>
                   )}
                 </button>
@@ -431,9 +436,9 @@ export default function SeatingPage() {
       <ConfirmDialog
         open={!!deleteTableId}
         onOpenChange={(open) => !open && setDeleteTableId(null)}
-        title="Удалить стол?"
-        description="Все гости будут откреплены от стола."
-        confirmLabel="Удалить"
+        title={t.deleteTableQ}
+        description={t.deleteTableD}
+        confirmLabel={t.delete}
         onConfirm={handleDeleteTable}
         loading={deleteTable.isPending}
       />
