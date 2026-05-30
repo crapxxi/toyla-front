@@ -1,70 +1,141 @@
 'use client'
 import Link from 'next/link'
-import { useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
+import { Check, MessageCircle } from 'lucide-react'
 import { Logo } from '@/components/shared/Logo'
 import { Shanyrak } from '@/components/shared/Shanyrak'
+import { KazakhTemplate } from '@/components/templates/KazakhTemplate'
 import { useAuthStore } from '@/store/auth.store'
+import type { PublicToyResponse } from '@/types'
 
-function PrimaryBtn({ href, children }: { href: string; children: React.ReactNode }) {
+// ── Mock event for template preview ──────────────────────────────────────────
+const DEMO_EVENT: PublicToyResponse = {
+  id: 'demo',
+  title: 'Айгерім 60 жас',
+  description: 'Сізді Айгерімнің 60 жас мерей тойына шақырамыз. Бұл қуанышты күнде бізбен бірге болыңыз!',
+  eventDate: '2025-09-14T18:00:00',
+  locationName: '"Қымбатжан" мейрамханасы',
+  gisLink: null,
+  templateId: 'ELEGANT',
+  templateSettings: {
+    primaryColor: '#2D4A1E',
+    accentColor: '#B8963C',
+    backgroundColor: '#FDFAF3',
+    countdownEnabled: true,
+    countdownTargetDate: '2025-09-14T18:00:00',
+  },
+  organizerDisplayName: 'Семья Абылай',
+  images: [],
+  musicUrl: null,
+}
+
+// ── Reusable buttons ──────────────────────────────────────────────────────────
+function PrimaryBtn({ href, children, onClick }: { href?: string; children: React.ReactNode; onClick?: () => void }) {
+  const style = {
+    fontFamily: 'var(--font-manrope), sans-serif',
+    fontSize: 14.5,
+    fontWeight: 600,
+    background: 'var(--clay)',
+    color: 'var(--paper)',
+    padding: '12px 26px',
+    borderRadius: 999,
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: 8,
+    whiteSpace: 'nowrap' as const,
+    boxShadow: '0 8px 20px rgba(168,73,42,.22)',
+    transition: 'all .2s',
+    cursor: 'pointer',
+    border: 'none',
+  }
+  if (href) return (
+    <Link href={href} style={style}
+      onMouseEnter={(e) => { Object.assign((e.currentTarget as HTMLElement).style, { background: 'var(--clay-deep)', transform: 'translateY(-1px)', boxShadow: '0 12px 26px rgba(168,73,42,.3)' }) }}
+      onMouseLeave={(e) => { Object.assign((e.currentTarget as HTMLElement).style, { background: 'var(--clay)', transform: 'translateY(0)', boxShadow: '0 8px 20px rgba(168,73,42,.22)' }) }}
+    >{children}</Link>
+  )
+  return <button onClick={onClick} style={style}
+    onMouseEnter={(e) => { Object.assign((e.currentTarget as HTMLElement).style, { background: 'var(--clay-deep)', transform: 'translateY(-1px)' }) }}
+    onMouseLeave={(e) => { Object.assign((e.currentTarget as HTMLElement).style, { background: 'var(--clay)', transform: 'translateY(0)' }) }}
+  >{children}</button>
+}
+
+function GhostLink({ href, children }: { href: string; children: React.ReactNode }) {
   return (
-    <Link
-      href={href}
-      className="inline-flex items-center gap-2 whitespace-nowrap font-semibold rounded-full transition-all duration-200"
-      style={{
-        fontFamily: 'var(--font-manrope), sans-serif',
-        fontSize: 14.5,
-        background: 'var(--clay)',
-        color: 'var(--paper)',
-        padding: '12px 26px',
-        boxShadow: '0 8px 20px rgba(168,73,42,.22)',
-      }}
-      onMouseEnter={(e) => {
-        const el = e.currentTarget as HTMLElement
-        el.style.background = 'var(--clay-deep)'
-        el.style.transform = 'translateY(-1px)'
-        el.style.boxShadow = '0 12px 26px rgba(168,73,42,.3)'
-      }}
-      onMouseLeave={(e) => {
-        const el = e.currentTarget as HTMLElement
-        el.style.background = 'var(--clay)'
-        el.style.transform = 'translateY(0)'
-        el.style.boxShadow = '0 8px 20px rgba(168,73,42,.22)'
-      }}
-    >
-      {children}
-    </Link>
+    <Link href={href} style={{ fontSize: 15, fontWeight: 600, color: 'var(--ink)', borderBottom: '1.5px solid var(--line)', paddingBottom: 3, transition: 'all .18s', whiteSpace: 'nowrap' as const }}
+      onMouseEnter={(e) => { Object.assign((e.currentTarget as HTMLElement).style, { color: 'var(--clay)', borderBottomColor: 'var(--clay)' }) }}
+      onMouseLeave={(e) => { Object.assign((e.currentTarget as HTMLElement).style, { color: 'var(--ink)', borderBottomColor: 'var(--line)' }) }}
+    >{children}</Link>
   )
 }
 
-function GhostBtn({ href, children }: { href: string; children: React.ReactNode }) {
+// ── Pricing card ──────────────────────────────────────────────────────────────
+function PriceCard({
+  name, price, sub, features, highlight, cta, ctaHref,
+}: {
+  name: string; price: string; sub: string
+  features: string[]; highlight?: boolean; cta: string; ctaHref: string
+}) {
   return (
-    <Link
-      href={href}
-      className="inline-flex items-center gap-2 whitespace-nowrap font-semibold rounded-full transition-all duration-200"
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-40px' }}
+      transition={{ duration: 0.55 }}
       style={{
-        fontFamily: 'var(--font-manrope), sans-serif',
-        fontSize: 15,
-        color: 'var(--ink)',
-        borderBottom: '1.5px solid var(--line)',
-        paddingBottom: 3,
-      }}
-      onMouseEnter={(e) => {
-        const el = e.currentTarget as HTMLElement
-        el.style.color = 'var(--clay)'
-        el.style.borderBottomColor = 'var(--clay)'
-      }}
-      onMouseLeave={(e) => {
-        const el = e.currentTarget as HTMLElement
-        el.style.color = 'var(--ink)'
-        el.style.borderBottomColor = 'var(--line)'
+        background: highlight ? 'var(--ink)' : 'var(--paper)',
+        border: highlight ? '2px solid var(--clay)' : '1px solid var(--line)',
+        borderRadius: 24,
+        padding: '36px 32px',
+        position: 'relative',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 0,
       }}
     >
-      {children}
-    </Link>
+      {highlight && (
+        <span style={{ position: 'absolute', top: -14, left: '50%', transform: 'translateX(-50%)', background: 'var(--clay)', color: 'var(--paper)', fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', padding: '4px 14px', borderRadius: 999 }}>
+          Танымал
+        </span>
+      )}
+      <p style={{ fontFamily: 'var(--font-spectral), serif', fontSize: 22, fontWeight: 500, color: highlight ? 'var(--paper)' : 'var(--ink)', marginBottom: 6 }}>{name}</p>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 4 }}>
+        <span style={{ fontFamily: 'var(--font-spectral), serif', fontSize: 40, fontWeight: 400, color: highlight ? 'var(--gold-soft)' : 'var(--clay)', lineHeight: 1 }}>{price}</span>
+        <span style={{ fontSize: 14, color: highlight ? 'rgba(244,236,223,.6)' : 'var(--ink-soft)' }}>{sub}</span>
+      </div>
+      <div style={{ height: 1, background: highlight ? 'rgba(244,236,223,.15)' : 'var(--line)', margin: '22px 0' }} />
+      <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 28px', display: 'flex', flexDirection: 'column', gap: 12, flex: 1 }}>
+        {features.map((f) => (
+          <li key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: 14, color: highlight ? 'rgba(244,236,223,.82)' : 'var(--ink-soft)', lineHeight: 1.4 }}>
+            <Check size={15} style={{ color: highlight ? 'var(--gold-soft)' : 'var(--clay)', marginTop: 1, flexShrink: 0 }} />
+            {f}
+          </li>
+        ))}
+      </ul>
+      <Link
+        href={ctaHref}
+        style={{
+          display: 'block',
+          textAlign: 'center',
+          padding: '12px 24px',
+          borderRadius: 999,
+          fontWeight: 600,
+          fontSize: 14,
+          background: highlight ? 'var(--clay)' : 'transparent',
+          color: highlight ? 'var(--paper)' : 'var(--clay)',
+          border: highlight ? 'none' : '1.5px solid var(--clay)',
+          transition: 'all .18s',
+        }}
+        onMouseEnter={(e) => { const el = e.currentTarget as HTMLElement; el.style.background = highlight ? 'var(--clay-deep)' : 'var(--clay)'; if (!highlight) el.style.color = 'var(--paper)' }}
+        onMouseLeave={(e) => { const el = e.currentTarget as HTMLElement; el.style.background = highlight ? 'var(--clay)' : 'transparent'; if (!highlight) el.style.color = 'var(--clay)' }}
+      >
+        {cta}
+      </Link>
+    </motion.div>
   )
 }
 
+// ── Page ──────────────────────────────────────────────────────────────────────
 export default function LandingPage() {
   const { token } = useAuthStore()
   const dashHref = token ? '/dashboard' : '/login'
@@ -73,7 +144,7 @@ export default function LandingPage() {
     <div style={{ background: 'var(--bone)', color: 'var(--ink)', fontFamily: 'var(--font-manrope), system-ui, sans-serif', minHeight: '100vh' }}>
 
       {/* ── Header ── */}
-      <header style={{ position: 'sticky', top: 0, zIndex: 50, background: 'rgba(244,236,223,.86)', backdropFilter: 'saturate(150%) blur(12px)', borderBottom: '1px solid rgba(228,216,196,.7)' }}>
+      <header style={{ position: 'sticky', top: 0, zIndex: 50, background: 'rgba(244,236,223,.88)', backdropFilter: 'saturate(150%) blur(12px)', borderBottom: '1px solid rgba(228,216,196,.7)' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 72 }}>
           <Logo size="sm" href="/" />
           <nav className="hidden md:flex items-center gap-8">
@@ -82,25 +153,15 @@ export default function LandingPage() {
               { label: 'Үлгілер', href: '#templates' },
               { label: 'Баға', href: '#pricing' },
             ].map((item) => (
-              <a
-                key={item.label}
-                href={item.href}
+              <a key={item.label} href={item.href}
                 style={{ fontSize: 14.5, fontWeight: 500, color: 'var(--ink-soft)', transition: 'color .18s' }}
                 onMouseEnter={(e) => ((e.target as HTMLElement).style.color = 'var(--clay)')}
                 onMouseLeave={(e) => ((e.target as HTMLElement).style.color = 'var(--ink-soft)')}
-              >
-                {item.label}
-              </a>
+              >{item.label}</a>
             ))}
           </nav>
           <div className="flex items-center gap-5">
-            <Link
-              href="/login"
-              className="hidden sm:block"
-              style={{ fontSize: 14.5, fontWeight: 600, color: 'var(--ink)' }}
-            >
-              Кіру
-            </Link>
+            <Link href="/login" className="hidden sm:block" style={{ fontSize: 14.5, fontWeight: 600, color: 'var(--ink)' }}>Кіру</Link>
             <PrimaryBtn href={dashHref}>Той құру</PrimaryBtn>
           </div>
         </div>
@@ -108,65 +169,30 @@ export default function LandingPage() {
 
       {/* ── Hero ── */}
       <section style={{ position: 'relative', textAlign: 'center', padding: '96px 24px 60px', overflow: 'hidden' }}>
-        {/* watermark */}
         <div style={{ position: 'absolute', top: -80, left: '50%', transform: 'translateX(-50%)', width: 620, height: 620, opacity: 0.05, pointerEvents: 'none' }}>
           <Shanyrak hoop="#A8492A" lattice="#A8492A" spoke="#A8492A" sw={1.4} />
         </div>
-
         <div style={{ maxWidth: 1200, margin: '0 auto', position: 'relative' }}>
-          <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.34em', textTransform: 'uppercase', color: 'var(--gold)', marginBottom: 24 }}
-          >
+          <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
+            style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.34em', textTransform: 'uppercase', color: 'var(--gold)', marginBottom: 24 }}>
             Той-көмекші
           </motion.p>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.1 }}
-            style={{
-              fontFamily: 'var(--font-spectral), Georgia, serif',
-              fontWeight: 400,
-              fontSize: 'clamp(42px, 6.4vw, 76px)',
-              lineHeight: 1.06,
-              letterSpacing: '-0.012em',
-              color: 'var(--ink)',
-              marginBottom: 0,
-            }}
-          >
+          <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.1 }}
+            style={{ fontFamily: 'var(--font-spectral), Georgia, serif', fontWeight: 400, fontSize: 'clamp(42px, 6.4vw, 76px)', lineHeight: 1.06, letterSpacing: '-0.012em', color: 'var(--ink)' }}>
             Әдемі той<br />
             <span style={{ fontStyle: 'italic', color: 'var(--clay)' }}>осыдан</span> басталады
           </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.25 }}
-            style={{ maxWidth: 520, margin: '24px auto 0', fontSize: 17, lineHeight: 1.6, color: 'var(--ink-soft)' }}
-          >
+          <motion.p initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.25 }}
+            style={{ maxWidth: 520, margin: '24px auto 0', fontSize: 17, lineHeight: 1.6, color: 'var(--ink-soft)' }}>
             Toyla берёт на себя весь той: красивые пригласительные, список гостей и напоминания — собрано в одном месте.
           </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.38 }}
-            className="flex items-center justify-center gap-5 flex-wrap"
-            style={{ marginTop: 36 }}
-          >
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.38 }}
+            className="flex items-center justify-center gap-5 flex-wrap" style={{ marginTop: 36 }}>
             <PrimaryBtn href={dashHref}>Той құру →</PrimaryBtn>
-            <GhostBtn href="#how">Қалай жұмыс істейді</GhostBtn>
+            <GhostLink href="#how">Қалай жұмыс істейді</GhostLink>
           </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.55 }}
-            style={{ marginTop: 28, fontSize: 13, color: 'var(--ink-soft)', letterSpacing: '0.02em', display: 'inline-flex', alignItems: 'center', gap: 10 }}
-          >
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.55 }}
+            style={{ marginTop: 28, fontSize: 13, color: 'var(--ink-soft)', letterSpacing: '0.02em', display: 'inline-flex', alignItems: 'center', gap: 10 }}>
             <span>Тойхана мен жеке тойларға</span>
             <span style={{ width: 4, height: 4, borderRadius: '50%', background: 'var(--gold)', display: 'inline-block' }} />
             <span>Қазақша · Русский</span>
@@ -174,72 +200,178 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── Photo frame ── */}
-      <section style={{ padding: '12px 24px 0' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+      {/* ── Template showcase ── */}
+      <section id="templates" style={{ padding: '80px 24px' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr', gap: 48, alignItems: 'center' }} className="lg:grid-cols-2">
+
+          {/* Text */}
+          <motion.div initial={{ opacity: 0, x: -24 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, margin: '-80px' }} transition={{ duration: 0.7 }}>
+            <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.3em', textTransform: 'uppercase', color: 'var(--gold)', marginBottom: 18 }}>
+              Үлгі
+            </p>
+            <h2 style={{ fontFamily: 'var(--font-spectral), serif', fontWeight: 400, fontSize: 'clamp(28px,3.6vw,46px)', lineHeight: 1.1, color: 'var(--ink)', marginBottom: 20 }}>
+              Казахский шаблон —<br /><span style={{ fontStyle: 'italic', color: 'var(--clay)' }}>тепло и красиво</span>
+            </h2>
+            <p style={{ fontSize: 16, lineHeight: 1.7, color: 'var(--ink-soft)', marginBottom: 32, maxWidth: 460 }}>
+              Ботанический стиль с золотыми акцентами и казахским колоритом. Обратный отсчёт, адрес с картой, фото и фоновая музыка — всё встроено.
+            </p>
+            <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 36px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {[
+                'Красивое пригласительное на казахском и русском',
+                'Обратный отсчёт до торжества',
+                'Адрес со ссылкой на 2GIS / карту',
+                'Фоновая музыка и фотографии',
+                'Форма регистрации гостей',
+              ].map((f) => (
+                <li key={f} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 15, color: 'var(--ink-soft)' }}>
+                  <Check size={16} style={{ color: 'var(--clay)', flexShrink: 0 }} />
+                  {f}
+                </li>
+              ))}
+            </ul>
+            <PrimaryBtn href={dashHref}>Попробовать →</PrimaryBtn>
+          </motion.div>
+
+          {/* Phone mockup */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, delay: 0.4 }}
-            style={{ position: 'relative', borderRadius: 24, overflow: 'hidden', border: '1px solid var(--line)', boxShadow: '0 30px 70px rgba(38,27,17,.12)', background: 'var(--bone-2)', minHeight: 420, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            initial={{ opacity: 0, y: 32 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-80px' }}
+            transition={{ duration: 0.8, delay: 0.1 }}
+            className="flex justify-center"
           >
-            {/* Decorative placeholder */}
-            <div style={{ textAlign: 'center', padding: '80px 24px' }}>
-              <div style={{ width: 80, height: 80, margin: '0 auto 20px', opacity: 0.25 }}>
-                <Shanyrak hoop="#261B11" lattice="#A8492A" spoke="#B0843A" sw={2.3} />
+            <div style={{ position: 'relative' }}>
+              {/* phone shell */}
+              <div style={{
+                width: 270,
+                height: 560,
+                borderRadius: 44,
+                border: '8px solid #261B11',
+                background: '#261B11',
+                boxShadow: '0 40px 90px rgba(38,27,17,.3), 0 0 0 1px rgba(38,27,17,.15)',
+                overflow: 'hidden',
+                position: 'relative',
+              }}>
+                {/* notch */}
+                <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: 90, height: 28, background: '#261B11', borderRadius: '0 0 18px 18px', zIndex: 10 }} />
+                {/* screen */}
+                <div style={{
+                  position: 'absolute',
+                  inset: 0,
+                  overflow: 'hidden',
+                  borderRadius: 38,
+                  background: '#FDFAF3',
+                }}>
+                  {/* scaled template */}
+                  <div style={{
+                    width: 390,
+                    transformOrigin: 'top left',
+                    transform: `translateZ(0) scale(${254 / 390})`,
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    pointerEvents: 'none',
+                  }}>
+                    <KazakhTemplate event={DEMO_EVENT} />
+                  </div>
+                </div>
               </div>
-              <p style={{ fontFamily: 'var(--font-spectral), serif', fontStyle: 'italic', fontSize: 22, color: 'var(--ink-soft)' }}>
-                Айгерім &amp; Нұрлан · 14 маусым
-              </p>
-            </div>
-            {/* Corner chip */}
-            <div style={{ position: 'absolute', top: 20, left: 20, display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(251,246,238,.92)', backdropFilter: 'blur(6px)', padding: '8px 14px 8px 10px', borderRadius: 999, fontSize: 13, fontWeight: 600, color: 'var(--ink)', boxShadow: '0 6px 18px rgba(38,27,17,.1)' }}>
-              <span style={{ width: 18, height: 18, display: 'block', flexShrink: 0 }}>
-                <Shanyrak hoop="#261B11" lattice="#A8492A" spoke="#B0843A" sw={2.4} />
-              </span>
-              Toyla — той-көмекші
+              {/* shadow reflection */}
+              <div style={{ position: 'absolute', bottom: -24, left: '50%', transform: 'translateX(-50%)', width: 180, height: 20, background: 'rgba(38,27,17,.12)', borderRadius: '50%', filter: 'blur(12px)' }} />
             </div>
           </motion.div>
         </div>
       </section>
 
       {/* ── How it works ── */}
-      <section id="how" style={{ padding: '104px 24px' }}>
+      <section id="how" style={{ padding: '80px 24px' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-          <div style={{ maxWidth: 680, marginBottom: 64 }}>
-            <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.3em', textTransform: 'uppercase', color: 'var(--gold)', marginBottom: 18 }}>
-              Қалай жұмыс істейді
-            </p>
-            <h2 style={{ fontFamily: 'var(--font-spectral), Georgia, serif', fontWeight: 400, fontSize: 'clamp(30px,4vw,48px)', lineHeight: 1.1, letterSpacing: '-0.01em', color: 'var(--ink)' }}>
+          <div style={{ maxWidth: 680, marginBottom: 56 }}>
+            <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.3em', textTransform: 'uppercase', color: 'var(--gold)', marginBottom: 18 }}>Қалай жұмыс істейді</p>
+            <h2 style={{ fontFamily: 'var(--font-spectral), serif', fontWeight: 400, fontSize: 'clamp(30px,4vw,48px)', lineHeight: 1.1, color: 'var(--ink)' }}>
               Үш қадам — <span style={{ fontStyle: 'italic', color: 'var(--clay)' }}>той дайын</span>
             </h2>
           </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', borderTop: '1px solid var(--line)' }} className="grid-cols-1 md:grid-cols-3">
+          <div className="grid grid-cols-1 md:grid-cols-3" style={{ borderTop: '1px solid var(--line)' }}>
             {[
               { num: '01', kz: 'Шақыру жасаңыз', ru: 'Приглашение', text: 'Выберите шаблон, добавьте дату, место и пару тёплых слов. Готовое пригласительное — за минуту.' },
               { num: '02', kz: 'Қонақтарды жинаңыз', ru: 'Гости', text: 'Гость отвечает одним касанием. Список «кто придёт» собирается сам — без чатов и таблиц.' },
               { num: '03', kz: 'Еске салдырыңыз', ru: 'Напоминания', text: 'Toyla сам напомнит каждому гостю в нужный момент — накануне и в день торжества.' },
             ].map((step, i) => (
-              <motion.div
-                key={step.num}
+              <motion.div key={step.num}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-60px' }}
                 transition={{ duration: 0.6, delay: i * 0.12 }}
-                style={{
-                  padding: '38px 34px 38px 0',
-                  borderRight: i < 2 ? '1px solid var(--line)' : 'none',
-                  paddingLeft: i > 0 ? 34 : 0,
-                }}
-                className="border-r-0 md:border-r"
+                style={{ padding: '36px 0', paddingRight: i < 2 ? 34 : 0, paddingLeft: i > 0 ? 34 : 0, borderRight: i < 2 ? '1px solid var(--line)' : 'none' }}
+                className="border-r-0 md:border-r last:border-r-0"
               >
-                <p style={{ fontFamily: 'var(--font-spectral), serif', fontWeight: 300, fontSize: 46, color: 'var(--clay)', lineHeight: 1, marginBottom: 22 }}>{step.num}</p>
-                <p style={{ fontFamily: 'var(--font-spectral), serif', fontWeight: 500, fontSize: 23, color: 'var(--ink)', marginBottom: 4 }}>{step.kz}</p>
-                <p style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', color: 'var(--gold)', marginBottom: 14 }}>{step.ru}</p>
-                <p style={{ fontSize: 15, lineHeight: 1.6, color: 'var(--ink-soft)' }}>{step.text}</p>
+                <p style={{ fontFamily: 'var(--font-spectral), serif', fontWeight: 300, fontSize: 46, color: 'var(--clay)', lineHeight: 1, marginBottom: 20 }}>{step.num}</p>
+                <p style={{ fontFamily: 'var(--font-spectral), serif', fontWeight: 500, fontSize: 22, color: 'var(--ink)', marginBottom: 4 }}>{step.kz}</p>
+                <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--gold)', marginBottom: 14 }}>{step.ru}</p>
+                <p style={{ fontSize: 15, lineHeight: 1.65, color: 'var(--ink-soft)' }}>{step.text}</p>
               </motion.div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Pricing ── */}
+      <section id="pricing" style={{ padding: '80px 24px' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 60 }}>
+            <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.3em', textTransform: 'uppercase', color: 'var(--gold)', marginBottom: 18 }}>Баға</p>
+            <h2 style={{ fontFamily: 'var(--font-spectral), serif', fontWeight: 400, fontSize: 'clamp(30px,4vw,48px)', lineHeight: 1.1, color: 'var(--ink)' }}>
+              Таңдаңыз — <span style={{ fontStyle: 'italic', color: 'var(--clay)' }}>тойыңызға лайықты</span>
+            </h2>
+            <p style={{ marginTop: 16, fontSize: 16, color: 'var(--ink-soft)' }}>Бір той — бір төлем. Айлық жазылым жоқ.</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <PriceCard
+              name="Тегін"
+              price="0 ₸"
+              sub="бір той"
+              cta="Бастау →"
+              ctaHref={dashHref}
+              features={[
+                '1 мероприятие',
+                'До 50 гостей',
+                'Казахский шаблон',
+                'WhatsApp приглашения',
+                'Форма регистрации',
+              ]}
+            />
+            <PriceCard
+              name="Дара"
+              price="4 990 ₸"
+              sub="бір той"
+              cta="Той құру →"
+              ctaHref={dashHref}
+              highlight
+              features={[
+                'До 3 мероприятий',
+                'До 300 гостей',
+                'Все шаблоны',
+                'Фото и музыка',
+                'Рассадка гостей',
+                'Напоминания гостям',
+              ]}
+            />
+            <PriceCard
+              name="Той"
+              price="9 990 ₸"
+              sub="бір той"
+              cta="Той құру →"
+              ctaHref={dashHref}
+              features={[
+                'Безлимит мероприятий',
+                'До 1 000 гостей',
+                'Все шаблоны',
+                'Приоритетная поддержка',
+                'Без логотипа Toyla',
+                'Все возможности',
+              ]}
+            />
           </div>
         </div>
       </section>
@@ -252,15 +384,12 @@ export default function LandingPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-80px' }}
             transition={{ duration: 0.7 }}
-            style={{ background: 'var(--ink)', borderRadius: 32, padding: '80px 64px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}
+            style={{ background: 'var(--ink)', borderRadius: 32, padding: 'clamp(48px,6vw,80px) clamp(24px,5vw,64px)', textAlign: 'center', position: 'relative', overflow: 'hidden' }}
           >
-            {/* watermark */}
             <div style={{ position: 'absolute', right: -100, top: '50%', transform: 'translateY(-50%)', width: 440, height: 440, opacity: 0.08, pointerEvents: 'none' }}>
               <Shanyrak hoop="#E9D9BE" lattice="#C8A24B" spoke="#C8A24B" sw={1.5} />
             </div>
-            <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.3em', textTransform: 'uppercase', color: 'var(--gold-soft)', marginBottom: 20, position: 'relative' }}>
-              Тойыңызды бастаймыз ба?
-            </p>
+            <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.3em', textTransform: 'uppercase', color: 'var(--gold-soft)', marginBottom: 20, position: 'relative' }}>Тойыңызды бастаймыз ба?</p>
             <h2 style={{ fontFamily: 'var(--font-spectral), serif', fontWeight: 400, fontSize: 'clamp(32px,4.4vw,54px)', lineHeight: 1.08, color: 'var(--paper)', position: 'relative' }}>
               Әр шаңыраққа —<br />
               <span style={{ fontStyle: 'italic', color: 'var(--gold-soft)' }}>лайықты той</span>
@@ -271,15 +400,14 @@ export default function LandingPage() {
             <div className="flex items-center justify-center gap-5 flex-wrap" style={{ marginTop: 36, position: 'relative' }}>
               <Link
                 href={dashHref}
-                className="inline-flex items-center font-semibold rounded-full transition-all duration-200"
-                style={{ fontFamily: 'var(--font-manrope), sans-serif', fontSize: 14.5, background: 'var(--paper)', color: 'var(--ink)', padding: '12px 26px' }}
+                style={{ display: 'inline-flex', alignItems: 'center', fontFamily: 'var(--font-manrope), sans-serif', fontWeight: 600, fontSize: 14.5, background: 'var(--paper)', color: 'var(--ink)', padding: '12px 26px', borderRadius: 999, transition: 'all .18s' }}
                 onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-1px)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 12px 26px rgba(0,0,0,.25)' }}
                 onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = 'translateY(0)'; (e.currentTarget as HTMLElement).style.boxShadow = 'none' }}
               >
                 Той құру →
               </Link>
-              <a href="#how" style={{ fontSize: 15, fontWeight: 600, color: 'var(--bone)', borderBottom: '1.5px solid rgba(244,236,223,.3)', paddingBottom: 3 }}>
-                Үлгілерді көру
+              <a href="#pricing" style={{ fontSize: 15, fontWeight: 600, color: 'var(--bone)', borderBottom: '1.5px solid rgba(244,236,223,.3)', paddingBottom: 3 }}>
+                Бағаны көру
               </a>
             </div>
           </motion.div>
@@ -287,24 +415,43 @@ export default function LandingPage() {
       </section>
 
       {/* ── Footer ── */}
-      <footer style={{ padding: '0 24px 40px' }}>
+      <footer style={{ padding: '0 24px 48px' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 24, flexWrap: 'wrap', borderTop: '1px solid var(--line)', paddingTop: 32 }}>
-            <Logo size="sm" href="/" />
-            <div className="flex gap-8 flex-wrap">
-              {['Мүмкіндіктер', 'Үлгілер', 'Баға', 'Қолдау'].map((label) => (
-                <a key={label} href="#" style={{ fontSize: 14, color: 'var(--ink-soft)', transition: 'color .18s' }}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6" style={{ borderTop: '1px solid var(--line)', paddingTop: 36 }}>
+            <div className="flex flex-col gap-4">
+              <Logo size="sm" href="/" />
+              <a
+                href="https://wa.me/77073907131"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 transition-all"
+                style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink-soft)' }}
+                onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = 'var(--clay)')}
+                onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = 'var(--ink-soft)')}
+              >
+                <MessageCircle size={16} />
+                +7 707 390 71 31
+              </a>
+            </div>
+            <div className="flex flex-wrap gap-x-8 gap-y-3">
+              {[
+                { label: 'Мүмкіндіктер', href: '#how' },
+                { label: 'Үлгілер', href: '#templates' },
+                { label: 'Баға', href: '#pricing' },
+                { label: 'WhatsApp', href: 'https://wa.me/77073907131' },
+              ].map((item) => (
+                <a key={item.label} href={item.href} target={item.href.startsWith('http') ? '_blank' : undefined}
+                  style={{ fontSize: 14, color: 'var(--ink-soft)', transition: 'color .18s' }}
                   onMouseEnter={(e) => ((e.target as HTMLElement).style.color = 'var(--clay)')}
                   onMouseLeave={(e) => ((e.target as HTMLElement).style.color = 'var(--ink-soft)')}
-                >
-                  {label}
-                </a>
+                >{item.label}</a>
               ))}
             </div>
             <p style={{ fontSize: 13, color: 'var(--ink-soft)' }}>© 2026 Toyla · toyla.app</p>
           </div>
         </div>
       </footer>
+
     </div>
   )
 }
