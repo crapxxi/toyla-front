@@ -2,9 +2,8 @@
 import { useState, useMemo } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
-import { ChevronLeft, Save, Monitor, Palette, Music2, Timer, Eye } from 'lucide-react'
+import { ChevronLeft, Save, Monitor, Music2, Timer, Eye } from 'lucide-react'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Separator } from '@/components/ui/separator'
@@ -17,29 +16,6 @@ import { RomanticTemplate } from '@/components/templates/RomanticTemplate'
 import { ModernTemplate } from '@/components/templates/ModernTemplate'
 import { PublicToyResponse } from '@/types'
 
-function ColorPicker({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
-  return (
-    <div className="flex items-center justify-between gap-4">
-      <label className="text-sm text-gray-700 flex-1">{label}</label>
-      <div className="flex items-center gap-2.5">
-        <div className="relative">
-          <input
-            type="color"
-            value={value || '#8B5CF6'}
-            onChange={(e) => onChange(e.target.value)}
-            className="w-9 h-9 rounded-xl cursor-pointer border-2 border-gray-100 p-0.5 bg-transparent"
-          />
-        </div>
-        <Input
-          value={value || ''}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder="#8B5CF6"
-          className="w-28 h-9 text-xs rounded-xl font-mono"
-        />
-      </div>
-    </div>
-  )
-}
 
 function Toggle({ label, sublabel, checked, onChange }: { label: string; sublabel?: string; checked: boolean; onChange: (v: boolean) => void }) {
   return (
@@ -158,67 +134,6 @@ export default function TemplatePage() {
       <div className={`grid gap-5 ${showPreview ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1 max-w-xl'}`}>
         {/* Settings */}
         <div className="space-y-4">
-          {/* Design */}
-          <SectionCard icon={Palette} title="Цвета и шрифт">
-            <ColorPicker
-              label="Основной цвет"
-              value={settings.primaryColor ?? ''}
-              onChange={(v) => updateSettings({ primaryColor: v })}
-            />
-            <Separator />
-            <ColorPicker
-              label="Цвет фона"
-              value={settings.backgroundColor ?? ''}
-              onChange={(v) => updateSettings({ backgroundColor: v })}
-            />
-            <Separator />
-            <ColorPicker
-              label="Акцентный цвет"
-              value={settings.accentColor ?? ''}
-              onChange={(v) => updateSettings({ accentColor: v })}
-            />
-            <Separator />
-            <div>
-              <label className="block text-sm text-gray-700 mb-2">Приветственный текст</label>
-              <Textarea
-                value={settings.greetingText ?? ''}
-                onChange={(e) => updateSettings({ greetingText: e.target.value })}
-                placeholder="С радостью приглашаем вас..."
-                rows={2}
-                className="rounded-xl resize-none text-sm"
-              />
-            </div>
-            <Separator />
-            <div>
-              <label className="block text-sm text-gray-700 mb-2">Шрифт</label>
-              <div className="grid grid-cols-3 gap-2">
-                {([
-                  { key: 'serif', label: 'Serif', preview: 'Аа' },
-                  { key: 'sans-serif', label: 'Sans', preview: 'Аа' },
-                  { key: 'cursive', label: 'Cursive', preview: 'Аа' },
-                ] as { key: 'serif' | 'sans-serif' | 'cursive'; label: string; preview: string }[]).map((f) => (
-                  <button
-                    key={f.key}
-                    onClick={() => updateSettings({ fontFamily: f.key })}
-                    className={`py-2.5 px-3 rounded-xl border text-center transition-all ${
-                      settings.fontFamily === f.key
-                        ? 'border-[#8B5CF6] bg-[#EDE9FE] text-[#8B5CF6]'
-                        : 'border-gray-200 text-gray-600 hover:border-gray-300'
-                    }`}
-                  >
-                    <div
-                      className="text-lg leading-none mb-0.5"
-                      style={{ fontFamily: f.key === 'sans-serif' ? 'Inter' : f.key === 'cursive' ? 'cursive' : 'Georgia, serif' }}
-                    >
-                      {f.preview}
-                    </div>
-                    <div className="text-[10px] font-medium">{f.label}</div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </SectionCard>
-
           {/* Music */}
           <SectionCard icon={Music2} title="Музыка">
             <div>
@@ -269,7 +184,10 @@ export default function TemplatePage() {
               label="Показывать таймер"
               sublabel="Обратный отсчёт до события"
               checked={settings.countdownEnabled ?? false}
-              onChange={(v) => updateSettings({ countdownEnabled: v })}
+              onChange={(v) => updateSettings({
+                countdownEnabled: v,
+                ...(v && !settings.countdownTargetDate ? { countdownTargetDate: toy.eventDate } : {}),
+              })}
             />
 
             {settings.countdownEnabled && (
