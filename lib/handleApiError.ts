@@ -32,6 +32,7 @@ export function handleApiError(err: unknown) {
     toast.error(`Лимит. Повторите через ${headers?.['retry-after'] ?? 60}с`)
     return
   }
+  if (status === 413) { toast.error(data?.error ?? 'Файл слишком большой'); return }
   if (data?.errors) {
     Object.values(data.errors).forEach((m) => toast.error(m as string))
     return

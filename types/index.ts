@@ -10,6 +10,8 @@ export type Role             = 'ORGANIZER' | 'ADMIN'
 export interface AuthResponse {
   id: number
   phoneNumber: string
+  name: string | null
+  lastName: string | null
   token: string
 }
 

@@ -41,7 +41,7 @@ function PlanCard({ plan, current }: { plan: TariffPlanInfo; current: boolean })
         <span className="text-2xl font-bold" style={{ color: 'var(--clay)' }}>
           {isFree ? t.freePrice : formatTenge(plan.priceTenge)}
         </span>
-        {!isFree && <span className="text-xs mb-1" style={{ color: 'var(--ink-soft)' }}>{t.perEventLabel}</span>}
+        {!isFree && <span className="text-xs mb-1" style={{ color: 'var(--ink-soft)' }}>{plan.code === 'TOY' ? (lang === 'kk' ? '/ айына' : '/ месяц') : t.perEventLabel}</span>}
       </div>
 
       <ul className="mt-5 space-y-2.5 flex-1">
